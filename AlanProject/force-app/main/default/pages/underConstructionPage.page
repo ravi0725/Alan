@@ -1,0 +1,67 @@
+<apex:page >
+  <script>
+    function back(){
+      javascript:history.go(-1)
+    }
+  </script>
+  <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 250px;
+            margin-left: -170px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 300px;  
+            height: 80px;          
+            margin-left: -200px;
+            top:200px;
+            align:center;
+        }
+
+    </style>
+    <apex:outputPanel id="expQuotePopup">
+        <apex:outputPanel styleClass="popupBackground" layout="block"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block">               
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               <apex:outputLabel value="{!$Label.Coming_Soon}" style="font-size:16px;font-weight:bold;"/><br/><br/><br/>
+               
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" style="btn" class="btn" value="{!$Label.Return_to_Product_Catalog}" onclick="back();" />
+                                                
+            </apex:outputPanel>
+        </apex:outputPanel>
+</apex:page>

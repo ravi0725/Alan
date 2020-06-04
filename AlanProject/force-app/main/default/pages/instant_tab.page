@@ -1,0 +1,5 @@
+<apex:page >
+        
+    <apex:enhancedList type="case"  height="600"  rowsPerPage="25" id="aclist"> </apex:enhancedList>
+
+</apex:page>

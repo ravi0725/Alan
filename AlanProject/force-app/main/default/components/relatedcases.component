@@ -1,0 +1,44 @@
+<!--This VF component is used for Planning Priority VF based Email Template - GCCM
+This interacts with ListCaseController and VF Email Template (Priority_Case_Template_Ad) -->
+
+<apex:component controller="ListCaseController" access="global">
+  <apex:attribute name="caseId" description="Case Id"  assignTo="{!cId}" type="String" />
+  <apex:attribute name="recordType" description="Case Record Type"  assignTo="{!recType}" type="String" />
+    <style>
+    table, td, th {
+    border: 1px solid #ddd;
+    text-align: left;
+    }
+    
+    table {
+    border-collapse: collapse;
+    width: 100%;
+    }
+    
+    th, td {
+    padding: 15px;
+    }
+    </style>
+    
+    <table>
+    <tr>
+    <td>Related Child Case #</td>
+    <td>Case Owner</td> 
+    <td>Application </td> 
+    <td>Subject</td>
+    <!-- <td>Description</td> -->
+    </tr>
+    <apex:repeat value="{!cases}" var="case" id="theRepeat">
+    <tr>
+    <td><apex:outputLink value="{!LEFT($CurrentPage.URL,FIND('/',$CurrentPage.URL,9))}/{!Case.Id}">
+    {!case.CaseNumber} </apex:outputLink> </td>
+    <td>{!case.Owner.name}</td>
+    <td>{!case.Application__c}</td>
+    <td>{!case.Subject}</td> 
+    <!-- <td>{!case.Description}</td> -->
+    
+    
+    </tr>
+    </apex:repeat> 
+    </table>
+</apex:component>

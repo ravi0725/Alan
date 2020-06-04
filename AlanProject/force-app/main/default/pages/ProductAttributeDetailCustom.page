@@ -1,0 +1,1202 @@
+<!-- 
+    Apttus Config & Pricing
+    ProductAttributeDetail
+     
+    @2010-2011 Apttus Inc. All rights reserved. 
+
+ -->
+<apex:page standardController="Apttus_Config2__LineItem__c" 
+           extensions="Apttus_Config2.ProductAttributeDetailController2,ProductAttributeLineItemController"  
+           showHeader="false" 
+           sidebar="false"  
+           tabStyle="Product2" id="thepage">   
+     
+    <apex:stylesheet value="{!$Resource.Apttus_Config2__ConfigStyles}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__YUILibrary, '/yui/build/assets/skins/sam/skin.css')}" />
+    
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Config2__YUILibrary, '/yui/build/yahoo-dom-event/yahoo-dom-event.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Config2__YUILibrary, '/yui/build/dragdrop/dragdrop-min.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Config2__YUILibrary, '/yui/build/container/container-min.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Config2__YUILibrary, '/yui/build/animation/animation-min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-1.9.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-ui.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.core.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.lob.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.theme.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.css')}"/>
+    <script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.8.3.js"></script>
+    <script>
+        function saveData(){
+            saveLineItems();
+        }
+    
+        function startLoad(){
+            document.getElementById("loadId").style.display = "block";
+            document.getElementById("loadTextId").style.display = "block";
+        }
+    
+        function endLoad(){
+            document.getElementById("loadId").style.display = "none";
+            document.getElementById("loadTextId").style.display = "none";
+        }
+    </script> 
+    <style>
+        #SFDCTableGrid_headers{
+            font-size:10px;
+        }
+        
+        textarea { 
+            width: 40%;
+        }
+        
+        .loadingScreen{
+        z-index:199;
+        width:100%;
+        height:97%;
+        background-color:black;
+        position:absolute;
+        opacity:0.4;
+        filter:alpha(40);
+        display:none;
+        }
+        
+        
+        .loadingStyle{
+        z-index:999;
+        width:200px;
+        height:50px;
+        background-color:#3EAEDC;
+        color:white;
+        font-size:18px;
+        text-align:center;
+        border-radius:6px;
+        position:absolute;
+        left:40%;
+        top:35%;
+        }
+    
+        .aptSellPrice {}
+        .aptAdditionalDiscount {}
+        .aptProductListHeader h2 {
+                padding-left:1em;
+                font-weight: normal;
+        }
+        
+        .aptMainBlockHeader {
+            background: -moz-linear-gradient(top,  rgba(30,87,153,1) 0%, rgba(125,185,232,0) 100%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(30,87,153,1)), color-stop(100%,rgba(125,185,232,0)));
+            background: -webkit-linear-gradient(top,  rgba(30,87,153,1) 0%,rgba(125,185,232,0) 100%);
+            background: -o-linear-gradient(top,  rgba(30,87,153,1) 0%,rgba(125,185,232,0) 100%);
+            background: -ms-linear-gradient(top,  rgba(30,87,153,1) 0%,rgba(125,185,232,0) 100%);
+            background: linear-gradient(to bottom,  rgba(30,87,153,1) 0%,rgba(125,185,232,0) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#007db9e8',GradientType=0 );
+            border-radius: 3px;
+            height:60px;
+            color:white;
+            padding-top: 7px;
+            font-size: 15px;
+        }
+        
+        .aptListButton {
+            -moz-box-shadow: 0px 1px 0px 0px #ffffff;
+            -webkit-box-shadow: 0px 1px 0px 0px #ffffff;
+            box-shadow: 0px 1px 0px 0px #ffffff;
+            background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #71b2f6), color-stop(1, #236fbd) );
+            background: -moz-linear-gradient( center top, #71b2f6 5%, #236fbd 100% );
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#71b2f6', endColorstr='#236fbd');
+            background-color: #71b2f6;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            display: inline-block;
+            color: #ffffff !important;
+            font-family: arial;
+            font-size: 12px;
+            font-weight: normal;
+            padding: 5px 24px;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+        
+        .ListButton{
+            -moz-box-shadow: 0px 1px 0px 0px #ffffff;
+            -webkit-box-shadow: 0px 1px 0px 0px #ffffff;
+            box-shadow: 0px 1px 0px 0px #ffffff;
+            background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #71b2f6), color-stop(1, #236fbd) );
+            background: -moz-linear-gradient( center top, #71b2f6 5%, #236fbd 100% );
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#71b2f6', endColorstr='#236fbd');
+            background-color: #71b2f6;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            display: inline-block;
+            color: #ffffff !important;
+            font-family: arial;
+            font-size: 10px;
+            font-weight: normal;
+            text-decoration: none;
+            padding: 2px 4px;
+            margin-right: 2px;
+            height:14px;
+            text-align: center;
+            width:50px;
+        }
+        
+        .ui-iggrid tr.ui-ig-altrecord {
+            background-color:white;
+        }
+        
+        .ui-iggrid td.ui-state-hover {
+            background-color:white;
+            border-left:0px;
+            border-right:0px;
+        } 
+        
+        .ui-iggrid th, .ui-iggrid th.ui-state-default{
+            border-color: #DDDDDD; 
+        }
+        
+        .ui-iggrid .ui-ig-altrecord td.ui-state-hover {
+            background-color:white;
+            border-left:none;
+        }
+        
+        .ui-iggrid-headertext{
+            color:#5491D1;
+            font-weight:bold;
+        }
+        
+        .ui-iggrid-header{
+            background-color:#F3F3F3;
+        }
+        
+        .ui-widget-header {
+            background-color:#F3F3F3;           
+        }
+        
+        .aptRoundedDiv {
+            padding-bottom: 5px;
+            background-color: white;
+            border: 1px solid #DDD;
+            margin-top: 5px;
+            -webkit-border-radius: 3px; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
+            border-radius: 3px; 
+            /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
+            /* useful if you do not want a bg color from leaking outside the border: */
+            /* -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; */
+            /*-webkit-box-shadow: 0px 0px 4px 0px #000;  Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+            /*box-shadow: 0px 0px 4px 0px #000; /* Opera 10.5, IE9+, Firefox 4+, Chrome 6+, iOS 5 */
+            
+            /* IE Stuff */      
+            zoom: 1; 
+            width:100%;
+            filter: 
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=0,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=45,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=90,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=135,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=180,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=225,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=270,strength=2),
+              progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=315,strength=2); 
+        }
+        
+        .aptListButton:hover {
+            background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89bff8), color-stop(1, #4a88c9) );
+            background: -moz-linear-gradient( center top, #89bff8 5%, #4a88c9 100% );
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#89bff8', endColorstr='#4a88c9');
+            background-color: #89bff8;
+            text-decoration: none;
+            color: #ffffff;
+        }
+        
+        div.aptProductListHeader {
+            cursor: pointer;
+
+            width:100%;
+            padding: 6px 0px;
+            font-size: 1em;
+            line-height: 1.5em;
+            color: #6f6f6f;
+            -webkit-border-top-left-radius: 2px;
+            -webkit-border-top-right-radius: 2px;
+            -moz-border-radius-topleft: 2px;
+            -moz-border-radius-topright: 2px;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px; 
+            
+            background: url('{!$Resource.CPQNewSprites}') repeat-x;
+            background-position: 0px 0px;
+            
+            /* background: -moz-linear-gradient(top,  #022649 30%, #04050c 99%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#022649), color-stop(99%,#04050c));
+            background: -webkit-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: -o-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: -ms-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: linear-gradient(to bottom,  #022649 30%,#04050c 99%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#022649', endColorstr='#04050c',GradientType=0 ); */
+        }
+        
+        .clearfix {
+            clear:both; 
+        }
+        
+        .buttonsBlock{
+            width:100%;
+            text-align: center;
+        }
+        
+        .tableLineItems{
+            width:100%;
+            padding-left: 10px;
+        }
+        
+        /* .bPageBlock{
+            background-color: transparent !important;
+            border-radius: 0px 0px 0px 0px !important;
+            border:0px !important;
+            
+        }*/
+        
+        div.aptProductListHeader {
+            cursor: pointer;
+
+            width:100%;
+            padding: 6px 0px;
+            font-size: 1em;
+            line-height: 1.5em;
+            color: #6f6f6f;
+            -webkit-border-top-left-radius: 2px;
+            -webkit-border-top-right-radius: 2px;
+            -moz-border-radius-topleft: 2px;
+            -moz-border-radius-topright: 2px;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            
+            background: url('{!$Resource.CPQNewSprites}') repeat-x;
+            background-position: 0px 0px;
+            
+            /* background: -moz-linear-gradient(top,  #022649 30%, #04050c 99%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#022649), color-stop(99%,#04050c));
+            background: -webkit-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: -o-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: -ms-linear-gradient(top,  #022649 30%,#04050c 99%);
+            background: linear-gradient(to bottom,  #022649 30%,#04050c 99%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#022649', endColorstr='#04050c',GradientType=0 ); */
+        }
+
+        .aptProductListHeader h2 {
+            padding-left:1em;
+            font-weight: normal;
+        }
+
+         #aptSelectedProducts {
+            padding-left:10px;
+        }
+
+        .aptQuantity {
+            text-align: right;
+            width:3em;
+        }
+
+        .aptRecommendedProductsContainer {
+
+        }
+
+        .aptShoppingCartContainer {
+
+        }
+        
+        .evenRowRules {
+            background-color: white;
+        }
+
+
+        /***************************
+         *  FIELDS
+         **************************/
+
+
+        
+
+        .aptToggleOff  {
+            background-position: 0px -80px;
+        }
+        
+        .aptToggleOn  {
+            background-position: 0px -11px;
+        }
+
+        .aptToggleStatus a {
+            color: #06C;
+        }
+
+
+        .aptShoppingCartTable tr {
+            height: 3em;
+        }
+
+
+        /***************************
+         *  ICONS and IMAGES
+         **************************/
+
+        .aptCartLineItemIcon {
+            width:100px;
+        }
+        .aptSmallBasket {
+            background: url('{!$Resource.CPQNewSprites}');
+            background-position: -23px -280px;
+            height: 17px;
+            width: 19px;
+            margin-left:5px;
+            float:left;
+        }
+ 
+        
+    </style>
+    
+    <script type="text/javascript" src="/soap/ajax/22.0/connection.js"></script>
+    <script type="text/javascript" src="/soap/ajax/22.0/apex.js"></script>
+    <apex:include pageName="Apttus_Config2__ConfigJSLibInclude" />
+    
+    <!-- 
+    <apex:includeScript value="{!$Resource.ConfigPromptJSLib}"/>
+    <apex:includeScript value="{!$Resource.Apttus_Config2__ConfigSelectJSLib}"/>
+     -->
+    <script type="text/javascript">
+        //set the title and progress bar icon
+        var aptLoadingPageHeader = "{!$Label.apttus_config2__loadingpage}";
+        
+        var aptRuleAlertHeader = "{!$Label.apttus_config2__constraintrulealert}";
+        var aptDialogBody = '<center><img src="{!URLFOR($Resource.Apttus_Config2__Image_LoadingPage)}" /></center>';
+        
+        YAHOO.namespace("force.com");
+        // detail panel
+        YAHOO.force.com.globalCtx = new Object();
+        YAHOO.force.com.clsNodes = new Array();
+        YAHOO.force.com.selectedNode = new Object();
+                
+        //for IE load the script into DOM
+        function loadJSFile(filename){
+            var fileref = document.createElement('script');
+            if (typeof fileref != "undefined"){
+                fileref.setAttribute("type","text/javascript");
+                fileref.setAttribute("src", filename);
+                document.getElementsByTagName("head")[0].appendChild(fileref);
+            }
+        }
+        //load the JavaScript file. This is necessary for IE
+        loadJSFile("{!$Resource.Apttus_Config2__ConfigPromptJSLib}");
+        //loadJSFile("{!$Resource.Apttus_Config2__ConfigSelectJSLib}");
+        
+    </script>
+    
+    <script type="text/javascript">
+        
+        /**
+         * Initializes the call to webservices api
+         */
+        function initCall() {
+            try {
+                sforce.connection.sessionId = "{!$Api.Session_ID}"; //to avoid session timeout
+                        
+            } catch(ex) {
+                cp_erroralert(cp_cERROR_UNKNOWN,ex);
+                        
+            }
+        }
+                                
+    </script>
+    <script type="text/javascript">  
+    function doSave(date) {  
+        paraFunction(document.getElementById(date).value);  
+    }
+    </script>
+    <script type="text/javascript">  
+    function doSave1(date) {  
+        paraFunction1(document.getElementById(date).value);  
+    }
+    </script>
+
+    <apex:form id="idLineItemSO" >
+        <div id="loadId" class="loadingScreen"/>
+        <div id="loadTextId" class="loadingStyle" style="display:none;">
+            Processing . . . 
+            <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+        </div>
+        <apex:actionStatus id="saveStatus" onstart="startLoad();" onstop="endLoad();"/>
+        <!--  required fields -->
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ProductId__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ProductId__r.Name}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ConfigurationId__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__LineNumber__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__LineType__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__LineStatus__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__AttributeValueId__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__BaseProductId__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__HasOptions__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__Customizable__c}" rendered="false" />
+        <apex:outputText value="{!Apttus_Config2__LineItem__c.Apttus_Config2__PriceType__c}" rendered="false" />
+        <apex:actionFunction name="saveLineItems" >
+        </apex:actionFunction>
+        
+        <table style="width: 100%; background-color: #F7F7F7;" width="100%">
+            <tr>
+                <td>
+                <table width="100%">
+                    <tr style="background-color: #FFFFFF;">
+                        <td><apex:outputPanel style="text-align: left;" layout="block">
+                            <apex:panelGrid columns="1">
+                                <apex:panelGroup >
+                                    <apex:outputText escape="false" value="&nbsp;{!fromBizType}:"
+                                        style="text-transform:uppercase;font-weight:bold;color:#5487B9" />
+
+                                    <apex:outputText escape="false"
+                                        value="&nbsp;{!fromBizTitle}&nbsp;&nbsp;"
+                                        style="font-weight:bold;color:#5487B9;" />
+                                </apex:panelGroup>
+                            </apex:panelGrid>
+                        </apex:outputPanel></td>
+                        <td> 
+                        <apex:outputPanel style="text-align: right;" layout="block">
+                            <apex:image url="{!$Resource.Apttus_Config2__Apttus_Logo}" title="" alt="" />
+                        </apex:outputPanel></td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <apex:outputPanel id="idTopNavStage"
+                                              style="text-align: left;" 
+                                              layout="block">
+
+                                <apex:panelGrid columns="1" style="line-height:80%">
+
+                                    <apex:panelGroup >
+
+                                        <apex:outputText escape="false" 
+                                                         value="{!$Label.apttus_config2__step}"
+                                                         style="font-weight:bold;font-size:90%" />
+
+                                        &nbsp;&nbsp;
+                                        <apex:outputText escape="false"
+                                                         value="&nbsp;&nbsp;{!$Label.Apttus_Config2__StageSelect}&nbsp;&nbsp;"
+                                                         styleClass="aptsConfigStage" />
+            
+                                        &nbsp;&nbsp;
+                                        <apex:image url="{!$Resource.Apttus_Config2__Chevron}" title="" alt="" />
+                                        &nbsp;&nbsp;
+                        
+
+                                        <apex:outputText escape="false"
+                                                         value="&nbsp;&nbsp;{!$Label.Apttus_Config2__StageConfigure}&nbsp;&nbsp;"
+                                                         styleClass="aptsCurrentConfigStage" />
+            
+                                        &nbsp;&nbsp;
+                                        <apex:image url="{!$Resource.Apttus_Config2__Chevron}" title="" alt="" />
+                                        &nbsp;&nbsp;
+            
+                                        <apex:outputText escape="false"
+                                                         value="&nbsp;&nbsp;{!$Label.Apttus_Config2__StagePrice}&nbsp;&nbsp;"
+                                                         styleClass="aptsConfigStage" />
+
+
+                                        &nbsp;&nbsp;
+                                        <apex:image url="{!$Resource.Apttus_Config2__Chevron}" title="" alt="" />
+                                        &nbsp;&nbsp;
+
+                                        <apex:outputText escape="false"
+                                                         value="&nbsp;&nbsp;{!$Label.Apttus_Config2__StageFinalize}&nbsp;&nbsp;"
+                                                         styleClass="aptsConfigStage"  />
+            
+                                        <b><apex:actionStatus id="idStatusSelect" 
+                                                              startText="{!$Label.apttus_config2__statusmessageupdatingpage}..." /></b>
+                                                              
+                                    </apex:panelGroup>
+
+                                </apex:panelGrid>
+
+                            </apex:outputPanel>
+                        </td>
+                        
+                        <td>
+                            <apex:outputPanel id="idTopNavActions" 
+                                              style="text-align: right;"
+                                              layout="block" >
+                                <apex:commandButton value="{!$Label.apttus_config2__abandon}"
+                                                    action="{!doAbandon}" 
+                                                    immediate="true"
+                                                    style="background-color:#657383;background-image:none;color:white;"/>
+                                &nbsp;
+                                &nbsp;
+                                <apex:image url="{!$Resource.Apttus_Config2__Cart}" 
+                                            title="{!$Label.apttus_config2__cart}"
+                                            alt="{!$Label.apttus_config2__cart}" />
+                                <apex:commandLink value="{!$Label.apttus_config2__myselections}"
+                                                  action="{!doViewCart}" 
+                                                  style="color:blue;font-weight:bold" 
+                                                  reRender="idErrorMsg, idRulesBlock"
+                                                  />
+                                &nbsp;
+                                <apex:outputText value="({!cartSummaryInfo})" />
+                                &nbsp;
+                            </apex:outputPanel>
+        
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        </table>
+        
+        <table width="100%" class="aptRoundedDiv"><tr>
+        <td width="80%" valign="top">
+            <div width="100%"  class="aptRoundedDiv">
+<!-- Start Product Attribute Detail --> 
+            
+        <apex:pageBlock id="idProductAttributeDetailBlock"  >
+            <apex:outputPanel id="idErrorMsg">
+                <apex:pageMessages />
+                <!--<Apttus_Config2:RuleMessageDisplay id="idRuleMessageComponent" configId="{!ConfigurationId}" contextLineNumber="{!ContextLineNumber}" hasChoice="{!RuleResult.isEmpty == false}"/>-->
+            </apex:outputPanel>
+            
+             <div class="buttonsBlock">
+                 <apex:commandLink value="{!$Label.apttus_config2__backtopricing}"
+                                    styleClass="aptListButton"
+                                    action="{!doViewCart}"
+                                    onclick="onActionClick();"
+                                    oncomplete="onActionComplete();"
+                                    reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock"/>
+                <apex:commandLink value="{!$Label.apttus_config2__removeitem}"
+                                    styleClass="aptListButton" 
+                                    onclick="YAHOO.force.com.showRemoveConfirmation('{!LineItemSO.Apttus_Config2__LineNumber__c}');return false;"/>
+                <apex:commandLink value="{!$Label.apttus_config2__addmoreproducts}" 
+                                    styleClass="aptListButton"
+                                    action="{!AddProd}" 
+                                    rendered="{!enablePricing}"/>
+                                    <!-- rendered="{!isCallerSelectionPage}" /> -->
+                <apex:commandLink value="{!$Label.apttus_config2__backtopricing}" 
+                                    styleClass="aptListButton"
+                                    action="{!doViewCart}"
+                                    onclick="onActionClick();" 
+                                    oncomplete="onActionComplete();"
+                                    reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock" 
+                                    rendered="{!isCallerViewCartPage && hasOptionGroups}" />
+                <apex:commandLink value="{!$Label.apttus_config2__next}"
+                                    styleClass="aptListButton" 
+                                    action="{!doConfigureOptions}" 
+                                    onclick="onActionClick();" 
+                                    oncomplete="onActionComplete();"
+                                    reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock" 
+                                    rendered="{!hasOptionGroups}" />
+               <apex:commandLink id="GotoPricing1" value="{!$Label.apttus_config2__gotopricing}" 
+                                    styleClass="aptListButton"
+                                    onclick="onActionClick();" 
+                                    oncomplete="window.open('/apex/AdvancePricingPageClone?retHref=ProductAttributeDetail&configRequestId={!configRequestId}&businessObjectId={!proposalId}&retId={!proposalId}&id={!configurationId}&lineitemid={!lineItemId}&flow={!flowUI}','_self');"
+                                    reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock" 
+                                    rendered="{!AND(NOT(hasOptionGroups), enablePricing)}"/>
+                 <apex:commandLink id="GotoPricing2" value="{!$Label.apttus_config2__gotopricing}" 
+                                    styleClass="aptListButton"
+                                    onclick="onActionClick();" 
+                                    oncomplete="window.open('/apex/AdvancePricingPageClone?retHref=ProductAttributeDetail&configRequestId={!configRequestId}&businessObjectId={!proposalId}&retId={!proposalId}&id={!configurationId}&lineitemid={!lineItemId}&flow={!flowUI}','_self');"
+                                    reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock" 
+                                    rendered="{!AND(hasOptionGroups, enablePricing)}"/> <!--action="{!doUpdateCart}" -->
+            </div>
+                
+            <apex:outputPanel >
+                <apex:panelGrid columns="3">    
+                    <apex:outputText style="font-weight:bold;color:#5487B9;text-transform:uppercase"
+                                     value="{!$Label.apttus_config2__specifydetailsfor}" />
+                    &nbsp;                
+                    <apex:outputText style="font-weight:bold;color:#5487B9;" 
+                                     value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ProductId__r.Name}" />
+                </apex:panelGrid>       
+            </apex:outputPanel>    
+            <apex:outputPanel >
+                <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!$Label.Apttus_Config2__Detail}</h2>
+                    </div>  
+                    <apex:pageBlockSection id="idProductAttributeDetailSection" 
+                                           columns="1" 
+                                           collapsible="false" >
+                        <apex:outputField value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ProductId__c}" />
+                    </apex:pageBlockSection>
+              
+                 </div>
+            </apex:outputPanel> 
+            
+            
+             <!--  Attribute Groups MAX 5  -->
+            <script>
+                function setPageBlockTable(){
+                    $("#SFDCTableGrid").igGrid({
+                        width: "100%",
+                        height: "300px", 
+                        columns: [
+                            { headerText: "Action", key: "Action"},
+                            { headerText: "Asset Product Code", key: "AssetProductCode"},
+                            { headerText: "Asset Name", key: "AssetName"},
+                            { headerText: "Asset Oracle ID", key: "AssetOracleID"},
+                            { headerText: "Quantity", key: "AssetQuantity"},
+                            { headerText: "Serial Number", key: "SerialNumber"},
+                            { headerText: "Entitlement Product Code", key: "EntitlementProductCode"},
+                            { headerText: "Quantity", key: "EntitlementQuantity"},
+                            { headerText: "Contract Number", key: "ContractNumber"},
+                            { headerText: "Start Date", key: "StartDate"},
+                            { headerText: "End Date", key: "EndDate"},
+                            { headerText: "License Key", key: "LicenseKey"},
+                            { headerText: "Version", key: "Version"},
+                            { headerText: "Purchase Date", key: "PurchaseDate"}
+                        ],
+                        features: [
+                            {
+                                name: "Tooltips",
+                                visibility: "always",
+                                columnSettings: [
+                                    { columnKey: "Action", allowTooltips: false },
+                                    { columnKey: "AssetProductCode", allowTooltips: true },
+                                    { columnKey: "AssetName", allowTooltips: true },
+                                    { columnKey: "AssetOracleID", allowTooltips: true },
+                                    { columnKey: "AssetQuantity", allowTooltips: false },
+                                    { columnKey: "SerialNumber", allowTooltips: true },
+                                    { columnKey: "EntitlementProductCode", allowTooltips: true },
+                                    { columnKey: "EntitlementQuantity", allowTooltips: false },
+                                    { columnKey: "ContractNumber", allowTooltips: true },
+                                    { columnKey: "StartDate", allowTooltips: false },
+                                    { columnKey: "EndDate", allowTooltips: false },
+                                    { columnKey: "LicenseKey", allowTooltips: true },
+                                    { columnKey: "Version", allowTooltips: true },
+                                    { columnKey: "PurchaseDate", allowTooltips: false }
+                                ],
+                                showDelay: 1000,
+                                hideDelay: 500
+                            }
+                        ]
+                    });
+                    
+                    $(".ui-iggrid-header").css("height", "40px");
+                    $(".ui-iggrid-header").css("white-space", "pre-wrap");
+                    $(".ui-iggrid-header").css("text-align", "center"); 
+                    
+                }
+            </script>
+            <!--  Attribute Group 1 -->
+            <apex:outputPanel rendered="{!isAttributeGroup1Enabled}" id="thepanel">
+                <script>
+                $(function () {
+                    setPageBlockTable();
+                });
+                </script>
+                <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!attributeGroup1Name}</h2>
+                    </div>   
+                    <apex:outputPanel id="assetTable"> 
+                        <table id="SFDCTableGrid" style="font-size:10px;">
+                            <thead>
+                                <tr> 
+                                    <th>
+                                        Action
+                                    </th>
+                                    <th>
+                                        Asset {!$ObjectType.Asset.Fields.Product_Code__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.Name.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.Asset_Oracle_ID__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.Quantity.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.SerialNumber.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Entitlement.Fields.Entitlement_Product_Product_Code__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Entitlement.Fields.Quantity__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Entitlement.Fields.Contract_Number__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Entitlement.Fields.StartDate.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Entitlement.Fields.EndDate.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.License_Key__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.Product_Version__c.label}
+                                    </th>
+                                    <th>
+                                        {!$ObjectType.Asset.Fields.PurchaseDate.label}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!assetWrapList}" var="assetWrap">
+                                    <tr>
+                                        <td>
+                                            <apex:commandLink rendered="{!AND(CONTAINS(validAssets , assetWrap.assObj.Product2Id) ,IF(IF(division == 'MEP' , OR(NOT(CONTAINS(allSelectedEntitlements,assetWrap.entObj.Oracle_Unique_Identifier__c)) , allSelectedEntitlements == '') && assetWrap.entObj.Oracle_Unique_Identifier__c != '' && assetWrap.entObj.Oracle_Unique_Identifier__c != null  , IF(allSelectedAssets == '' , true , NOT(CONTAINS(allSelectedAssets,assetWrap.assObj.Asset_Oracle_ID__c)) ) && assetWrap.assObj.Asset_Oracle_ID__c != '') &&
+                                                                        ((assetWrap.entObj.Quantity__c != null && assetWrap.assObj.Quantity != null && assetWrap.entObj.Quantity__c < assetWrap.assObj.Quantity && assetWrap.entObj.Status=='Active')
+                                                                        || (assetWrap.entObj.Status=='Expired')
+                                                                        || NOT(assetWrap.entitltmentFlag)) , true , false))}" 
+                                                              value="Save" styleClass="ListButton" action="{!saveLineItem}" oncomplete="setPageBlockTable();" reRender="idProductAttributeDetailBlock" 
+                                                              status="saveStatus" style="width:50px;">
+                                                <apex:param assignTo="{!selectedAsset}" name="selectedAsset" value="{!assetWrap.assObj.Asset_Oracle_ID__c}"/> <!-- + IF(assetWrap.entObj.Quantity__c == assetWrap.assObj.Quantity && assetWrap.entObj.Entitlement_Product_Product_Code__c != null && assetWrap.entObj.Entitlement_Product_Product_Code__c != '' && assetWrap.entObj.Entitlement_Status__c=='Active', ':'+ assetWrap.entObj.Entitlement_Product_Product_Code__c , '')}"/>-->
+                                                <apex:param assignTo="{!selectedEntitlement}" name="selectedEntitlement" value="{!assetWrap.entObj.Oracle_Unique_Identifier__c}"/>
+                                            </apex:commandLink> 
+                                            <apex:image value="{!$Resource.GreenCheckMark}" width="16" height="16" rendered="{!AND(CONTAINS(allSelectedAssets,assetWrap.assObj.Asset_Oracle_ID__c) , allSelectedAssets != '' , assetWrap.assObj.Asset_Oracle_ID__c != '', OR(AND(CONTAINS(allSelectedEntitlements,assetWrap.entObj.Oracle_Unique_Identifier__c) , allSelectedEntitlements != '' , assetWrap.entObj.Oracle_Unique_Identifier__c != '' , assetWrap.entObj.Oracle_Unique_Identifier__c != null , division == 'MEP'), division != 'MEP'))}"/>
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.Product_Code__c}
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.Name}
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.Asset_Oracle_ID__c}
+                                        </td>
+                                        <td>
+                                            <center><apex:outputField value="{!assetWrap.assObj.Quantity}"/></center>
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.SerialNumber}
+                                        </td>
+                                        <td>
+                                            {!assetWrap.entObj.Entitlement_Product_Product_Code__c}
+                                        </td>
+                                        <td>
+                                            <center><apex:outputField value="{!assetWrap.entObj.Quantity__c}"/></center>
+                                        </td>
+                                        <td>
+                                            {!assetWrap.entObj.Contract_Number__c}
+                                        </td>
+                                        <td>
+                                            <center><apex:outputField value="{!assetWrap.entObj.Startdate}"/></center>
+                                        </td>
+                                        <td>
+                                            <center><apex:outputField value="{!assetWrap.entObj.EndDate}"/></center>
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.License_Key__c}
+                                        </td>
+                                        <td>
+                                            {!assetWrap.assObj.Product_Version__c}
+                                        </td>
+                                        <td>
+                                            <center><apex:outputField value="{!assetWrap.assObj.PurchaseDate}"/></center>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>    
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div align="center">
+                            <table style="width:100%">
+                                <tr> 
+                                    <td style="width:300px;text-align:left;">
+                                        CurrentPage: {!currentPageRd} &nbsp; TotalPage: {!totalPageRd} 
+                                    </td>
+                                    <td style="text-align:center;"> 
+                                        <apex:commandbutton action="{!previousPageRd}" title="Previous Page" value="Previous Page" disabled="{!previousFlagRd}" reRender="assetTable" status="saveStatus" oncomplete="setPageBlockTable();"/>
+                                        <apex:commandbutton title="Next Page" value="Next Page" disabled="{!nextPageFlagRd}" action="{!nextPageRd}" reRender="assetTable" status="saveStatus" oncomplete="setPageBlockTable();"/>&nbsp;    
+                                    </td>
+                                    <td style="width:300px;text-align:right;">
+                                        <apex:selectList value="{!pageSizeRd}" multiselect="false" size="1"> 
+                                            <apex:actionSupport event="onchange" action="{!retriveAssetRecords}" reRender="assetTable" status="saveStatus" oncomplete="setPageBlockTable();"/>
+                                            <apex:selectOption itemValue="25" itemLabel="25"></apex:selectOption>
+                                            <apex:selectOption itemValue="50" itemLabel="50" ></apex:selectOption>
+                                            <apex:selectOption itemValue="100" itemLabel="100"></apex:selectOption>
+                                            <apex:selectOption itemValue="200" itemLabel="200"></apex:selectOption>
+                                            <apex:selectOption itemValue="500" itemLabel="500"></apex:selectOption> 
+                                        </apex:selectList>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                    <br/>
+                </div>
+            </apex:outputPanel> 
+             
+            <!--  Attribute Group 2 -->
+            <apex:outputPanel rendered="{!isAttributeGroup2Enabled}">
+                 <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!attributeGroup2Name}</h2>
+                    </div>  
+               
+                    <apex:pageBlockSection columns="2" 
+                                           collapsible="true" >
+                    
+                        <!-- attribute value fields -->
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Color__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup2, ':Apttus_Config2__Color__c')}" />
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Vendor__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup2, ':Apttus_Config2__Vendor__c')}" />
+                        
+                        <!-- Add custom fields here -->
+                                            
+                    </apex:pageBlockSection>
+                </div>
+            </apex:outputPanel>
+            
+            <!--  Attribute Group 3 -->
+            <apex:outputPanel rendered="{!isAttributeGroup3Enabled}">
+                <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!attributeGroup3Name}</h2>
+                    </div>  
+                    <apex:pageBlockSection columns="1" 
+                                           collapsible="true" >
+                    
+                        <!-- attribute value fields -->
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Color__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup3, ':Apttus_Config2__Color__c')}" />
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Vendor__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup3, ':Apttus_Config2__Vendor__c')}" />
+                        
+                        <!-- Add custom fields here -->
+                                         
+                    </apex:pageBlockSection>
+                 </div>
+            </apex:outputPanel>
+            
+            <!--  Attribute Group 4 -->
+            <apex:outputPanel rendered="{!isAttributeGroup4Enabled}" id="Demand">
+                <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!attributeGroup4Name}</h2>
+                    </div> 
+                    <apex:pageBlockSection columns="1" 
+                                           collapsible="true">
+                    
+                        <!-- attribute value fields -->
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Color__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup4, ':Apttus_Config2__Color__c')}" />
+                        <apex:inputField value="{!attributeValueSO.Apttus_Config2__Vendor__c}" 
+                                         rendered="{!CONTAINS(attributeNamesStringForGroup4, ':Apttus_Config2__Vendor__c')}" />
+                                         
+                                         
+                        
+                        <!-- Add custom fields here -->
+                         
+                    </apex:pageBlockSection>
+                 </div>
+            </apex:outputPanel>
+            
+            <!--  Attribute Group 5 -->
+            <apex:outputPanel rendered="{!isAttributeGroup5Enabled}" id="Collaborate">
+                <div width="100%"  class="aptRoundedDiv">
+                    <div class="aptProductListHeader" >
+                        <h2 style="margin-left: 1em;">{!attributeGroup5Name}</h2>
+                    </div>
+                    <apex:pageBlockSection title="{!attributeGroup5Name}" 
+                                           columns="1" 
+                                           collapsible="true" >
+                        <!-- attribute value fields -->
+                        <!-- Add custom fields here -->
+                                             
+                    </apex:pageBlockSection>  
+                 </div>  
+            </apex:outputPanel>
+            
+        </apex:pageBlock>
+<!-- End Product Attribute Detail -->  
+        </div>     
+        </td>
+        <td width="20%" valign="top">
+<!-- Start Shopping Cart -->
+        <apex:pageBlock id="idSelectedProductsBlock">
+<!-- Start Shopping Cart -->
+            <div style=" float: left;" class="aptRoundedDiv">
+                <div class="aptProductListHeader">
+                    <div class="aptSmallBasket"></div>
+                    <h2 style="margin-left: 1em; display:inline">{!$Label.Apttus_Config2__SelectedProducts}</h2>
+                </div>
+                  <apex:pageBlockSection id="idSelectedProductsBlock"
+                                          columns="1" 
+                                          collapsible="false">
+                                         
+                      <apex:outputPanel id="idPaginationPanel" 
+                                        styleClass="bNext"
+                                        layout="block" 
+                                        style="text-align: right;"
+                                        rendered="{!lineItemPaging.hasDisplayLines}">
+                          <font size="1px"> 
+                              <apex:outputPanel id="idNavSelectedPanel" 
+                                                styleClass="next"
+                                                layout="block" 
+                                                rendered="{!OR(lineItemPaging.hasNextPage,lineItemPaging.hasPreviousPage)}">
+                                  <apex:outputPanel rendered="{!NOT(lineItemPaging.hasPreviousPage)}"
+                                                    styleClass="greyedLink">&lt;{!$Label.Apttus_Config2__IteratorPrevious}</apex:outputPanel>
+                                  <apex:commandLink action="{!previousLineItemPage}" 
+                                                    rendered="{!lineItemPaging.hasPreviousPage}" 
+                                                    reRender=" ">&lt;{!$Label.Apttus_Config2__IteratorPrevious}</apex:commandLink>
+                                  <span> | </span>
+                                  <apex:outputText value="{!$Label.apttus_config2__page}: {!lineItemPaging.currentPageNumber} {!$Label.apttus_config2__outof} {!lineItemPaging.totalPages}" />
+                                  <span> | </span>
+                                  <apex:outputPanel rendered="{!NOT(lineItemPaging.hasNextPage)}"
+                                                    styleClass="greyedLink">{!$Label.Apttus_Config2__IteratorNext}&gt;</apex:outputPanel>
+                                  <apex:commandLink action="{!nextLineItemPage}" 
+                                                    rendered="{!lineItemPaging.hasNextPage}"
+                                                    reRender="idSelectedProductsBlock">{!$Label.Apttus_Config2__IteratorNext}&gt;</apex:commandLink>
+                              </apex:outputPanel>   
+                          </font>
+                      </apex:outputPanel>                                                
+                      <!-- Shopping Cart ProductInfo -->  
+                     <apex:pageBlockTable value="{!lineItemPaging.displayLines}" 
+                                          var="lineItem"
+                                          width="100%" 
+                                          rules="rows" 
+                                          rowClasses="oddRow, evenRow"
+                                          rendered="{!lineItemPaging.hasDisplayLines}">
+                         <!-- Start Group By Search Attribute Value -->               
+                         <apex:column style="width: 50px; max-width: 100px; white-space: nowrap;" rendered="{!lineItem.isSearchItem}">
+                             <apex:outputPanel rendered="{!(lineItem.searchAttrSO.Apttus_Config2__ValueType__c == ValueTypeDefault)}"> 
+                                 <!-- <apex:commandLink value="{!$Label.Apttus_Config2__GuideMe}"
+                                                   action="{!gotoSearchDefault}"
+                                                   onclick="onActionClick();" 
+                                                   oncomplete="onActionComplete();"
+                                                   style="color: blue; white-space: nowrap;"
+                                                   reRender="idTopNavActions, idSelectedProductsBlock, idRulesBlock" >
+                                 </apex:commandLink>
+                             </apex:outputPanel>
+                             <apex:outputPanel rendered="{!(lineItem.searchAttrSO.Apttus_Config2__ValueType__c == ValueTypeProduct)}"> 
+                                 <apex:commandLink value="{!$Label.Apttus_Config2__GuideMe}"
+                                                     action="{!gotoSearchProduct}"
+                                                     onclick="onActionClick();" 
+                                                     oncomplete="onActionComplete();"
+                                                     style="color:blue;"
+                                                     reRender="idTopNavActions, idSelectedProductsBlock, idRulesBlock" >
+                                         <apex:param name="param1" 
+                                                 assignTo="{!selectProductId}"
+                                                 value="{!lineItem.searchAttrSO.Apttus_Config2__BaseProductId__c}" />
+                                 </apex:commandLink> -->
+                             </apex:outputPanel>
+                         </apex:column>               
+                         <apex:column rendered="{!lineItem.isSearchItem}"> 
+                             <apex:outputPanel rendered="{!(lineItem.searchAttrSO.Apttus_Config2__ValueType__c == ValueTypeDefault)}"> 
+                                 <apex:outputText value="{!$Label.apttus_config2__searchdefault}"/>
+                             </apex:outputPanel>
+                             <apex:outputPanel rendered="{!(lineItem.searchAttrSO.Apttus_Config2__ValueType__c == ValueTypeProduct)}">
+                                 <apex:outputField value="{!lineItem.searchAttrSO.Apttus_Config2__BaseProductId__c}"></apex:outputField> 
+                             </apex:outputPanel>             
+                         </apex:column>                                                   
+                         <!-- End of Group By Search Attribute Value --> 
+                         <!-- Start Selected Line Item -->                
+                         <apex:column style="width: 28px; max-width: 36px; text-align: center;" rendered="{!lineItem.isLineItem}">
+                             <apex:commandLink rerender="dummy">
+                                 <apex:image url="{!$Resource.Apttus_Config2__Image_Remove}" 
+                                             alt="{!$Label.apttus_config2__remove}"
+                                             title="{!$Label.apttus_config2__remove}"
+                                             onclick="YAHOO.force.com.showRemoveConfirmation('{!lineItem.lineItemSO.Apttus_Config2__LineNumber__c}');return false;"/>
+                             </apex:commandLink> 
+                         </apex:column>
+                         <apex:column rendered="{!lineItem.isLineItem}">
+                             <apex:outputField value="{!lineItem.lineItemSO.Apttus_Config2__ProductId__c}"  
+                                              style="font-size: 10px; font-weight: bold;" />
+                         </apex:column>
+                         <!--                                
+                         <apex:column style="text-align: right"  rendered="{!lineItem.isLineItem}">
+                             <apex:outputField value="{!lineItem.lineItemSO.AdjustedPrice__c}" />
+                         </apex:column>
+                         -->
+                         <!-- End Selected Line Item -->
+                     </apex:pageBlockTable>
+                     
+            </apex:pageBlockSection>
+         </div>
+             
+
+         </apex:pageBlock>       
+<!-- End Shopping Cart -->                  
+        </td>
+        </tr></table>
+        
+<!--  Javascript functions -->
+        <apex:actionFunction name="invokeDoDeleteLineItem" 
+                             action="{!doDeleteLineItem}"
+                             rerender="idSelectedProductsBlock, idErrorMsg, idRulesBlock"
+                             oncomplete="onActionComplete();">
+            <apex:param name="firstParam" assignTo="{!lineItemLineNbr}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="invokeDoRemoveProduct" 
+                             action="{!doRemoveItem}"
+                             reRender="idErrorMsg, idRulesBlock, idSelectedProductsBlock" 
+                             oncomplete="YAHOO.force.com.waitPanel.hide();">
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="invokeDoHideMessage"
+                             action="{!doHideMessage}"
+                             reRender="idErrorMsg"
+                             oncomplete="YAHOO.force.com.waitPanel.hide();" >
+            <apex:param name="param" assignTo="{!appliedActionInfoId}" value="" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="invokeDoProcessMoreRules" 
+                             action="{!doProcessMoreRules2}" 
+                             rerender="idSelectedProductsBlock, idErrorMsg, idRulesBlock"
+                             oncomplete="onActionComplete();" />
+         
+        <!-- This is the content of the confirmation dialog -->
+        <apex:outputPanel >
+            <div id="confirmationPanel" style="display: none">
+                <div class="hd">
+                    <apex:outputText value="{!$Label.apttus_config2__removeconfirmation}" />
+                </div> 
+                <div class="bd">
+                    <apex:outputText value="{!$Label.apttus_config2__removeproductmessage}" />
+                </div>
+                <div class="bd">
+                    <apex:actionRegion >
+                        <div style="text-align: center; padding-left: 4px;" >
+                            <apex:commandButton value="{!$Label.apttus_config2__yes}"
+                                                onclick="YAHOO.force.com.remove();"
+                                                style="width: 50px;"   
+                                                immediate="true" 
+                                                oncomplete="YAHOO.force.com.confirmationPanel.hide();" />
+                            <apex:commandButton value="{!$Label.apttus_config2__no}" 
+                                                style="width: 50px;"   
+                                                onclick="YAHOO.force.com.confirmationPanel.hide();return false;" />
+                        </div>
+                    </apex:actionRegion>
+                </div>
+            </div>
+        </apex:outputPanel>
+
+<!-- Begin Constraint Rule Alert -->        
+<!-- This is the select choice dialog -->
+        <apex:outputPanel >
+            <div id="choicePanel" style="display: block">
+                <apex:outputPanel id="idChoicePanel">
+<!-- Start Choice Body -->
+
+<!-- Start Rule Result -->      
+<div id="aptRuleResult" style="{border: 2px solid gray; width: 100%;}">
+                        <apex:pageBlock id="idRulesBlock">
+                                    <apex:outputPanel rendered="{!NOT(ruleResult.isEmpty)}">
+                                        <div style="width: 98%; padding-left: 10px; padding-left: 10px;">   
+                                            <div style="width: 98%; height: 40px; color: black; border: 1px solid #990000; padding-left: 5px; font-weight: bold; overflow: auto;">
+                                               <apex:outputText value="{!ruleResult.Message}"/>
+                                            </div>  
+                                        </div>
+                                    </apex:outputPanel> 
+                                    <div style="{!ruleResult.tableStyle}">
+                                    <apex:pageBlockSection columns="1" 
+                                                   collapsible="false"
+                                                   showHeader="{!ruleResult.isShowMessage}"
+                                                   rendered="{!NOT(ruleResult.isEmpty)}"
+                                                   >
+                                        <!-- Begin List of Products -->
+                                                <apex:pageBlockTable value="{!ruleResult.products}"
+                                                                     var="productSO"
+                                                                     rules="rows" 
+                                                                     width="100%"
+                                                                     styleClass="aptShoppingCartTable"
+                                                                     columns="3"> 
+                                                                     
+                                                    <apex:column width="20%" >
+                                                        <apex:commandButton value="{!$Label.apttus_config2__select}"
+                                                                        action="{!doSelectProduct}" 
+                                                                        onclick="onActionClick();" 
+                                                                        oncomplete="onActionComplete();"
+                                                                        rendered="{!ruleResult.isSelect}"
+                                                                        reRender="idTopNavActions, idErrorMsg, idRulesBlock, idSelectedProductsBlock" >
+                                                                <apex:param name="param1" 
+                                                                            assignTo="{!selectedProductId}"
+                                                                            value="{!productSO.Id}" />
+                                                                <apex:param name="param2" 
+                                                                            assignTo="{!ruleActionId}"
+                                                                            value="{!ruleResult.ruleActionId}" />
+                                                        </apex:commandButton>
+                                                        <apex:commandButton value="{!$Label.apttus_config2__remove}" 
+                                                                        action="{!doRemoveProduct}" 
+                                                                        onclick="onActionClick();" 
+                                                                        oncomplete="onActionComplete();"
+                                                                        rendered="{!ruleResult.isRemove}"
+                                                                        reRender="idTopNavActions, idErrorMsg, idRulesBlock, idSelectedProductsBlock" >
+                                                                <apex:param name="param1" 
+                                                                            assignTo="{!selectedProductId}" 
+                                                                            value="{!productSO.Id}" />
+                                                                <apex:param name="param2" 
+                                                                            assignTo="{!ruleActionId}"
+                                                                            value="{!ruleResult.ruleActionId}" />
+                                                        </apex:commandButton>
+                                                    </apex:column>
+                                                 
+                                                    <apex:column >
+                                                        <apex:outputText value="{!productSO.Name}"
+                                                                         style="font-weight:bold;" />
+                                                    </apex:column>
+                                                
+                                                </apex:pageBlockTable>
+                                        <!-- End List of Products -->
+                                        
+                                    </apex:pageBlockSection>
+                                    </div>
+<!-- End Rule Result -->                                
+                            
+<!-- End Choice Body --> 
+                    <div>
+                        <div style="text-align: center;" >
+                        <apex:outputPanel >
+                            <!-- 
+                            <input type="button" value="{!$Label.apttus_config2__cancel}" style="width: 60px;" onclick="YAHOO.force.com.choicePanel.hide();"/>
+                            -->     
+                            <apex:commandButton value="{!$Label.apttus_config2__cancel}"
+                                                action="{!doIgnoreAction}" 
+                                                onclick="onActionClick();" 
+                                                oncomplete="onActionComplete();"
+                                                reRender="idTopNavActions, idSelectedProductsBlock, idErrorMsg, idRulesBlock" >
+                                                    <apex:param name="param1" 
+                                                                assignTo="{!ignoreActionId}"
+                                                                value="{!ruleResult.ruleActionId}" />
+                            </apex:commandButton>       
+                        </apex:outputPanel>
+                                
+                        </div>
+                    </div> 
+                              
+                    </apex:pageBlock>
+                    </div> 
+                </apex:outputPanel>  
+            </div>
+        </apex:outputPanel> 
+        
+<!-- End of Constraint Rule Alert -->       
+
+    </apex:form>
+    <script type="text/javascript">
+     //when the page is loaded with pending processing of rules
+        var aptsOnload = function() {
+            YAHOO.util.Event.onDOMReady(YAHOO.force.com.onDOMReady);
+            if(needMoreProcessing){
+                YAHOO.force.com.waitPanel.show();
+                invokeDoProcessMoreRules();
+            }/*else if(showChoicePanel){
+                YAHOO.force.com.waitPanel.hide();
+                YAHOO.force.com.choicePanel.show();
+            }*/
+        }
+        
+        //we have dependent pick list bug when window.onload is overridden
+        window.onload = combineFunction(window.onload, aptsOnload);
+    </script>
+    
+</apex:page>

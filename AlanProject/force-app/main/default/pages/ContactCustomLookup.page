@@ -1,0 +1,48 @@
+<apex:page controller="ContactCustomLookupCtrl" sidebar="True" showHeader="True">
+<script language="JavaScript" type="text/javascript">
+
+</script>
+    <apex:form >
+        <apex:pageBlock title="Related Contacts ">
+            <apex:pageBlockTable value="{!ContList}" var="cont" id="pagetableId">
+         <apex:column >
+          <apex:facet name="header">
+           <apex:inputCheckbox onclick="selectCheckboxes(this,'checkedone')"/>
+         </apex:facet>
+          <apex:inputCheckbox value="{!cont.checked}" id="checkedone">
+    
+          </apex:inputCheckbox>
+        </apex:column>
+        <apex:column value="{!Cont.cat.Name}"/>
+        <apex:column value="{!Cont.cat.Country_Code__c}"/>
+        <apex:column value="{!Cont.cat.phone}"/>
+        <apex:column value="{!Cont.cat.Email}"/>
+ </apex:pageBlockTable> 
+ <apex:pageBlockButtons location="bottom">
+  <apex:commandButton action="{!SelectedContact}" value="Update Contact" disabled="{!disablebutton}" onclick="/'{!eventId}'; return false"/>
+   <apex:commandButton action="{!Cancel}" value="Cancel"/>
+      </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        <apex:outputPanel id="redirectPaneldel" > 
+             <apex:outputText rendered="{!shouldRedirect}">
+                  <script type="text/javascript">
+                        window.opener.parent.location.href = '{!url}'; 
+                        window.top.close();
+                    </script>
+             </apex:outputText>
+        </apex:outputPanel> 
+    </apex:form>
+    <script type="text/javascript">
+  function selectCheckboxes(inpt,receivedInptID)
+   {
+     var inputCheckBox = document.getElementsByTagName("input");                  
+     for(var i=0; i<inputCheckBox.length; i++)
+      {          
+       if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+          inputCheckBox[i].checked = inpt.checked;
+       }
+     }
+   }
+   </script>
+</apex:page>

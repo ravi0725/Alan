@@ -1,0 +1,339 @@
+<apex:page sidebar="false" controller="CustomLoginController" showheader="false" standardStylesheets="false" title="Trimble LeanSight Portal">
+    <apex:form >
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <title>Untitled Document</title>
+            
+            <style>
+
+                /* Basics */
+                html, body {
+                /* overflow-y: scroll; */
+                /* overflow-x: hidden; */
+                /* width: 100%; */
+                /* height: 100%; */
+                font-family: "Helvetica Neue", Helvetica, sans-serif;
+                color: #444;
+                -webkit-font-smoothing: antialiased;
+                /* background: #f0f0f0; */
+                background; #FFFFFF   
+                }
+                
+                /* This is "SIGHT" */
+                b {
+                margin-left: 4px;
+                color: #005F9E;
+                }
+                
+                #container {
+                
+                overflow: hidden;
+                /* position: absolute; */
+                position: relative;
+                width: 340px;
+                height: 285px;
+                top: 40px;
+                margin: auto;
+                /* left: 250px; */
+                /* margin-top: 0px; */
+                /* margin-left: -210px; */
+                background: #fff;
+                border-radius: 3px;
+                border: 1px solid #ccc;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+                
+                }
+                #imagebox {
+                overflow:hidden;
+                /* position: fixed; */
+                position: relative;
+                width: 100%;
+                height: 75%;
+                min-width: 800px;
+                min-height: 450px;
+                /* top: 60px; */
+                /* margin-top: 10px; */
+                margin-top: 0px;
+                margin-left: 0px;
+                /* margin-left: -10px; */
+                background-repeat: no-repeat;
+                background-attachment: scroll; 
+                background-position: center;
+                /* background-size: cover; */
+                background-size: cover;    
+                background-image: url({!URLFOR($Resource.LeanSightPortal)})
+                
+                }
+                
+                #bannerbox {
+                /* overflow:hidden; */
+                overflow: hidden;
+                /* position: fixed; */
+                width: 100%;
+                min-width: 800px;
+                /* width: 100%; */
+                /* height: 5%; */
+                height: 30px;
+                margin-top: -10px;
+                /* margin-top: 0px; */
+                margin-left: 0px;   
+                /* margin-bottom: 10px; */
+                background-repeat: no-repeat;
+                /* background-attachment: scroll; */    
+                background-position: center;
+                background-size: contain;
+                background: #fff;
+                float: left;
+                /* line-height: 58px; */
+                text-align:center;
+                font-family: 'Open Sans', sans-serif;
+                font-size: 24px;
+                color: #00438B;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                //background-image: url({!URLFOR($Resource.ProjectSightPortalBanner)})
+                
+                }
+                
+#textbox {
+                /* display:none; */
+                min-width: 300px;
+                /* position: fixed; */
+                /* position: relative; */
+                /* margin-left: 2em; */
+                /* width: 100%; */
+                /* height: 25%; */
+                /* margin-top: 35%; */
+                /* margin-left: -5px; */     
+                /* text-align: left; */
+                margin-left: 100px;
+                /*text-indent: -3px;*/
+                /* float: right; */
+                background; #FFFFFF 
+                /* float: center; */
+                font-size: 16px;
+                color: #00438B;
+                /* background: #FFFBFA; */
+                
+                }
+                
+                #infobox {
+                /* display:none; */
+                overflow:hidden;
+                min-width: 300px;
+                /* position: fixed; */
+                position: relative;
+                /* width: 100%; */
+                /* height: 10%; */
+                /* margin-top: 42%; */
+                /* margin-left: -5px; */    
+                text-align: center; 
+                float: center;
+                font-size: 14px;
+                
+                background: #FFFBFA;
+                
+                }
+                @media screen and (min-width:1024px){
+                #infobox {
+                    display:block;
+                }
+                #textbox {
+                    display:block;
+                }
+                }
+                
+                
+                p {
+                color: #0070d2;
+                }
+                form {
+                margin: 0 auto;
+                margin-top: 20px;
+                }
+                label {
+                color: #555;
+                display: inline-block;
+                margin-left: 18px;
+                padding-top: 10px;
+                font-size: 14px;
+                }
+                p a {
+                font-size: 11px;
+                color: #aaa;
+                float: right;
+                margin-top: -13px;
+                margin-right: 20px;
+                -webkit-transition: all .4s ease;
+                -moz-transition: all .4s ease;
+                transition: all .4s ease;
+                }
+                p a:hover {
+                color: #555;
+                }
+                input {
+                font-family: "Helvetica Neue", Helvetica, sans-serif;
+                font-size: 12px;
+                outline: none;
+                }
+                input[type=text],
+                input[type=password] {
+                color: #777;
+                padding-left: 10px;
+                margin: 10px;
+                margin-top: 12px;
+                margin-left: 18px;
+                width: 290px;
+                height: 35px;
+                border: 1px solid #c7d0d2;
+                border-radius: 2px;
+                box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #f5f7f8;
+                -webkit-transition: all .4s ease;
+                -moz-transition: all .4s ease;
+                transition: all .4s ease;
+                }
+                input[type=text]:hover,
+                input[type=password]:hover {
+                border: 1px solid #b6bfc0;
+                box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .7), 0 0 0 5px #f5f7f8;
+                }
+                input[type=text]:focus,
+                input[type=password]:focus {
+                border: 1px solid #a8c9e4;
+                box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #e6f2f9;
+                }
+                #lower {
+                background: #ecf2f5;
+                color: color: #0070d2;
+                width: 100%;
+                height: 65px;
+                margin-top: 4px;
+                text-decoration: none;
+                box-shadow: inset 0 1px 1px #fff;
+                border-top: 1px solid #ccc;
+                border-bottom-right-radius: 3px;
+                border-bottom-left-radius: 3px;
+                font-size: 12px;
+                }
+                
+                input[type=checkbox] {
+                margin-left: 20px;
+                margin-top: 30px;
+                }
+                .check {
+                margin-left: 3px;
+                font-size: 11px;
+                color: #444;
+                text-shadow: 0 1px 0 #fff;
+                }
+                input[type=submit] {
+                display: inline-block;
+                
+                margin-left: 50px;
+                margin-top: 7px;
+                width: 70%;
+                height: 35px;
+                font-size: 14px;
+                font-weight: bold;
+                color: #fff;
+                background-color: #0D6AA8;
+                border: 2px solid #0D6AA8;
+                border-radius: 8px;
+                font-family: 'Open Sans', sans-serif;
+                font-weight: 400;
+                font-style: normal;
+                text-decoration: none;
+                text-align: center;
+                text-indent: 0;
+                }
+                
+            UL {
+                width: 90%;
+                }
+                li {    
+                    padding-left: 2em;
+                    text-indent: -2em;
+                }
+                
+            </style>
+            
+        </head>
+        
+        <body>
+            <!-- Begin Page Content -->
+            
+            <!-- <div id="imagebox"> -->
+                
+                <div id="bannerbox">
+                    <!--<apex:image URL="{!$Resource.Trimble_Logo}" height="60%" style="float: left;margin: 10px 0px 15px 15px;"/>-->
+                    <apex:image URL="{!$Resource.Trimble_Logo}" height="100%" style="float: left;;margin: 0px 0px 15px 15px;"/>
+                    <span id="TopBanner_spnProductName" class="brand">
+                        <b>Lean</b>Sight&nbsp;&nbsp;Support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                </div><!-- bannerbox-->
+                
+            <div id="imagebox">
+                            
+                <div id="container">
+                    <form>
+                        <span style="font-size:12px; color: #C23934">
+                            <apex:pageMessage rendered="{!isLoginFailed}" severity="error" detail="Please check your username and password. If you still can't log in, contact your Salesforce administrator."/>
+                        </span>
+                        <label for="username">Username:</label>
+                        <apex:inputtext value="{!username}" />
+                        <label for="password">Password:</label>
+                        <apex:inputsecret value="{!password}"/>                     
+                        
+                        <apex:commandbutton value="Log In" action="{!doLogin}"/>
+                            <div id="lower">
+                                <div style="float:left">
+                                    <apex:outputLink value="/secur/forgotpassword.jsp" style="text-decoration: none"><p><br/> &nbsp;&nbsp; Forgot Your Password?</p></apex:outputLink>
+                                </div>
+                                <div style="float:right;">
+                                    <apex:outputLink value="/apex/SelfRegistration?Product=LeanSight" style="text-decoration: none"><p><br/> Sign Up &nbsp;&nbsp;</p></apex:outputLink>
+                                </div>
+                            </div><!-- lower-->         
+                    </form>
+                    
+                </div><!-- container-->
+                
+            </div><!-- imagebox-->
+ 
+ 
+
+          
+            <div id="textbox">
+                <br/>
+                <ul>
+                  <li>Trimble LeanSight technical support is available to users who have purchased a subscription. &nbsp;If you would like to purchase a LeanSight subscription, please visit <a href="http://gc.trimble.com/product/leansight">http://gc.trimble.com/product/leansight</a>.</li>
+                  <br><li><b>LeanSight and the LeanSight Support Portal require separate logins</b>. &nbsp;After purchasing the subscription for LeanSight, users may then request access to the LeanSight Support portal using the sign-up form above.</li></br>
+                  <li>Please visit the <a href="https://www.linkedin.com/groups/13523483"> LeanSight LinkedIn </a> site for free online user collaboration.</li>
+                </ul>
+            </div>
+            
+            <div id="infobox">
+                <table align="center" width="40%" style="border-collapse: collapse;">
+                    <tr height="20px">
+                        <td><u><b> Live Support</b></u></td>    <td Style="border-left: 1px solid #000;border-right: 1px solid #000;"><u><b> Online Help</b></u></td>    <td><u><b> Case Management</b></u></td>
+                    </tr>
+                    <tr style="font-size :12px;" height="20px">    
+                        <td ><b> Telephone</b></td>    <td Style="border-left: 1px solid #000;border-right: 1px solid #000;"><b>Documentation </b></td>    <td><b> Case Creation</b></td>
+                    </tr>
+                    <tr style="font-size :12px;" height="20px">    
+                        <td> <b>Chat</b></td>    <td Style="border-left: 1px solid #000;border-right: 1px solid #000;"><b> Technical Alerts</b></td>    <td> <b>Case History</b></td>
+                    </tr>
+                    <tr style="font-size :12px;" height="20px">    
+                        <td><b> Online Case</b></td>    <td Style="border-left: 1px solid #000;border-right: 1px solid #000;"><b> </b></td>    <td><b> Case Reports</b></td>
+                    </tr>
+                    <tr style="font-size :12px;" height="20px">    
+                        <td> </td>    <td Style="border-left: 1px solid #000;border-right: 1px solid #000;"><b> </b></td>    <td></td>
+                    </tr>
+                </table> 
+            </div>
+
+            
+            <!-- End Page Content -->
+        </body>
+
+    </apex:form>
+</apex:page>

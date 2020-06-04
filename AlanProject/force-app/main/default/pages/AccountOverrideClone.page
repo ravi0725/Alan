@@ -1,0 +1,5 @@
+<apex:page StandardController="Account">
+     <!-- StandardController="Contact" , working fine -->
+        <apex:detail inlineEdit="true"></apex:detail> 
+      
+</apex:page>

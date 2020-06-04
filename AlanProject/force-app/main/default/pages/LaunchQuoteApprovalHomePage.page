@@ -1,0 +1,30 @@
+<apex:page Controller="ApptusApprovalpagecontroller"   sidebar="false" showHeader="false">
+<apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+   <style>
+     .blue {
+    color:#0000FF;
+    font-size:13px;
+    }
+   </style>
+
+    <apex:form >
+      <body class="homeTab">
+       <!--<apex:pageMessages />-->                       
+       <apex:pageblock >
+       <div style="font-weight: bold;font-size: 15px;">{!$Label.Quote_Proposal_Approval}</div>
+        <apex:pageBlockTable value="{!approvalRequestListnew}" var="approvalRequest" rendered="{!AND(approvalRequestListnew != null, approvalRequestListnew.size > 0)}">
+             <apex:column headerValue="{!$Label.Action}" width="12%">
+              <span class="blue"><a  href="/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!approvalRequest.id}&pageMode=reassign" target="_Blank"><span class="blue">{!$Label.Reassign}</span></a>/
+              <a href="/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!approvalRequest.id}&pageMode=approveReject"><span class="blue" target="_Blank">{!$Label.Approve_Reject}</span></a></span>
+             </apex:column>
+             <apex:column value="{!approvalRequest.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Apttus_Proposal__Proposal_Name__c}" headerValue="{!$Label.Related_To}" width="20%"/>
+             <apex:column value="{!$ObjectType.Apttus_Proposal__Proposal__c.Label}" headerValue="{!$Label.Type}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Actual_Approver__c}" headerValue="{!$Label.Most_Recent_Approver}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__DateAssigned__c}" headerValue="{!$Label.Date_Submitted}"/>           
+          </apex:pageBlockTable> <br/>
+          <apex:outputLabel value="{!$Label.No_Item_Approve}" rendered="{!AND(approvalRequestListnew != null, approvalRequestListnew.size <= 0)}" />
+        </apex:pageblock>
+       </body>
+    </apex:form>
+   
+</apex:page>

@@ -1,0 +1,56 @@
+<apex:page standardController="Contact"  extensions="Contact_Address_validate_PageExt" title="Address Validation" sidebar="false" showHeader="false" action="{!makecallout}">
+
+    <apex:form >
+        <apex:pageblock >
+            
+            <apex:pageMessages id="errorMsg"></apex:pageMessages>
+            <apex:pageBlockSection columns="1" title="Input Address">
+                <apex:outputPanel >
+                    <apex:pageblockTable value="{!Contact}" var="Addr" width="100%">
+                        <apex:column >
+                            
+                        </apex:column>
+                        <apex:column width="15%" value="{!Line1}" headerValue="Address Line 1"/>
+                       <apex:column width="15%" value="{!Line2}" headerValue="Address Line 2"/>
+                        <apex:column width="15%" value="{!Line3}" headerValue="Address Line 3"/>
+                        <apex:column width="15%" value="{!Line4}" headerValue="Address Line 4"/>
+                        <apex:column width="7%" value="{!Addr.MailingCity}" headerValue="City"/>
+                        <apex:column width="7%" value="{!Addr.MailingState}" headerValue="State"/>
+                        <apex:column width="7%" value="{!Addr.County__c}" headerValue="County"/>
+                        <apex:column width="7%" value="{!Addr.MailingCountry}" headerValue="Country"/>
+                        <apex:column width="7%" value="{!Addr.MailingPostalCode}" headerValue="Postal Code"/>                               
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Suggested Address" columns="1">
+                <apex:outputPanel >
+                    <apex:pageblockTable value="{!OutPutAddress}" var="OpAdd" width="100%">
+                        <apex:column >
+                            <apex:commandButton style="float:centre" value="Update" action="{!SaveChanges}" rerender="errorMsg">
+                                <apex:param name="GlobalRecordID" value="{!OpAdd.RecordID}" assignTo="{!GlobalRecordID}"/>
+                            </apex:commandButton>
+                        </apex:column>
+                        
+                        <apex:column width="15%" value="{!OpAdd.AddressLine1}" headerValue="Address Line 1"/>
+                        <apex:column width="15%" value="{!OpAdd.AddressLine2}" headerValue="Address Line 2"/>
+                        <apex:column width="15%" value="{!OpAdd.AddressLine3}" headerValue="Address Line 3"/>
+                        <apex:column width="15%" value="{!OpAdd.AddressLine4}" headerValue="Address Line 4"/>
+                        <apex:column width="7%" value="{!OpAdd.City}" headerValue="City"/>
+                        <apex:column width="7%" value="{!OpAdd.State}" headerValue="State"/>
+                        <apex:column width="7%" value="{!OpAdd.County}" headerValue="County"/>
+                        <apex:column width="7%" value="{!OpAdd.Country}" headerValue="Country"/>
+                        <apex:column width="7%" value="{!OpAdd.PostalCode}" headerValue="Postal Code"/>
+                        <apex:column width="7%" value="{!OpAdd.status}" headerValue="Status"/>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            
+        </apex:pageblock>
+        <apex:outputPanel >
+            <div align="center" draggable="false" >
+                <apex:commandButton style="float:centre" value="Cancel" action="{!CancelChanges}" />
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

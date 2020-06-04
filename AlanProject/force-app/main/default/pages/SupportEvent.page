@@ -1,0 +1,22 @@
+<!-- 
+**
+ * Company     : Trimble Software Technology Pvt Ltd.,
+ * Description : Appears as Inline VF on the Event Standard Page
+ * History     :  
+ * [09.JUN.2013] Prince Leo    - Code Created.
+ * -->
+<apex:page standardController="Event" sidebar="false" showHeader="false" extensions="SupportEventExt">
+<script type="text/javascript">
+</script>
+<apex:form >
+<apex:pageBlock >
+<apex:PageBlockButtons location="top" dir="center">
+<apex:commandButton value="{!$Label.Save}" action="{!PerformDML}" />
+</apex:PageBlockButtons>
+<apex:pageMessages ></apex:pageMessages>
+<apex:pageBlockSection columns="1" id="block">
+<apex:inputtextarea value="{!ExtDescription}" richText="True"/>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

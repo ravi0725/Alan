@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+<div class="slds-card__body slds-card__body_inner slds-p-top_m">
+    <div class="slds-card">Hello World</div>	
+    </div>
+</aura:component>

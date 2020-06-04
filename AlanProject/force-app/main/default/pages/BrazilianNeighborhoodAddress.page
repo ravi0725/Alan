@@ -1,0 +1,64 @@
+<apex:page standardController="Address__c" extensions="BrazilianNeighborhoodAddressController">
+    <style>
+        .loadingScreen{
+            z-index:199;
+            width:100%;
+            height:97%;
+            background-color:black;
+            position:absolute;
+            opacity:0.4;
+            filter:alpha(40);
+            display:none;
+        }
+        
+        .loadingStyle{
+            z-index:999;
+            width:120px;
+            height:24px;
+            background-color:#3EAEDC;
+            color:white;
+            font-size:14px;
+            text-align:center;
+            border-radius:6px;
+            position:absolute;
+            left:40%;
+            top:50px;
+        }
+        
+    </style>
+    <script>
+    function startLoad(){
+        document.getElementById("loadId").style.display = "block";
+        document.getElementById("loadTextId").style.display = "block";
+    }
+    
+    function endLoad(){
+        document.getElementById("loadId").style.display = "none";
+        document.getElementById("loadTextId").style.display = "none";
+    }
+    </script>
+    <apex:form >
+        <div id="loadId" class="loadingScreen"/>
+        <div id="loadTextId" class="loadingStyle" style="display:none;padding:2px">
+            <apex:image url="/img/loading.gif" style="border-radius:6px;"/>
+            Processing.....
+        </div>
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <apex:pageblock >
+        <apex:pageMessages ></apex:pageMessages>
+
+            <apex:pageBlockSection >
+                <apex:selectList label="State" size="1" value="{!brazilianState}">
+                    <apex:actionSupport event="onchange" rerender="brazilianCity" status="statusId"/>
+                    <apex:selectOptions value="{!states}"></apex:selectOptions>
+                </apex:selectList>
+                <apex:selectList label="City" size="1" id="brazilianCity" value="{!brazilianCity}">
+                    <apex:selectOptions value="{!cities}"></apex:selectOptions>
+                </apex:selectList>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" status="statusId" action="{!save}" oncomplete="window.open('/{!Address__c.Id}','_parent');"/>
+            </apex:pageBlockButtons>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

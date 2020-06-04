@@ -1,0 +1,106 @@
+<apex:page id="pagetest" controller="MergeQuoteController" renderAs="{!pdf1}">
+   <apex:pageMessages />  
+   <apex:form > 
+       <apex:actionFunction name="callToMethod" action="{!generateAttachment}" reRender="pagetest"/> 
+     <apex:variable value="{!1}" var="counter"/>  
+     <apex:repeat value="{!eventList}" var="ev">               
+       <span style="float:right;">
+           <img src="{!$Resource.PlancalLogo}" height="70" width="300"/>
+       </span> <br/><br/><br/><br/><br/><br/>
+       <span style="font-size:200%;"><b>Service Delivery Acknowledgement</b></span>            
+       <br/> <br/> <br/> 
+       <table width="100%">
+          <tr>
+             <td width="60%"><b>Date:</b>                
+                 <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                   <apex:param value="{!ev.StartDateTime}" /> 
+                 </apex:outputText>
+             </td>       
+             <td width="40%"><b>Primary Contact:</b> </td> 
+          </tr>
+          <tr>
+             <td width="60%"><b>Account:</b> {!accountName}</td>
+             <td width="40%"><b>Service Rep:</b> </td>
+          </tr>
+          <tr>
+             <td width="60%"><b>Account ID:</b> {!accountNumber}</td> 
+             <td width="40%"><b>Service Location:</b> {!ev.Service_Location__c}</td>
+          </tr>
+          <tr>
+             <td width="60%"><b>Record ID:</b> {!caseNumber}</td>
+          </tr>  
+       </table>
+       <br/> <br/> <br/> <br/>
+       <div style="font-size:170%; font-weight:bold;">Summary of Services Performed</div>  
+       <apex:pageBlock title="" mode="maindetail">
+           <table style="font-weight:bold;" width="100%">
+               <tr>
+                  <td width="80%">Description</td>
+                  <td width="20%">Hours</td> 
+               </tr>
+           </table>  
+           <hr/>
+           <table width="100%">
+               <tr>
+                  <td width="80%">Services Provided <br/> {!ev.Activity_Description__c}</td>
+                  <td width="20%">{!ev.Activity_Hours__c}</td>                  
+               </tr>
+               <tr>
+                 <td>&nbsp;</td>
+                 <td>&nbsp;</td>
+               </tr>
+               <tr>
+                   <td width="80%">Travel Time To</td>
+                   <td width="20%">{!ev.Travel_Time_To__c}</td> 
+               </tr>
+               <tr>
+                 <td>&nbsp;</td>
+                 <td>&nbsp;</td>
+               </tr>
+               <tr>
+                   <td width="80%">Travel Time From</td>
+                   <td width="20%">{!ev.Travel_Time_From__c}</td>
+               </tr>
+               <tr>
+                 <td>&nbsp;</td>
+                 <td>&nbsp;</td>
+               </tr>
+               <tr>
+                   <td width="80%">Total Hours</td>
+                   <td width="20%">{!ev.Total_hours__c}</td>                  
+               </tr>
+           </table><br/>
+             
+           <br/><br/><br/><br/><br/>
+           <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+           <br/>
+           <table>
+               <tr>
+                   <td>___________________________________________________</td>
+                   <td>&nbsp;</td>
+                   <td>___________________________________________________</td>
+               </tr>
+               <tr>
+                   <td><i>Date / Customer Signature</i></td>
+                   <td>&nbsp;</td>
+                   <td><i>Date / Plancal Service Representative Signature</i></td>
+               </tr>
+           </table>           
+       </apex:pageBlock>       
+       <apex:outputPanel rendered="{!eventList.size != counter}">
+          <div style="page-break-after:always;"></div>    
+       </apex:outputPanel>
+       <apex:variable value="{!counter + 1}" var="counter"/>   
+     </apex:repeat>                 
+   </apex:form>    
+    <script>
+      window.onload = function() {
+          //alert('DOM Loaded');
+          callActionMethod();          
+      }
+      
+      function callActionMethod(){
+          callToMethod();
+      } 
+   </script>
+</apex:page>

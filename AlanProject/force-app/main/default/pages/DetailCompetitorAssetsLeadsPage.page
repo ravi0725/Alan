@@ -1,0 +1,36 @@
+<apex:page controller="CompetitiorAssetLeadClass" showheader="true" sidebar="true" tabstyle="Competitor_Owned_Assets__c" action="{!editCompAsset}">
+<script>
+     function confirmDialog(){
+        if(confirm('{!$Label.Are_You_Sure_Comp_Asset}')){
+          deleteAssetJS();
+        }else{
+          return false;
+        }
+     }
+</script>
+<apex:sectionHeader title="{!$Label.Competitor_Assets}" subtitle="{!assets.Name}" />
+<apex:form >    
+  <apex:pageBlock title="{!$Label.Comp_Assets_Detail}" mode="detail">     
+     <apex:actionFunction name="deleteAssetJS" action="{!deleteCompetitorAsset}"/>
+     <apex:pageBlockButtons location="both">
+        <apex:outputLink value="/apex/EditCompetitorAssetsLeadsPage?id={!assets.Id}&aId={!leadId}" styleClass="btn" style="text-decoration:none; padding: 4px 3px;">
+          {!$Label.Edit}
+        </apex:outputLink>
+        <input type="button" class="btn" onclick="return confirmDialog();" value="{!$Label.Delete}"/>
+     </apex:pageBlockButtons>   
+     <apex:pageBlockSection collapsible="false" columns="2" title="{!$Label.Comp_Assets_Detail}">        
+         <apex:outputField value="{!assets.Competitor_Company__c}" />
+         <apex:outputField value="{!assets.Number_of_Licenses__c}"/>
+         <apex:outputText value="{!assets.Product__r.Name}" label="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product__c.label}"/>         
+         <apex:outputField value="{!assets.Yearly_Subscription_Cost__c}"/>
+         <apex:outputField value="{!assets.Product_Family__c}" id="pFamily"/>
+         <apex:outputField value="{!assets.CurrencyIsoCode}"/>
+         <apex:outputField value="{!assets.Product_Version__c}"/>
+         <apex:outputField value="{!assetJunction.Lead__c}"/>
+         <apex:outputField value="{!assets.Install_Date__c}"/>
+         <apex:outputField value="{!assetJunction.Account__c}"/>
+         <apex:outputField value="{!assets.Expiration_Date__c}"/>
+     </apex:pageBlockSection> 
+  </apex:pageBlock>
+</apex:form>  
+</apex:page>

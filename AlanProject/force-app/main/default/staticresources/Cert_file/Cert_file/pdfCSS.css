@@ -1,0 +1,40 @@
+.page-break {
+	page-break-before:always;
+}
+.page-break:first-child {
+	page-break-before: avoid;
+}
+@page {
+	size: A5 Landscape;
+	margin-bottom: 0mm;
+	@bottom-center {
+		content: "Page " counter(page) " of " counter(pages);
+	}
+}
+.cert_h1{
+	text-align: center;
+	color:#005596;
+	font-size: 44px;
+	font-weight: 950;
+	font-family: 'sans-serif';
+	margin-bottom: 0px;
+}
+.cert_h2{
+	text-align: center;
+	color:black;
+	font-size:16px;
+	font-weight:bold;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.cert_h3{
+	text-align: center;
+	color:#337ab7;
+	font-size:14px;
+	margin-top: 0px;
+}
+.cert_name{
+	text-align: center;
+	color:black;
+	font-size:16px;
+}

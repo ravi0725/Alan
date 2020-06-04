@@ -1,0 +1,38 @@
+<apex:page Controller="ApptusApprovalpagecontroller"   sidebar="false" showHeader="false">
+<apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+   <style>
+     .blue {
+    color:#0000FF;
+    font-size:13px;
+    }
+   </style>
+
+    <apex:form >
+      <body class="homeTab">
+      
+       <!--<apex:pageMessages />-->                       
+       <apex:pageblock id="pb">
+       <div style="font-weight: bold;font-size: 15px;">{!$Label.Quote_Proposal_Approval}</div>
+      <!-- <apex:outputText value="{!approvalRequestList.size}" />-->
+        <apex:pageBlockTable value="{!approvalRequestList}" var="approvalRequest" rendered="{!AND(approvalRequestList != null, approvalRequestList.size > 0)}">
+             <apex:column headerValue="{!$Label.Action}" width="12%">
+              <span class="blue"><a  href="https://na15.salesforce.com/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!approvalRequest.id}&pageMode=addComment" target="_new"><span class="blue">Comments</span></a>/
+              <a href="/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!approvalRequest.id}&pageMode=approveReject" target="_new"><span class="blue" >{!$Label.Approve_Reject}</span></a></span>
+             </apex:column>
+             <apex:column value="{!approvalRequest.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Apttus_Proposal__Proposal_Name__c}" headerValue="{!$Label.Related_To}" width="20%"/>
+             <apex:column value="{!$ObjectType.Apttus_Proposal__Proposal__c.Label}" headerValue="{!$Label.Type}" width="8%"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Actual_Approver__c}" headerValue="{!$Label.Most_Recent_Approver}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__DateAssigned__c}" headerValue="{!$Label.Date_Submitted}"/> 
+             <apex:column value="{!approvalRequest.Apttus_Approval__Initial_Submitter__c}" headerValue="Submitter"/>           
+          </apex:pageBlockTable> <br/>
+          <apex:outputLabel value="{!$Label.No_Item_Approve}" rendered="{!AND(approvalRequestList != null, approvalRequestList.size <= 0)}" />
+           <apex:outputPanel id="opt2" rendered="{!AND(approvalRequestListnew != null, approvalRequestListnew.size > 2)}">
+             <apex:outputLink target="_blank" style="cursor:pointer;text-decoration:underline;" value="/apex/LaunchQuoteApprovalHomePage">
+                 {!$Label.Go_to_list} ({!totalSize}) >>
+               </apex:outputLink>
+          </apex:outputPanel>
+        </apex:pageblock>
+       </body>
+    </apex:form>
+   
+</apex:page>

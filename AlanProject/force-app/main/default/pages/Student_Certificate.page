@@ -1,0 +1,31 @@
+<apex:page standardController="TTraining_Events__c"
+           extensions="StudentCertificateAll"
+           standardStylesheets="false"
+           action="{!getStudentCertificate}"
+           renderAs="advanced_pdf"
+           applyBodyTag="false">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />    
+        <apex:stylesheet value="{!URLFOR($Resource.Cert_file, 'Cert_file/pdfCSS.css')}"/>
+    </head>    
+    <apex:repeat value="{!studentCertList}" var="cert">
+        <div class="page-break" >
+            <div class="cert_header">
+                <apex:image url="{!URLFOR($Resource.Cert_file, '/Cert_file/cert_img/header_img.png')}" width="100%"/>
+            </div>
+            <H1 class="cert_h1" style="font:Frutiger Bold">Certificate of Completion</H1>
+            <h2 class="cert_h2">Trimble Navigation Limited</h2>
+            <h3 class="cert_h3">IS PLEASED TO PRESENT THIS CERTIFICATE TO</h3><br/>
+            <h2 class="cert_h2">{!cert.Contact__r.Name}</h2><br/>
+            <h3 class="cert_h3">FOR SUCCESSFULLY COMPLETING THE TRAINING COURSE</h3>
+            <h2 class="cert_h2">{!cert.Events__r.Course__r.Name}</h2><br/>
+            <apex:outputText value="AWARDED: {0, date, medium}" style="font-size:14px;line-height:2px">
+            <apex:param value="{!cert.Awarded_Date__c}" />
+            </apex:outputText>
+			<p style="font-size:14px;line-height:2px">CERTIFICATE #: {!cert.Certificate_No__c}</p>
+            <div class="cert_footer">
+                <apex:image url="{!URLFOR($Resource.Cert_file, '/Cert_file/cert_img/footer_img.png')}" width="100%" />
+            </div>
+        </div>   
+    </apex:repeat> 
+</apex:page>

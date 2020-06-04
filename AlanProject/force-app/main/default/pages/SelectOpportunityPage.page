@@ -1,0 +1,296 @@
+<!-- 1. 07/21 Srini updated -->
+<apex:page standardController="Account" id="pgId" extensions="SelectOpportunityClass" action="{!initializeOptyRecords}">
+    <script type="text/javascript"> 
+    
+    function setBillToContact(conName){
+        document.getElementById('{!$Component.pgId.myForm.pbId.pbSecId.pbSecBillConItemId.billToContact}').value = conName;
+    }
+    
+    function setShipToContact(conName){
+        document.getElementById('{!$Component.pgId.myForm.pbId.pbSecId.pbSecShipConItemId.primarycon}').value = conName;
+    }
+    
+    function setBillToAddress(addName){
+        document.getElementById('{!$Component.pgId.myForm.pbId.pbSecId.pbSecBillAddItemId.billToId}').value = addName;
+    }
+    
+    function setShipToAddress(addName){
+        document.getElementById('{!$Component.pgId.myForm.pbId.pbSecId.pbSecShipAddItemId.shipToId}').value = addName;
+    }
+    
+    </script>
+    <apex:form id="myForm">
+    <apex:outputPanel id="contactLookupId">   
+        <script>
+            function popupcustomLookup(ele){
+                var val = document.getElementById(ele).value;
+                var billToAccId = '{!newopportunity.Bill_To_Account__c}';
+                if(document.getElementById('pgId:myForm:pbId:pbSecId:billToAccountPBSecId:billToAccountId_lkid') != null)
+                    billToAccId = document.getElementById('pgId:myForm:pbId:pbSecId:billToAccountPBSecId:billToAccountId_lkid').value;
+                var shipToAccId = '{!newopportunity.Ship_To_Account__c}';
+                if(document.getElementById('pgId:myForm:pbId:pbSecId:shipToAccountPBSecId:shipToAccountId_lkid') != null)
+                    shipToAccId = document.getElementById('pgId:myForm:pbId:pbSecId:shipToAccountPBSecId:shipToAccountId_lkid').value;
+                if(ele == 'primaryConId'){
+                    window.open('/apex/customprimarycontactlookup?accountid=' + shipToAccId + '&lksrch=' + val,'_blank','left=20%;top=20%,width=700px,height=500px');    
+                }else if(ele == 'billToContact'){
+                    window.open('/apex/CustomBillToContactlookupPage?accountid=' + billToAccId + '&lksrch=' + val,'_blank','left=20%;top=20%,width=700px,height=500px');    
+                }else if(ele == 'custombilltolookup'){
+                    window.open('/apex/custombilltolookup?txt=pgId%3AmyForm%3ApbId%3ApbSecId%3ApbSecBillAddItemId%3AbillToId&frm=pgId%3AmyForm&lksearch=&lksrch=' + val + '&accountid=' + billToAccId,'_blank','left=20%;top=20%,width=700px,height=500px');
+                }else if(ele == 'customshiptolookup'){
+                    window.open('/apex/customshiptolookup?txt=pgId%3AmyForm%3ApbId%3ApbSecId%3ApbSecShipAddItemId%3AshipToId&frm=pgId%3AmyForm&lksearch=&lksrch=' + val + '&accountid=' + shipToAccId,'_blank','left=20%;top=20%,width=700px,height=500px');
+                }
+            }
+        </script>
+    </apex:outputPanel>
+        
+        <apex:actionFunction name="getBillToAddress" action="{!getBillToAddress}" oncomplete="setBillToAddress('{!billToAddName}');" immediate="true"  status="billToIdStatus" rerender="billingAddress,billToPanelId" >
+            <apex:param name="billToAddressId" value="{!billToAddressId}" assignTo="{!billToAddressId}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="getShipToAddress" action="{!getShipToAddress}" oncomplete="setShipToAddress('{!shipToAddName}');" immediate="true"  status="shipToIdStatus" rerender="shippingRegion,shipToPanelId" >
+            <apex:param name="shipToAddressId" value="{!shipToAddressId}" assignTo="{!shipToAddressId}"/>
+        </apex:actionFunction>
+       <apex:actionFunction name="getBillToContact" immediate="true" action="{!getBillToContact}" status="billToContactStatus" rerender="billToContactId" >
+        <apex:param name="billToContactId" value="{!billToContactId}" assignTo="{!billToContactId}"/>
+    </apex:actionFunction>
+    
+    <apex:actionFunction name="getShipToContact" immediate="true" action="{!getShipToContact}" rerender="shipToContactId"  status="primaryconStatus">
+        <apex:param name="shipToContactId" value="{!shipToContactId}" assignTo="{!shipToContactId}"/>
+    </apex:actionFunction>
+        <apex:actionFunction name="loadOptyDetail" action="{!loadOptyDetail}" status="loadingStatus" >
+            <apex:param name="opportunityId" value="{!opportunityId}" assignTo="{!opportunityId}"/>
+        </apex:actionFunction>
+
+        <apex:pageMessages />
+        <apex:pageBlock id="pbId" title="{!$Label.Create_Quote}" rendered="{!invalidEntry}">
+            <apex:pageBlockSection id="pgblkSecId" title="{!$Label.Select_Existing_Opportunity}" collapsible="false">
+                <apex:outputPanel >
+                    <div style="text-align:left;">
+                        <apex:outputLabel value="{!$Label.Existing_Opportunity}" style="color: #4a4a56; font-weight:bold;"/> &nbsp;&nbsp;&nbsp;
+                        <apex:selectList onchange="loadOptyDetail(this.value);" value="{!opportunityId}" size="1">
+                            <apex:selectOptions value="{!opportunityList}"/>
+                        </apex:selectList>
+                        <apex:actionStatus id="loadingStatus" startText="{!$Label.Loading}"></apex:actionStatus>
+                    </div>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:outputPanel id="optyDetail">
+                <apex:pageBlockSection id="pbSecId" title="{!$Label.Opportunity_Detail}" rendered="{!showDetail}" collapsible="false">
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Name.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.Name}"/>
+                    </apex:pageblocksectionItem>
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.OwnerId.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.OwnerId}"/>
+                    </apex:pageblocksectionItem>
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.CurrencyISOCode.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel >
+                        <apex:inputfield value="{!opportunity.CurrencyISOCode}" rendered="{!NOT(opportunity.HasOpportunityLineItem)}"/>
+                        <apex:outputText value="{!opportunity.CurrencyISOCode}" rendered="{!opportunity.HasOpportunityLineItem}"></apex:outputText>
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem>
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Timeframe_to_Buy__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.Timeframe_to_Buy__c}"/>
+                    </apex:pageblocksectionItem>  
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.CloseDate.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.CloseDate}"/>
+                    </apex:pageblocksectionItem>
+                    <apex:pageblocksectionItem >  
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Demo_Date__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.Demo_Date__c}"/>
+                    </apex:pageblocksectionItem>  
+                     <apex:pageblocksectionItem >           
+                        <apex:outputLabel value="Registered To (Sold To)" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel >
+                            <div class="requiredInput">
+                                <span class="requiredBlock"/>
+                                <apex:inputfield value="{!opportunity.AccountId}"/>
+                            </div>    
+                        </apex:outputPanel>                      
+                    </apex:pageblocksectionItem> 
+                    <apex:pageblocksectionItem >           
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Price_List__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel >
+                            <div class="requiredInput">
+                                <span class="requiredBlock"/>
+                                <apex:inputfield value="{!opportunity.Price_List__c}"/>
+                            </div>    
+                        </apex:outputPanel>                      
+                    </apex:pageblocksectionItem>  
+                     <apex:pageblocksectionItem >
+                        
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.StageName}">
+                            <apex:actionSupport event="onchange" action="{!changeStageName}" rerender="probability" />
+                        </apex:inputfield>
+                        
+                    </apex:pageblocksectionItem>
+                   
+                     <apex:pageblocksectionItem id="paymentTermItemId">  
+                     
+                        <apex:outputLabel value="Payment Term" style="color: #4a4a56; font-weight:bold;"/>
+                         <apex:outputPanel >
+                          <div class="requiredInput">
+                                <span class="requiredBlock"/>
+                        <apex:outputfield id="paymentTermId" value="{!opportunity.Payment_Term__c}" />
+                        </div>
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem>
+                    
+                     <apex:pageblocksectionItem id="billToAccountPBSecId">  
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Bill_To_Account__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel >
+                            <div class="requiredInput">
+                                <span class="requiredBlock"/> 
+                                <apex:inputfield value="{!opportunity.Bill_To_Account__c}" id="billToAccountId"></apex:inputfield> 
+                            </div>    
+                        </apex:outputPanel>  
+                    </apex:pageblocksectionItem>
+                     <apex:pageblocksectionItem id="shipToAccountPBSecId">  
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Ship_To_Account__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                         <apex:outputPanel >
+                            <div class="requiredInput">
+                                <span class="requiredBlock"/>
+                                <apex:inputfield value="{!opportunity.Ship_To_Account__c}" id="shipToAccountId"></apex:inputfield>
+                             </div>    
+                        </apex:outputPanel>   
+                    </apex:pageblocksectionItem>
+                    <apex:pageblocksectionItem id="pbSecBillAddItemId">         
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Bill_to_Address__c.label}"  style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel id="billToPanelId">
+                            <div class="requiredInput">
+                                <table cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <span class="requiredBlock" style="vertical-align:top;"/>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="custombilltolookup" value="{!billToAddName}"/>
+                                        </td>
+                                        <td>
+                                            <a href="#" onclick="popupcustomLookup('custombilltolookup');"><apex:image url="{!$Resource.Search}" /></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <apex:actionStatus id="billToIdStatus" startText="{!$Label.Loading}"></apex:actionStatus>
+                            </div>    
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionItem id="pbSecShipAddItemId">         
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Ship_to_Address1__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel id="shipToPanelId" >
+                            <div class="requiredInput">
+                                <table cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <span class="requiredBlock" style="vertical-align:top;"/>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="customshiptolookup" value="{!shipToAddName}"/>
+                                        </td>
+                                        <td>
+                                            <a href="#" onclick="popupcustomLookup('customshiptolookup');"><apex:image url="{!$Resource.Search}" /></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <apex:actionStatus id="shipToIdStatus" startText="{!$Label.Loading}"></apex:actionStatus>
+                            </div>    
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Bill_to_Address_Disp__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputText value="{!Billaddress}" id="billingAddress" />
+                    </apex:pageBlockSectionItem> 
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Ship_to_Address_Disp__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputText value="{!shipAddress}" id="shippingRegion" />
+                    </apex:pageBlockSectionItem> 
+                    <apex:pageblocksectionItem id="pbSecBillConItemId">
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Bill_To_Contact__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputPanel id="billToContactId">
+                            <div class="requiredInput"> 
+                      
+                              <table cellpadding="0" cellspacing="0">
+                                  <tr>
+                                      <td>
+                                          <span class="requiredBlock" style="vertical-align:top;"/>
+                                      </td>
+                                      <td>
+                                          <input type="text" id="billToContact" value="{!billToContactName}"/>
+                                      </td>
+                                      <td>
+                                          <a href="#" onclick="popupcustomLookup('billToContact');"><apex:image url="{!$Resource.Search}" /></a>
+                                      </td>
+                                  </tr>
+                              </table>
+                              
+                              <apex:actionStatus id="billToContactStatus" startText="{!$Label.Loading}"></apex:actionStatus>
+                          </div>
+                        </apex:outputPanel>   
+                    </apex:pageblocksectionItem> 
+                    
+                    <apex:pageblocksectionItem id="pbSecShipConItemId">
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Primary_Contact__c.label}" style="color: #4a4a56; font-weight:bold;" />
+                        <apex:outputPanel id="shipToContactId">
+                            <div class="requiredInput"> 
+                      
+                              <table cellpadding="0" cellspacing="0">
+                                  <tr>
+                                      <td>
+                                          <span class="requiredBlock" style="vertical-align:top;"/>
+                                      </td>
+                                      <td>
+                                          <input type="text" id="primaryConId" value="{!ShipToContactName}"/>
+                                      </td>
+                                      <td>
+                                          <a href="#" onclick="popupcustomLookup('primaryConId');"><apex:image url="{!$Resource.Search}" /></a>
+                                      </td>
+                                  </tr>
+                              </table>
+                      
+                              <apex:actionStatus id="primaryconStatus" startText="{!$Label.Loading}"></apex:actionStatus>
+                          </div>
+                        </apex:outputPanel>   
+                    </apex:pageblocksectionItem> 
+                     <apex:pageblocksectionItem >  
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Reseller__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.Reseller__c}"/>
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionItem >  
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Partner_2__c.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:inputfield value="{!opportunity.Partner_2__c}"/>
+                    </apex:pageblocksectionItem>
+                    <apex:outputField value="{!Opportunity.Selling_Division__c}"> 
+                        <apex:inlineEditSupport event="ondblClick" /> 
+                    </apex:outputField>
+                    <apex:outputField value="{!Opportunity.Opportunity_Product__c}"> 
+                        <apex:inlineEditSupport event="ondblClick" /> 
+                    </apex:outputField>
+                   
+                    <apex:outputLabel ></apex:outputLabel>
+                    <apex:pageblocksectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Probability.label}" style="color: #4a4a56; font-weight:bold;"/>
+                        <apex:outputText value="{!opportunity.Probability}" id="probability" />
+                    </apex:pageblocksectionItem>
+   
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:pageBlockSection title="{!$Label.Or_New_Opportunity}" collapsible="false">
+                <apex:commandButton value="{!$Label.Create_New_Opportunity}" action="{!createOpportunity}" immediate="true"/>        
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom" style="text-align:right; padding-right:20%;">         
+                <apex:outputPanel id="nextBtn">
+                    <apex:commandButton value="{!$Label.Next}" action="{!next}" rendered="{!showDetail}" status="closer"/>
+                </apex:outputPanel> 
+                <apex:commandButton value="{!$Label.Cancel}" action="{!cancel}" immediate="true"/>
+                <apex:actionStatus startText="{!$Label.Creating_Quote}" id="closer"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,2 @@
+<apex:page controller="DealRegLineItems_PartnerUserController" action="{!deleteRegLineItem}">
+</apex:page>

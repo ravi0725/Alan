@@ -1,0 +1,29 @@
+<apex:page standardController="Apttus__APTS_Agreement__c" extensions="FC_SendToPPMFromAgreementController" action="{!sendToPPM}" 
+        title="Agreement: {!Apttus__APTS_Agreement__c.Name} ({!Apttus__APTS_Agreement__c.Apttus__FF_Agreement_Number__c})">
+    
+    <apex:sectionHeader title="{!Apttus__APTS_Agreement__c.Name}" 
+        subtitle="{!Apttus__APTS_Agreement__c.Apttus__FF_Agreement_Number__c}" />
+        
+      Project created in MavenksLink and the Number is #  <B> <apex:outputText value="{!Apttus__APTS_Agreement__c.Fusion_Project_Number__c }"/></B>
+      <br></br><br></br>
+    
+    <apex:pageBlock >
+        <apex:pageMessages />
+        
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Name}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Agreement_Number_for_Fusion__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Apttus__FF_Agreement_Number__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Apttus__Account__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Apttus__Account__r.Name}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Apttus__Contract_End_Date__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Business_Unit__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Fusion_Project_Name__c}" rendered="false"/> 
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Organization__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Template_Key__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Quote_Number__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.ProServ_Type__c}" rendered="false"/>
+        <apex:outputText value="{!Apttus__APTS_Agreement__c.Apttus__Contract_End_Date__c}" rendered="false"/>
+    
+        <apex:outputLink value="/{!Apttus__APTS_Agreement__c.Id}">&lt;&lt; Go Back</apex:outputLink>
+    </apex:pageBlock>
+</apex:page>

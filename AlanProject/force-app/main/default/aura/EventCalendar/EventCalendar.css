@@ -1,0 +1,63 @@
+.THIS BODY{
+    padding: 50px;
+}
+.THIS .event-no {
+    background:#FFFFFF;
+    border-color:#FFFFFF;
+}
+.THIS .event-Public {
+    background:Blue;
+    border-color:Blue;    
+}
+.THIS .event-Private {
+    background:Green;
+    border-color:Green;
+}
+.THIS .event-Holiday {
+    background:Red;
+    border-color:Red;
+}
+.THIS .event-Cancelled {
+    background:#ff0000;
+    border-color:#ff0000;
+}
+.THIS .EventSection {
+    float:left;
+}
+.THIS .EventSection ul {
+    margin:0;padding:0;list-style:none;
+}
+.THIS .EventSection ul li {
+    margin:0;padding:5px;float:left;
+}
+.THIS .EventSection ul li span {
+    display:block; height:14px; width:14px; margin-right:4px; float:left; border-radius:4px;
+}
+.THIS #calendar {
+    max-width: 100%;
+    margin: 50px auto;
+  }
+.THIS .popper .popper__arrow,
+.THIS .tooltip .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: 5px;
+  }
+
+.THIS#top {
+  padding: 0.5%;
+  line-height: 40px;
+  font-size: 12px;
+}
+.THIS.CalContainer{
+    background-color: #f3f2f2;
+    padding: 1rem;
+    border-radius: .25rem;
+    border: 1px solid #dddbda;
+    width:100%;
+    overflow:hidden;
+}
+
+/* This is Events End */

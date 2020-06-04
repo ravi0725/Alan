@@ -1,0 +1,130 @@
+<apex:page controller="CustomAccountLookupController"
+  title="Search" 
+  showHeader="false" 
+  sideBar="false" 
+  tabStyle="Account" 
+  id="pg" >
+ 
+ <script  type="text/javascript">
+ function GoToJs(inputvalue){
+ 
+         var SelValue = inputvalue;
+         var ValToBeAssigned = '{!TextBox}'; 
+          
+         
+         parent.window.opener.document.getElementById('{!TextBox}').value =  'Attach to Existing: '+SelValue;
+         
+         //alert(parent.window.opener.document.getElementById('{!TextBox}').value);
+         
+         var ipvar = 'Attach to Existing: '+SelValue;
+         parent.window.opener.document.getElementById('{!TextBox}').innerHTML = '<option value="'+ipvar+'">Attach to Existing: '+SelValue+'</option>'+parent.window.opener.document.getElementById('{!TextBox}').innerHTML;
+         //alert(parent.window.opener.document.getElementById('{!TextBox}').innerHTML);
+         parent.window.opener.document.getElementById('{!TextBox}').focus();
+         //parent.window.opener.hasvalues(SelValue);
+         top.parent.window.opener.hasvalues(SelValue);
+         
+        /*var ipvar = 'Attach to Existing: '+SelValue.trim();
+         var sel =  parent.window.opener.document.getElementById('{!TextBox}');
+         //alert(sel.options);
+         sel.options.add(new Option(ipvar, ipvar));
+        
+        
+        //parent.window.opener.document.getElementById('{!TextBox}').text = 'Attach to Existing: '+SelValue;
+        //parent.window.opener.document.getElementById('{!TextBox}').value = 'Attach to Existing: '+SelValue;
+        //parent.window.opener.document.getElementById('{!TextBox}').innerHTML = parent.window.opener.document.getElementById('{!TextBox}').innerHTML;
+        
+         //parent.window.opener.document.getElementById('{!TextBox}').focus();
+         */
+         top.parent.window.close();
+ 
+ }
+ 
+ function noenter(e){ 
+           
+                if(window.event){                    
+                    key = window.event.keyCode;     //IE               
+                } 
+                else{                    
+                    key = e.which;     //firefox               
+                }               
+                if(key == 13) {                    
+                    var ele=document.getElementById('pg:j_id1:btnGo');                                                           
+                    ele.click();                     
+                    return false;               
+                } else{                    
+                    return true;               
+                }          
+            }  
+ </script>
+ 
+  <apex:form >
+  
+  <apex:outputPanel id="page" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+    <apex:tabPanel switchType="client" selectedTab="name1" id="tabbedPanel">
+
+      <!-- SEARCH TAB -->
+      <apex:tab label="SFDC Account Search" name="tab1" id="tabOne">
+ 
+        <apex:actionRegion >  
+          <apex:outputPanel id="top" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+            <apex:outputLabel value="Search" style="font-weight:Bold;padding-right:10px;" for="txtSearch"/>
+            <apex:inputText id="txtSearch" value="{!searchString}" onkeypress="return noenter(event)"/>
+              <span style="padding-left:5px"><apex:commandButton id="btnGo" value="Go" action="{!Search}" rerender="searchResults"></apex:commandButton></span>
+          </apex:outputPanel>
+ 
+          <apex:outputPanel id="pnlSearchResults" style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+            <apex:pageBlock id="searchResults"> 
+              <apex:pageBlockTable value="{!results}" var="a" id="tblResults">
+                <apex:column >
+                  <apex:facet name="header">
+                    <apex:outputPanel >Name</apex:outputPanel>
+                  </apex:facet>                  
+                   <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!a.Name}', false)" rendered="{!NOT(ISNULL(a.Id))}" onclick="GoToJs('{!JSENCODE(a.Name)}')">{!a.Name}</apex:outputLink>     
+                </apex:column>
+                <apex:column >
+                  <apex:facet name="header">
+                    <apex:outputPanel >City</apex:outputPanel>
+                  </apex:facet>                  
+                   <apex:outputLabel >{!a.BillingCity}</apex:outputLabel>     
+                </apex:column>
+                <apex:column >
+                  <apex:facet name="header">
+                    <apex:outputPanel >State</apex:outputPanel>
+                  </apex:facet>                  
+                   <apex:outputLabel >{!a.BillingState}</apex:outputLabel>     
+                </apex:column>
+                <apex:column >
+                  <apex:facet name="header">
+                    <apex:outputPanel >Marketing Segment</apex:outputPanel>
+                  </apex:facet>                  
+                   <apex:outputLabel >{!a.Marketing_Segment__c}</apex:outputLabel>     
+                </apex:column>
+                <apex:column >
+                  <apex:facet name="header">
+                    <apex:outputPanel >Owner</apex:outputPanel>
+                  </apex:facet>                  
+                   <apex:outputLabel >{!a.Owner.Name}</apex:outputLabel>     
+                </apex:column>
+              </apex:pageBlockTable>
+            </apex:pageBlock>
+          </apex:outputPanel>
+        </apex:actionRegion>
+ 
+      </apex:tab>
+     
+     
+     <!-- NEW ACCOUNT TAB -->
+      <!-- <apex:tab label="Search MDM Data" name="tab2" id="tabTwo">
+ 
+        <apex:pageBlock id="newAccount" title="Data From MDM" >
+        
+            <h3>Data from MDM will disply here</h3>
+        </apex:pageBlock>
+ 
+      </apex:tab>    -->
+   
+     
+    </apex:tabPanel>
+  </apex:outputPanel>
+  </apex:form>
+</apex:page>

@@ -1,0 +1,471 @@
+<apex:page controller="ConsoleCTIMultipleMatchCtrl">
+    <apex:includeScript value="/soap/ajax/35.0/connection.js"/>
+    <apex:includeScript value="/support/console/35.0/integration.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-1.10.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.css')}"/>
+    
+    <apex:form id="formId">
+        <apex:pageMessages id="Errors"></apex:pageMessages>
+        <apex:sectionHeader title="CTI - Inbound Call" subtitle="Multiple matches"/>
+        
+        <apex:actionStatus startText="requesting..." stopText="" id="myStatus" />
+        <apex:actionFunction name="renderPageTable" action="{!returnAccountId}" reRender="formId, AccountDetail" oncomplete="refreshTables();" status="myStatus">
+            <apex:param name="CallDataJSON" value="" assignTo="{!jsonCallData}"/>
+        </apex:actionFunction>
+        
+        <apex:pageblock id="AccountDetail"  title="Account Details">
+            <apex:outputPanel layout="block"> 
+                <table id="tableAccount" class="list" border="0" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr class="headerRow">
+                            <th class="actionColumn">Action</th>
+                            <th>Account Name</th>
+                            <th>Account Status</th>
+                            <th>Type</th>
+                            <th>Billing Street</th>
+                            <th>Billing City</th>
+                            <th>Billing State</th>
+                            <th>Billing Country</th>
+                            <th>Billing Zip/Postal Code</th>
+                            <th>Phone</th>
+                            <th>Account Owner Alias</th>
+                            <th>Enterprise Master ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat id="repeatAccount" value="{!lstAllDetails}" var="item">
+                            <apex:variable var="acc" value="{!item.wAccount}" />   
+                            <tr id="{!$Component.repeatAccount}:account" class="dataRow" style="background-color: bisque; font-weight: bold;">
+                                <td class="actionColumn">
+                                    <apex:outputLink id="linkShowHide" value="javascript:toggleContactRow('{!$Component.repeatAccount}')">
+                                        <img id="{!$Component.repeatAccount}:Img" src="/s.gif" class="showContacts" 
+                                             border="0" height="11px" width="11px" style="padding-right: 4px;"/>
+                                    </apex:outputLink>
+                                </td>
+                                <td class="dataCell"><a href="#" onClick="openTab('{!acc.Id}','{!acc.Name}'); return false"><apex:outputField value="{!acc.Name}" /></a></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.Account_Status__c}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.Type}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.BillingStreet}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.BillingCity}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.BillingState}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.BillingCountry}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.BillingPostalCode}" /></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.Phone}" /></td>
+                                <td class="dataCell"><a href="#" onClick="openTab('{!acc.OwnerId}','{!acc.Owner.Alias}'); return false">
+                                    <apex:outputText value="{!acc.Owner.Alias}" /></a></td>
+                                <td class="dataCell"><apex:outputField value="{!acc.Enterprise_Master_ID_del__c}" /></td>
+                            </tr>
+                            
+                            <tr id="{!$Component.repeatAccount}:Contact" class="dataRow" style="display:none;">
+                                <td colspan="100" style="padding:10px; padding-left: 45px;">
+                                    <apex:outputPanel layout="none">                                            
+                                        <apex:pageBlock mode="detail" title="{!acc.Name} : Contacts" rendered="{!item.wlstContacts.size > 0}">
+                                            <apex:outputPanel layout="block" styleClass="full_width">
+                                                <table id="tableAccountContacts" class="list" border="0" cellpadding="0" cellspacing="0">
+                                                    <thead>
+                                                        <tr class="headerRow" style="background-color: burlywood;">
+                                                            <th>Name</th>
+                                                            <th>Title</th>
+                                                            <th>Account Name</th>
+                                                            <th>Phone</th>
+                                                            <th>Mobile</th>
+                                                            <th>Email</th>
+                                                            <th>Division / Department</th>
+                                                            <th>Contact Owner Alias</th>
+                                                            <th>FCH Contact Id</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <apex:repeat id="repeatAccountContacts" value="{!item.wlstContacts}" var="subitem">
+                                                            <apex:variable value="{!subitem}" var="con" />
+                                                            <tr class="dataRow">
+                                                                <td class="dataCell">
+                                                                    <a href="#" onclick="updateTAPCase('{!con.AccountId}','{!con.Id}'); return false">Update Case</a>
+                                                                </td>
+                                                                <td class="dataCell"><a href="#" onClick="openTab('{!con.Id}','{!con.Name}'); return false">
+                                                                    <apex:outputText value="{!con.Name}" /></a></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.Title}"/></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.Account.Name}"/></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.Phone}"/></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.MobilePhone}"/></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.Email}"/></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.Division_Department__c}"/></td>
+                                                                <td class="dataCell"><a href="#" onClick="openTab('{!con.OwnerId}','{!con.Owner.Alias}'); return false">
+                                                                    <apex:outputText value="{!con.Owner.Alias}" /></a></td>
+                                                                <td class="dataCell"><apex:outputField value="{!con.FCH_Contact_Id__c}"/></td>
+                                                            </tr> 
+                                                        </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </apex:pageBlock>
+                                        
+                                        <center>
+                                            <apex:outputText value="There is no Contact found, with this Inbound Phone Number" rendered="{!item.wlstContacts.size == 0}"></apex:outputText>
+                                        </center>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            
+                            <tr id="{!$Component.repeatAccount}:Entitlement" class="dataRow" style="display:none;">
+                                <td colspan="100" style="padding:10px; padding-left: 45px;">
+                                    <apex:outputPanel layout="none" rendered="{!!openDashboardPageFlag}">                                            
+                                        <apex:pageBlock mode="detail" title="{!acc.Name} : Entitlements" rendered="{!item.wlstEntitlements.size > 0}">
+                                            <apex:outputPanel layout="block" styleClass="full_width">
+                                                <table id="tableAccountEntitlements" class="list" border="0" cellpadding="0" cellspacing="0">
+                                                    <thead>
+                                                        <tr class="headerRow" style="background-color: burlywood;">
+                                                            <th>
+                                                                Entitlement Name
+                                                            </th>
+                                                            <th>
+                                                                Serial Number
+                                                            </th>
+                                                            <th>
+                                                                Status
+                                                            </th>
+                                                            <th>
+                                                                Status Icon
+                                                            </th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <apex:repeat id="repeatAccountEntitlements" value="{!item.wlstEntitlements}" var="subitem">
+                                                            <apex:variable value="{!subitem}" var="ent" />
+                                                            <tr class="dataRow">
+                                                                <td class="dataCell"><a href="#" onClick="openTab('{!ent.Id}','{!ent.Name}'); return false">
+                                                                    <apex:outputText value="{!ent.Name}" /></a></td>
+                                                                <td class="dataCell"><apex:outputText value="{!ent.Asset_s_Serial_Number__c}"></apex:outputText></td>
+                                                                <td class="dataCell"><apex:outputText value="{!ent.Entitlement_Status__c}"></apex:outputText></td>
+                                                                <td class="dataCell"><img src="{!CASE(ent.Entitlement_Status__c, 'Active', '/img/entitlement/active_entitlement_status.png', 'Signed', '/img/entitlement/active_entitlement_status.png', 'InActive', '/img/entitlement/inactive_entitlement_status.png', 'Expired', '/img/entitlement/expired_entitlement_status.png', 'Terminated', '/img/entitlement/expired_entitlement_status.png', '')}" alt="{!ent.Entitlement_Status__c}" title="Entitlement Satus"/></td>
+                                                                <td class="dataCell">
+                                                                    <apex:outputLink onclick="CreateCaseJS('{!ent.AccountId}', '{!item.relContactId}', '{!ent.AssetId}', '{!ent.Id}', '{!ent.Entitlement_Product_Group__c}'); return false;" rendered="{!item.wlstContacts.size == 1}">Create Case</apex:outputLink>
+                                                                    <apex:commandLink value="Create Case" action="{!showPopup}" rerender="popup" rendered="{!item.wlstContacts.size > 1}">
+                                                                        <apex:param name="entitlementId" value="{!ent.Id}" assignTo="{!entId}"/>
+                                                                        <apex:param name="entitlementAccountId" value="{!ent.AccountId}" assignTo="{!entAccId}"/>
+                                                                        <apex:param name="entitlementAssetId" value="{!ent.AssetId}" assignTo="{!entAstId}"/>
+                                                                        <apex:param name="entitlementPGroup" value="{!ent.Entitlement_Product_Group__c}" assignTo="{!entPGroup}"/>
+                                                                    </apex:commandLink>
+                                                                </td>
+                                                            </tr> 
+                                                        </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                            </apex:outputPanel>
+                                        </apex:pageBlock>
+                                        <center>
+                                            <apex:outputText value="There is no Entitlements found, with this Inbound Phone Number" rendered="{!item.wlstEntitlements.size == 0}"></apex:outputText>
+                                        </center>
+                                        
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel id="popup">
+                <apex:outputPanel styleClass="popupBg" layout="block" rendered="{!displayPopUp}"/>
+                <apex:outputPanel styleClass="popup" layout="block" rendered="{!displayPopUp}">
+                    <apex:outputPanel layout="block" style="text-align: center">
+                        <apex:outputPanel layout="block" styleClass="left">
+                            <apex:outputText value="Choose Contact to Create Case" style="font-weight: bold"></apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="center">
+                            <apex:commandButton value="Create Case with out Contact" onclick="CreateCaseJS('{!entAccId}', '', '{!entAstId}', '{!entId}', '{!entPGroup}'); return false;"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="right">
+                            <apex:commandButton value="close" action="{!closePopup}" rerender="popup"/>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    
+                    <apex:pageBlockTable value="{!lstFilteredContacts}" var="flt">
+                        <apex:column headerValue="Action">
+                            <apex:outputLink onclick="CreateCaseJS('{!flt.entAccId}', '{!flt.cCont.Id}', '{!flt.entAstId}', '{!flt.entId}', '{!flt.entPGroup}'); return false;">Create Case</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerValue="Contact Name">
+                            <apex:outputField value="{!flt.cCont.Name}"/>
+                        </apex:column>
+                        <apex:column headerValue="Title">
+                            <apex:outputField value="{!flt.cCont.Title}"/>
+                        </apex:column>
+                        <apex:column headerValue="Phone">
+                            <apex:outputField value="{!flt.cCont.Phone}"/>
+                        </apex:column>
+                        <apex:column headerValue="Email">
+                            <apex:outputField value="{!flt.cCont.Email}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageblock>
+    </apex:form>
+    
+    <script>
+    var responseData;
+    var jsonData;
+    j$ = jQuery.noConflict();
+
+    // Refresh jQuery Tables after Action
+    function refreshTables(){
+        j$( ".showContacts" ).each(function() {
+            toggleContactRow(this.id.replace(':Img', ''));
+        });
+
+        j$('#tableAccountEntitlements, #tableAccountContacts').dataTable({
+            "bSort":false
+        });
+    }
+
+
+    function openTab(recid, recname) {
+        if(!sforce.console.isInConsole())
+            window.parent.location.replace('/'+recid);
+        else
+            sforce.console.getEnclosingPrimaryTabId(function(result) {
+                callBackopenTab(result, recid, recname);
+            });
+    }
+
+    function callBackopenTab(result, recordid, recordname){
+        sforce.console.openSubtab(result.id, '/'+recordid , true, recordname, null);
+    }
+
+    function toggleContactRow(rowId) {
+        try {
+            var AccountImg = jQuery(document.getElementById(rowId + ":Img"));
+            var ContactsRow = jQuery(document.getElementById(rowId + ":Contact"));
+            var EntitlementsRow = jQuery(document.getElementById(rowId + ":Entitlement"));
+
+            if (AccountImg.hasClass("hideContacts")) {
+                AccountImg.attr("class", "showContacts");
+                ContactsRow.hide();
+                EntitlementsRow.hide();
+            }
+            else {
+                AccountImg.attr("class", "hideContacts");
+                ContactsRow.show();
+                EntitlementsRow.show();
+            }
+        }
+        catch (e) { alert(e); }
+    }
+
+
+    if (sforce.console.isInConsole()) {
+        var callback1 = function (result) {
+            if (result.ids && result.ids.length > 0) {
+                sforce.console.cti.getCallAttachedData(result.ids[0], callback2, {getCallType:true});
+            }
+        };
+
+        var callback2 = function (result) {
+            if(result.data !== undefined){
+                jsonData = result.data;
+                renderPageTable(jsonData);
+                if({!openDashboardPageFlag}){
+                    createCase();
+                }
+            }
+        };
+        //Note that we are using the CTI submodule here
+        sforce.console.cti.getCallObjectIds(callback1);
+    }else {
+        alert('Sorry! This Page ONLY worked on Service Console.');
+    }
+
+    /*function callCaseCreateMethod() {
+        if({!openDashboardPageFlag}){
+            createCase();
+        }
+    }*/
+
+    function createCase() {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ConsoleCTIMultipleMatchCtrl.returnTAPCaseId}',
+            jsonData,
+            function(result, event){
+                if (event.status) {
+                    result = result.replace(/&(lt|gt|quot);/g, function (m, p) {
+                        return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                    });
+                    var jArray = JSON.parse(result);
+
+                    //TAP Division
+                    responseData = jArray;
+                    console.log('----------responseData.AccountId--------' + responseData.AccountId);
+                    if(responseData.oneAccountFound)
+                        openAccountRecord();
+                    else
+                        sforce.console.openPrimaryTab(null , '/' + responseData.CaseId, true, 'New Case',null);
+                }else {
+                    if(event.message.indexOf('returnTAPCaseId') == -1)alert(event.message);
+                }
+            },
+            {escape: true}
+        );
+    }
+
+    // Start - TAP related functions
+    function openAccountRecord(){
+        sforce.console.openPrimaryTab(null , '/' + responseData.AccountId, true, 'Account', openTAPAccountSuccess);
+    }
+
+    var openTAPAccountSuccess = function openTAPAccountSuccess(result) {
+        //Report whether opening the new tab was successful
+        if (result.success) {
+            if(!responseData.isOnlyAccount)
+                sforce.console.openPrimaryTab(null , '/' + responseData.ContactId, true, 'Contact',null);
+            sforce.console.openPrimaryTab(null , '/' + responseData.CaseId, true, 'New Case',openTAPCaseSuccess);
+        }
+    };
+
+    var openTAPCaseSuccess = function openTAPCaseSuccess(result){
+        if (result.success) {
+            sforce.console.openPrimaryTab(null, '/apex/Account360View6?Id='+responseData.AccountId, true, 'Account Dashboard',null);
+        }else{
+            alert('Error occured while opening Account Dashboard.');
+        }
+    };
+
+    function updateTAPCase(accountId, contactId) {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ConsoleCTIMultipleMatchCtrl.updateTAPCase}',
+            jsonData, accountId, contactId,
+            function(result, event){
+                if (event.status) {
+                    result = result.replace(/&(lt|gt|quot);/g, function (m, p) {
+                        return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                    });
+                    var jArray = JSON.parse(result);
+
+                    //TAP Division
+                    responseData = jArray;
+                    console.log('----------responseData.AccountId--------' + responseData.AccountId);
+                    console.log('----------responseData.CaseNumber--------' + responseData.CaseNumber);
+                    //sforce.console.openPrimaryTab(null , '/' + responseData.CaseId, true, responseData.CaseNumber,null);
+                    alert('Case : '+ responseData.CaseNumber + ' updated with selected Contact');
+                    
+                    
+                }else {
+                    if(event.message.indexOf('returnTAPCaseId') == -1)alert(event.message);
+                }
+            },
+            {escape: true}
+        );
+    }
+    // End - TAP related functions
+
+    // Below function ONLY Opens Account Tab
+    function openAccountPrimaryTab(AccountId, AccountName){
+        sforce.console.getEnclosingPrimaryTabId(function VFAccTabId(result) {
+            sforce.console.openSubtab(result.id , '/'+AccountId, true, AccountName, null);
+        });
+    }
+
+    function openContactTabs(AccountId, AccountName, ContactId, ContactName){
+        sforce.console.getEnclosingPrimaryTabId(function VFConTabId(result) {
+            sforce.console.openSubtab(result.id , '/'+AccountId, true, AccountName, null);
+            sforce.console.openSubtab(result.id , '/'+ContactId, true, ContactName, null);
+        });
+    }
+
+    function CreateCaseJS(AccountId, ContactId, AssetId, EntitlementId, ProductGroup){
+        sforce.console.getEnclosingPrimaryTabId(function VFMainTabId(result) {
+            sforce.console.openSubtab(result.id , navigateToCreateCaseJs(ContactId, '{!pNonce}', AccountId, EntitlementId, AssetId), true, 'New Case', null);
+        });
+    }
+
+    function navigateToCreateCaseJs(ContactId, pNonceVal, AccountId, EntitlementId, AssetId){
+        var redirectURL;
+        if(ContactId != ''){
+            // Create Case for Account
+            redirectURL = '/setup/ui/recordtypeselect.jsp?ent=Case&ekp=500&retURL=/'+
+                ContactId+
+                '?isdtp=vw&nonce='+
+                pNonceVal+
+                '&save_new_url=/500/e?retURL=%2F'+
+                ContactId +
+                '%3Fisdtp%3Dvw%26nonce%3D'+
+                pNonceVal+
+                '&def_contact_id='+
+                ContactId+
+                '&def_account_id='+
+                AccountId+
+                '&def_entitlement_id='+
+                EntitlementId+
+                '&def_asset_id='+
+                AssetId+
+                '&isdtp=vw';
+        }
+        else{
+            // Create Case for Contact
+            redirectURL = '/setup/ui/recordtypeselect.jsp?ent=Case&ekp=500&retURL=/'+
+                AccountId+
+                '?isdtp=vw&nonce='+
+                pNonceVal+
+                '&save_new_url=/500/e?retURL=%2F'+
+                AccountId +
+                '%3Fisdtp%3Dvw%26nonce%3D'+
+                pNonceVal+
+                '&def_account_id='+
+                AccountId+
+                '&def_entitlement_id='+
+                EntitlementId+
+                '&def_asset_id='+
+                AssetId+
+                '&isdtp=vw';
+        }
+
+        // redirect to Case Creation
+        navigateToUrl(redirectURL,'RELATED_LIST','newCase');
+    }
+    </script>
+    
+    <style type="text/css">
+        .showContacts {
+        background: transparent url('/img/alohaSkin/twisty_sprite.png') 0 0 no-repeat;
+        }
+        .hideContacts {
+        background: transparent url('/img/alohaSkin/twisty_sprite.png') 0 -11px no-repeat;
+        }
+        .popup
+        {
+        background-color: white;
+        z-index: 9999;
+        left: 30%;
+        padding:10px;
+        position: absolute;
+        margin-left: -340px;
+        top:30%;
+        width: 80%;
+        }
+        
+        .popupBg
+        {
+        background-color:black;
+        opacity: 0.70;
+        filter: alpha(opacity = 70);
+        position: absolute;
+        width: 100%;
+        height: 200%;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        }
+        
+        .left{
+        float: left;
+        }
+        .right{
+        float: right;
+        }
+        .center{
+        text-align:left;
+        display:inline-block
+        }
+    </style>
+</apex:page>

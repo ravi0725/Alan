@@ -1,0 +1,442 @@
+<!-- 
+**
+ * Company     : Trimble Software Technology Pvt Ltd.,
+ * Description : 
+ * History     : 
+ * [16.OCT.2013] Srinivasan Babu    - Code Created.
+ * -->
+<apex:page controller="ResourceCalenderDetailViewCtrl" action="{!pageLoad}" id="pageId" sidebar="false">
+    <link href="{!$Resource.ResourceCalendarCSS}" rel="stylesheet" />
+    <link href="{!$Resource.ResourceCalendarPrintCSS}" rel="stylesheet" media="print" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script src="{!$Resource.ResourceCalendarMinJS}"></script>
+    <script>
+        
+        function startLoad(){
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("loadFilter").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("loadFilter").style.display = "none";
+        }
+        
+    </script>
+    <style>
+        .fc-weekend{
+            background-color:#F0F0F0;
+        }
+        
+        .fc-weekend-column{
+            background-color:#F0F0F0;
+        }
+    
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+    </style>
+    <div width="100%" id="filter" style="display:none;"/>
+    <div id="loadFilter" style="display:none;">
+        <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+        Loading . . . 
+    </div>
+    <apex:outputPanel id="calendarPanelId">
+    <script>
+        //We need to wrap everything in a doc.ready function so that the code fires after the DOM is loaded
+        $(document).ready(function() {  
+            //Call the fullCallendar method. You can replace the '#calendar' with the ID of the dom element where you want the calendar to go. 
+            $('#calendar').fullCalendar({
+                buttonText: {
+                   today : '{!$Label.Plancal_Calendar_View_Today}',
+                   resourceNextWeeks : '{!$Label.Plancal_Calendar_View_Next_Week}',
+                   resourceWeek : '{!$Label.Plancal_Calendar_View_Week}',
+                   resourceDay : '{!$Label.Plancal_Calendar_View_Day}',
+                   resourceMonth : '{!$Label.Plancal_Calendar_View_Month}'
+                },
+                monthNames: ['{!$Label.Plancal_Calendar_View_January}','{!$Label.Plancal_Calendar_View_February}','{!$Label.Plancal_Calendar_View_March}','{!$Label.Plancal_Calendar_View_April}','{!$Label.Plancal_Calendar_View_May}','{!$Label.Plancal_Calendar_View_June}','{!$Label.Plancal_Calendar_View_July}','{!$Label.Plancal_Calendar_View_August}','{!$Label.Plancal_Calendar_View_September}','{!$Label.Plancal_Calendar_View_October}','{!$Label.Plancal_Calendar_View_November}','{!$Label.Plancal_Calendar_View_December}'],
+                monthNamesShort: ['{!$Label.Plancal_Calendar_View_Jan}','{!$Label.Plancal_Calendar_View_Feb}','{!$Label.Plancal_Calendar_View_Mar}','{!$Label.Plancal_Calendar_View_Apr}','{!$Label.Plancal_Calendar_View_May}','{!$Label.Plancal_Calendar_View_Jun}','{!$Label.Plancal_Calendar_View_Jul}','{!$Label.Plancal_Calendar_View_Aug}','{!$Label.Plancal_Calendar_View_Sep}','{!$Label.Plancal_Calendar_View_Oct}','{!$Label.Plancal_Calendar_View_Nov}','{!$Label.Plancal_Calendar_View_Dec}'],
+                dayNames: ['{!$Label.Plancal_Calendar_View_Sunday}','{!$Label.Plancal_Calendar_View_Monday}','{!$Label.Plancal_Calendar_View_Tuesday}','{!$Label.Plancal_Calendar_View_Wednesday}','{!$Label.Plancal_Calendar_View_Thursday}','{!$Label.Plancal_Calendar_View_Friday}','{!$Label.Plancal_Calendar_View_Saturday}'],
+                dayNamesShort: ['{!$Label.Plancal_Calendar_View_Su}','{!$Label.Plancal_Calendar_View_Mo}','{!$Label.Plancal_Calendar_View_Tu}','{!$Label.Plancal_Calendar_View_We}','{!$Label.Plancal_Calendar_View_Th}','{!$Label.Plancal_Calendar_View_Fr}','{!$Label.Plancal_Calendar_View_Sa}'],
+                columnFormat: {
+                    resourceWeek : 'dddd dd MMM',
+                    resourceNextWeeks : 'ddd dd/MM',
+                    resourceMonth : 'ddd dd/MM'
+                },
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'resourceDay,resourceWeek,resourceNextWeeks,resourceMonth'
+                },
+                ignoreTimezone: false,
+                defaultView: '{!calendarView}',
+                firstDay: 1,   
+                editable: false, 
+                selectable: true,
+                minTime: 0,
+                maxTime: 23,
+                selectHelper: true,
+                resources:
+                   [
+                        <apex:repeat value="{!listResources}" var="r">
+                             {
+                                 name: "{!r.name}",
+                                id: '{!r.Id}'
+                             }{!r.sResoComma} 
+                        </apex:repeat>
+                        
+                   ],
+                   events:{!JsonData},
+                    eventMouseover: function(calEvent, jsEvent) {
+                    var url = calEvent.url;
+                    var ourl = calEvent.ourl;
+                   var mywindow = window.open("/apex/popuppage?id="+ourl, "mywindow", "location=1,status=1,scrollbars=1,  width=1200,height=400,'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,titlebar=no","_self");
+                    mywindow.moveTo(0, 0);
+                    $(this).mouseleave(function () {mywindow.close(true);});    
+                                       
+                           $(this).click(function () {return false;});                          
+                         },
+                       
+                         
+                      eventClick: function(calEvent, jsEvent){
+                      var url = calEvent.url;
+                      window.open(url, '_blank');
+                        },
+                                            
+                });
+        
+                var momentTemp = $('#calendar').fullCalendar('getDate');
+                var currentMonth = {!currentMonth - 1};
+        
+                $( ".fc-button-prev" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    
+                    if(view.name.indexOf('resourceWeek') != -1){
+                        moment = view.start;
+                        retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                    }else if(view.name.indexOf('resourceNextWeeks') != -1){
+                        moment = view.start;
+                        retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                    }else{
+                        moment = view.start;
+                        if(currentMonth != moment.getMonth()){
+                            retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                        }else{
+                            endLoad();
+                        }
+                    }
+                });
+                
+            
+                $( ".fc-button-next" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    
+                    if(view.name.indexOf('resourceWeek') != -1){
+                        moment = view.start;
+                        retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                    }else if(view.name.indexOf('resourceNextWeeks') != -1){
+                        moment = view.start;
+                        retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                    }else{
+                        moment = view.start;
+                        if(currentMonth != moment.getMonth()){
+                            retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                        }else{
+                            endLoad();
+                        }
+                    }
+                });
+            
+                $( ".fc-button-resourceDay" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    moment = view.start;
+                    retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                });
+                
+                $( ".fc-button-today" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    moment = view.start;
+                    retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                });
+            
+                $( ".fc-button-resourceWeek" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    moment = view.start;
+                    retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                });
+            
+                $( ".fc-button-resourceNextWeeks" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    moment = view.start;
+                    retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                });
+                
+                $( ".fc-button-resourceMonth" ).click(function() {
+                    startLoad();
+                    var moment;
+                    var view = $('#calendar').fullCalendar('getView');
+                    moment = view.start;
+                    retrivePrviousMonthData(moment.getDate(),moment.getMonth() + 1,moment.getFullYear(),view.name);
+                });
+                
+            
+            });
+    
+        function loadEvents(){
+            var calendar = $('#calendar').fullCalendar('gotoDate',new Date({!currentYear},{!currentMonth - 1},{!currentDay}));  
+            currentMonth = {!currentMonth - 1};
+            $( ".violetClass" ).css('background','#7030A0');
+        }
+    </script>
+    <!--some styling. Modify this to fit your needs-->
+    <style>
+        #cal-options {float:left;}
+        #cal-legend { float:right;}
+        #cal-legend ul {margin:0;padding:0;list-style:none;}
+        #cal-legend ul li {margin:0;padding:5px;float:left;}      
+        #cal-legend ul li span {display:block; height:16px; width:16px; margin-right:4px; float:left; border-radius:4px;}
+        #calendar {margin-top:20px;}
+        #calendar a:hover {color:#fff !important;}
+        .fc-event-inner {padding:3px;}
+        
+    </style>
+
+    <apex:sectionHeader title="{!$Label.Plancal_Calendar_Europe_Calendar}"/>
+        <apex:outputPanel id="calPanel">
+            <apex:form >
+                <apex:actionFunction action="{!retrivePrviousMonthData}" name="retrivePrviousMonthData" oncomplete="loadEvents();endLoad();" reRender="calendarPanelId">
+                    <apex:param name="day" value="" assignTo="{!currentDay}"/>
+                    <apex:param name="month" value="" assignTo="{!currentMonth}"/>
+                    <apex:param name="year" value="" assignTo="{!currentYear}"/>
+                    <apex:param name="calendarView" value="" assignTo="{!calendarView}"/>
+                </apex:actionFunction>
+                <apex:actionFunction action="{!retriveNextMonthData}" name="retrivePrviousMonthData" oncomplete="loadEvents();endLoad();" reRender="calendarPanelId">
+                    <apex:param name="day" value="" assignTo="{!currentDay}"/>
+                    <apex:param name="month" value="" assignTo="{!currentMonth}"/>
+                    <apex:param name="year" value="" assignTo="{!currentYear}"/>
+                    <apex:param name="calendarView" value="" assignTo="{!calendarView}"/>
+                </apex:actionFunction>
+                
+                
+                <div id="cal-options">
+                <table><tbody>
+                  <tr>
+                    <th>View:</th>
+                      <td>
+                         <apex:selectList id="view" styleclass="std" size="1" 
+                            value="{!sSelectView}" >
+                           <apex:actionSupport event="onchange" action="{!toggleEvents}"/> 
+                            <apex:selectOptions value="{!SelectViewList}"/>
+                         </apex:selectList>
+                      </td>
+                      <td>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <!--<apex:commandButton action="{!AddEvent}" value="{!$Label.Plancal_Calendar_Add_Event}" rendered="{!IF($Profile.Name =='Support Executive - MEP - Europe (Non-CH)'||$Profile.Name =='System Administrator - MEP - Europe' ||$Profile.Name =='System Administrator' || $Profile.Name=='Support Rep - MEP - Europe (Non-CH)' || $Profile.Name == 'Support Rep - MEP - Europe', true , false)}"/> -->
+                        <apex:commandButton action="{!AddEvent}" value="{!$Label.Plancal_Calendar_Add_Event}" rendered="{!IF( CONTAINS($Profile.Name, ' MEP') || $Profile.Name =='System Administrator', TRUE , FALSE)}"/> 
+                      </td>
+                  </tr>
+                  </tbody></table>
+                  
+                </div>
+                <div id="cal-legend">
+                <table width="115%" align ="right">
+                <tr>
+               
+                <td width="200px">
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[0].sClassName}'  style='background:{!listEventTypeColors[0].Colorcode};border-color:{!listEventTypeColors[0].Colorcode};'></span>{!listEventTypeColors[0].TypeName}</li> 
+                </ul>
+               </td>
+               <td width="200px">
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[1].sClassName}'  style='background:{!listEventTypeColors[1].Colorcode};border-color:{!listEventTypeColors[1].Colorcode};'></span>{!listEventTypeColors[1].TypeName}</li> 
+                </ul>
+               </td>
+               <td width="200px">
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[2].sClassName}'  style='background:{!listEventTypeColors[2].Colorcode};border-color:{!listEventTypeColors[2].Colorcode};'></span>{!listEventTypeColors[2].TypeName}</li> 
+                </ul>
+               </td>
+               
+                <td width="200px">
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[3].sClassName}'  style='background:{!listEventTypeColors[3].Colorcode};border-color:{!listEventTypeColors[3].Colorcode};'></span>{!listEventTypeColors[3].TypeName}</li> 
+                </ul>
+               </td>
+               <td width="200px">
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[4].sClassName}'  style='background:{!listEventTypeColors[4].Colorcode};border-color:{!listEventTypeColors[4].Colorcode};'></span>{!listEventTypeColors[4].TypeName}</li> 
+                </ul>
+               </td>
+               
+                </tr>
+                
+                <tr>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[5].sClassName}'  style='background:{!listEventTypeColors[5].Colorcode};border-color:{!listEventTypeColors[5].Colorcode};'></span>{!listEventTypeColors[5].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[6].sClassName}'  style='background:{!listEventTypeColors[6].Colorcode};border-color:{!listEventTypeColors[6].Colorcode};'></span>{!listEventTypeColors[6].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[7].sClassName}'  style='background:{!listEventTypeColors[7].Colorcode};border-color:{!listEventTypeColors[7].Colorcode};'></span>{!listEventTypeColors[7].TypeName}</li> 
+                </ul>
+               </td>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[8].sClassName}'  style='background:{!listEventTypeColors[8].Colorcode};border-color:{!listEventTypeColors[8].Colorcode};'></span>{!listEventTypeColors[8].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[9].sClassName}'  style='background:{!listEventTypeColors[9].Colorcode};border-color:{!listEventTypeColors[9].Colorcode};'></span>{!listEventTypeColors[9].TypeName}</li> 
+                </ul>
+               </td>
+                </tr>
+                
+                <tr>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[10].sClassName}'  style='background:{!listEventTypeColors[10].Colorcode};border-color:{!listEventTypeColors[10].Colorcode};'></span>{!listEventTypeColors[10].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[11].sClassName}'  style='background:{!listEventTypeColors[11].Colorcode};border-color:{!listEventTypeColors[11].Colorcode};'></span>{!listEventTypeColors[11].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[12].sClassName}'  style='background:{!listEventTypeColors[12].Colorcode};border-color:{!listEventTypeColors[12].Colorcode};'></span>{!listEventTypeColors[12].TypeName}</li> 
+                </ul>
+               </td>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[13].sClassName}'  style='background:{!listEventTypeColors[13].Colorcode};border-color:{!listEventTypeColors[13].Colorcode};'></span>{!listEventTypeColors[13].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[14].sClassName}'  style='background:{!listEventTypeColors[14].Colorcode};border-color:{!listEventTypeColors[14].Colorcode};'></span>{!listEventTypeColors[14].TypeName}</li> 
+                </ul>
+               </td>
+                </tr>
+                
+                <tr>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[15].sClassName}'  style='background:{!listEventTypeColors[15].Colorcode};border-color:{!listEventTypeColors[15].Colorcode};'></span>{!listEventTypeColors[15].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[16].sClassName}'  style='background:{!listEventTypeColors[16].Colorcode};border-color:{!listEventTypeColors[16].Colorcode};'></span>{!listEventTypeColors[16].TypeName}</li> 
+                </ul>
+                  </td> 
+                 <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[17].sClassName}'  style='background:{!listEventTypeColors[17].Colorcode};border-color:{!listEventTypeColors[17].Colorcode};'></span>{!listEventTypeColors[17].TypeName}</li> 
+                </ul>
+                  </td>    
+                 <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[18].sClassName}'  style='background:{!listEventTypeColors[18].Colorcode};border-color:{!listEventTypeColors[18].Colorcode};'></span>{!listEventTypeColors[18].TypeName}</li> 
+                </ul>
+                  </td>    
+                  
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[19].sClassName}'  style='background:{!listEventTypeColors[19].Colorcode};border-color:{!listEventTypeColors[19].Colorcode};'></span>{!listEventTypeColors[19].TypeName}</li> 
+                </ul>
+                  </td>              
+                </tr>
+                <tr>
+               
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[20].sClassName}'  style='background:{!listEventTypeColors[20].Colorcode};border-color:{!listEventTypeColors[20].Colorcode};'></span>{!listEventTypeColors[20].TypeName}</li> 
+                </ul>
+               </td>
+               <td>
+                <ul wrap="vert">
+                <li><span class='{!listEventTypeColors[21].sClassName}'  style='background:{!listEventTypeColors[21].Colorcode};border-color:{!listEventTypeColors[21].Colorcode};'></span>{!listEventTypeColors[21].TypeName}</li> 
+                </ul>
+                  </td> 
+                 <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[22].sClassName}'  style='background:{!listEventTypeColors[22].Colorcode};border-color:{!listEventTypeColors[22].Colorcode};'></span>{!listEventTypeColors[22].TypeName}</li> 
+                </ul>
+                  </td>
+                <td>
+                <ul wrap="vert">
+                <li><span class='{!listEventTypeColors[23].sClassName}'  style='background:{!listEventTypeColors[23].Colorcode};border-color:{!listEventTypeColors[23].Colorcode};'></span>{!listEventTypeColors[23].TypeName}</li> 
+                </ul>
+                  </td>
+                <td>
+                <ul wrap="vert" >
+                <li><span class='{!listEventTypeColors[24].sClassName}'  style='background:{!listEventTypeColors[24].Colorcode};border-color:{!listEventTypeColors[24].Colorcode};'></span>{!listEventTypeColors[24].TypeName}</li> 
+                </ul>
+                  </td>
+                 </tr>
+                <tr><td></td></tr> <tr><td></td></tr>
+               <tr>
+               <td><b>{!$Label.Plancal_Calendar_Hotline_Link}</b></td>
+               <td> <a href="{!$Label.Hotline_Report_Link}" target="_blank">{!$Label.Plancal_Calendar_Click_Here}</a></td>
+               </tr>
+                </table>
+                <div style="clear:both;"><!--fix floats--></div>
+                </div>
+                <div style="clear:both;"><!--fix floats--></div>
+                <div id="calendar">
+                </div> 
+            </apex:form>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</apex:page>

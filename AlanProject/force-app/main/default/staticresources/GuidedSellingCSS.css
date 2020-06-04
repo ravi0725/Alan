@@ -1,0 +1,63 @@
+.container {
+  margin-left: 50px;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 90% !important;
+  margin: 0 auto;
+  }
+  
+  .left-content {
+  width: 60% !important;
+  margin-right: 10px !important;
+  max-width: 60% !important;
+}
+
+.right-content {
+  padding: 0px !important;
+  width: 17%;
+  margin-right: 10px;
+}
+
+.interviewFormChoicesWithHelp {
+  float: left;
+  width: 750px;
+  margin-left: 10px;
+}
+
+.aptProductButttons .aptListButton {
+  width: 110px !important;
+  text-align: center;
+}
+
+.individualPalette .productBlock .secondaryPalette {
+  border-color: #8cc63f !important;
+}
+
+.product-details .title {
+  color: #8cc63f;
+  border-bottom: 2px solid #8cc63f;
+}
+
+.apexp{
+	max-width: 95% !important;
+	margin-left: -65px !important;
+}
+
+.detailList{
+	width: 80% !important;
+}
+.detailList tbody, .detailList tr {
+	width: 80% !important;
+}
+
+.row, .m-top-40{
+	width: 75% !important;
+}
+
+.container {
+	width: 100% !important;
+}
+
+.container, .container-class{
+	margin-left: 20px !important; 
+}

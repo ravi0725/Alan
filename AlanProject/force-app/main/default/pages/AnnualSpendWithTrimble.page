@@ -1,0 +1,65 @@
+<!--*****************************************************************************************
+  Name        : AnnualSpendWithTrimble
+  Desc        : Annual Spend with Trimble calculation on Acconnt level
+  ---------------------------------------------------------------------------
+  Developer              Date            Description
+  ---------------------------------------------------------------------------
+  Suresh Babu Murugan    16/OCT/2019        Created
+ ****************************************************************************************** -->
+<apex:page standardcontroller="Account" extensions="AnnualSpendWithTrimbleCtrl" setup="false" showchat="false" showheader="false" sidebar="false">
+    <!-- Style -->
+    <style>
+        th {
+            background-color: #f8f8f8;
+        }
+    </style>
+    <apex:form >
+        <apex:pageblock title="Annual Spending with Trimble" id="pb">
+            <apex:pageblockbuttons >
+                <input type="button" id="toClose" class="cusBtn cusBtnSave" onclick="window.top.close();" value="Close" />
+            </apex:pageblockbuttons>
+            <apex:outputpanel layout="block" rendered="{!NOT(MapIsEmpty)}">
+                <table class="list" border="0" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Business Area</th>
+                            <apex:repeat value="{!mapRevenueCollection_Results}" var="key_YEAR">
+                                <th>
+                                    <apex:outputtext value="{!key_YEAR}" />
+                                </th>
+                            </apex:repeat>
+                        </tr>
+                    </thead>
+                    <apex:repeat value="{!setBusinessArea}" var="bArea">
+                        <tr>
+                            <th>
+                                <apex:outputtext value="{!bArea}" />
+                            </th>
+                            <apex:repeat value="{!mapRevenueCollection_Results}" var="key_YEAR">
+                                <apex:variable value="{!mapRevenueCollection_Results[key_YEAR]}" var="revCollMap" />
+                                <td>
+                                    <apex:repeat value="{!revCollMap}" var="inWrap">
+                                        <apex:outputtext value="{!IF(AND(bArea = inWrap.businessArea, key_YEAR = inWrap.revenueYear), inWrap.revenueAmountDisp, " ")}" />
+                                    </apex:repeat>
+                                </td>
+                            </apex:repeat>
+                        </tr>
+                    </apex:repeat>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <apex:repeat value="{!mapRevenueCollection_TotalAmount}" var="key_YEAR">
+                                <th>
+                                    <apex:outputtext value="{!mapRevenueCollection_TotalAmount[key_YEAR]}" />
+                                </th>
+                            </apex:repeat>
+                        </tr>
+                    </tfoot>
+                </table>
+            </apex:outputpanel>
+            <apex:outputpanel layout="block" rendered="{!MapIsEmpty}">
+                <apex:outputtext value="Revenue details not found for this Account." />
+            </apex:outputpanel>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

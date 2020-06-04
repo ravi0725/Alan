@@ -1,0 +1,16 @@
+<aura:component controller="EventCalendarCls">
+    <aura:attribute name="valueFromParent" type="String"></aura:attribute>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="trainingEvent" type="TTraining_Events__c"/>
+    <lightning:card>
+        <p class="slds-p-horizontal_small">
+            <lightning:recordForm
+            recordId="{!v.valueFromParent}"
+            objectApiName="TTraining_Events__c"
+            layoutType="Full"
+            density="comfy"
+            columns="2"
+            mode="readonly" />
+        </p>
+    </lightning:card>
+</aura:component>

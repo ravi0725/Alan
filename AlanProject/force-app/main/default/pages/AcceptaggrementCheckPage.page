@@ -1,0 +1,128 @@
+<apex:page controller="AcceptaggrementCheckController" action="{!generateprop}">
+
+  <!-- <script type="text/javascript">
+           
+                function finalize()
+                  {
+                    var r = confirm("Are you sure you want to finalize this quote and generate an order?");
+                    if (r == true)
+                      {
+                        
+                        updateopportunity();
+                        
+                      }
+                    else
+                      {
+                         cancelquote();
+                      }
+                   
+                    
+                  }
+           window.onload=finalize;
+              
+       
+      
+     </script>-->
+     <script>
+    function validateForm(){
+           updateopportunity();
+        }   
+   </script>
+
+<apex:form >
+ <!--<apex:actionFunction name="updateopportunity" action="{!generateprop}" />-->
+  <apex:actionFunction name="cancelquote" action="{!cancelquote}"/> 
+  
+   <apex:pageMessages />     
+ 
+        <!--<apex:actionFunction name="updateopportunity" action="{!updateopportunity}" status="closer" />-->
+        
+        <!-- Added this output panel to show the pop up when Submit order button is clicked without calculating tax -->
+        <apex:outputPanel id="expQuotePopupnew" rendered="{!errorPopup}">
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+        <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+            <apex:pageBlock >
+                <apex:pageBlockButtons location="bottom">
+                    <apex:outputPanel id="buttons_tax"> 
+                        <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                             <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                        </div>                    
+                    </apex:outputPanel>
+                </apex:pageBlockButtons>
+                
+                <apex:pageblockSection columns="1" collapsible="false">
+                    <apex:outputPanel >
+                          <div id="pbField" style="text-align:center">
+                           <apex:outputText value="{!$Label.Customer_Agreement_Accept_Proposal_Text}" />
+                          </div>    
+                    </apex:outputPanel>
+                    
+                 </apex:pageblockSection>
+             </apex:pageBlock>
+        </apex:outputPanel>      
+      
+     </apex:outputPanel>      
+    
+   </apex:form>    
+   <script>
+      window.onload = function() {
+          //alert('DOM Loaded');
+          callActionMethod();
+          
+      }
+      
+      function callActionMethod(){
+        
+           //callToMethod();
+         
+      } 
+   </script>
+   <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 180px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 400px;
+            margin-left: -150px;
+            top:200px;
+        }
+
+    </style>
+  
+</apex:page>

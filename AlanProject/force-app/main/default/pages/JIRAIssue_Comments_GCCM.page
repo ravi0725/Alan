@@ -1,0 +1,15 @@
+<!--
+	Page : JIRAIssue_Comments_GCCM
+	Desc : This page is used to retrieve JIRA Comments
+_____________________________________________________________________________________________________
+Modificaion Log:
+===========================================================================
+Developer				Date			Description
+===========================================================================
+Suresh Babu Murugan		30/Nov/2018		Created
+_____________________________________________________________________________________________________
+-->
+<apex:page standardController="Case" extensions="JCFS.GenericObjectController,JIRAIssue_Comments_GCCMCtrl" showHeader="false" sidebar="false">
+	<JCFS:JiraCommentsComponent son="{!son}" soid="{!soid}" rendered="{!isHavePermissionToCreateJIRAIssue}"></JCFS:JiraCommentsComponent>
+	<apex:outputText value="This Issue is not related to ProjectSight (or) Prolog (or) Proliance, hence this section is disabled..." rendered="{!! isHavePermissionToCreateJIRAIssue }" />
+</apex:page>

@@ -1,0 +1,671 @@
+<apex:page id="pagetest" renderAs="{!pdf1}" showChat="false" showHeader="false" sidebar="false" controller="GenerateTechSupportAttachmentController"
+    applyBodyTag="false" standardStylesheets="false">
+    <apex:form >
+        <html>
+
+        <body>
+            <apex:stylesheet value="{!$Resource.dynaPdf}" />
+            <c:EventHeader type="header" eventLanguage="{!event.Language__c}">
+            </c:EventHeader>
+            <br/>
+            <br/>
+
+            <div id="pageContent" style="page-break-after:auto;margin-left: 25px; font-family: Arial Unicode MS; font-size:12px;">
+                <table width="655px">
+                    <tr>
+                        <td width="100%">
+                            <span style="font-size:150%; font-family: Arial Unicode MS;">{!languageMap.OnTech_Support_Title__c}</span>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <br/>
+                <apex:outputPanel layout="block" rendered="{!IF(event.Language__c != 'French', TRUE, FALSE)}">
+                    <table width="655px">
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Date__c} </b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                <apex:outputText value="{0,date,dd'.'MM'.'yyyy}">
+                                    <apex:param value="{!event.StartDateTime}" />
+                                </apex:outputText>
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Primary_Contact__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!leadName}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Contract_Number__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!event.Related_To_Proposal__r.Name}
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Contract_Status__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!event.Contract_Number__c}
+                            </td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="20%">
+                                <b>{!languageMap.Account__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!AccName}
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Service_Rep__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!userName}
+                            </td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="20%">
+                                <b>{!languageMap.Account_Id__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!AccNum}
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Service_Location__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!event.Service_Location__c}
+                            </td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="20%">
+                                <b>{!languageMap.Address__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!AccAddress}
+                            </td>
+                            <td width="20%">
+
+                            </td>
+                            <td width="2%">
+                            </td>
+                            <td width="28%">
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                <!--
+Service Location & Address should not display for French documents.
+-->
+                <apex:outputPanel layout="block" rendered="{!IF(event.Language__c = 'French', TRUE, FALSE)}">
+                    <table width="655px">
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Date__c} </b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                <apex:outputText value="{0,date,dd'.'MM'.'yyyy}">
+                                    <apex:param value="{!event.StartDateTime}" />
+                                </apex:outputText>
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Primary_Contact__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!leadName}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Contract_Number__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!event.Related_To_Proposal__r.Name}
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Contract_Status__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!event.Contract_Number__c}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Account__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!AccName}
+                            </td>
+                            <td width="20%">
+                                <b>{!languageMap.Service_Rep__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!userName}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%">
+                                <b>{!languageMap.Account_Id__c}</b>
+                            </td>
+                            <td width="2%">
+                                :
+                            </td>
+                            <td width="28%">
+                                {!AccNum}
+                            </td>
+                            <td width="20%">
+                                <!--<b>{!languageMap.Service_Location__c}</b>-->
+                            </td>
+                            <td width="2%">
+
+                            </td>
+                            <td width="28%">
+                                <!--{!event.Service_Location__c}-->
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+
+                <br/>
+                <br/>
+                <table style="font-family: SansSerif; font-size:12px;" width="655px">
+                    <tr style="vertical-align: text-top;">
+                        <td width="55%" style="font-weight: bold;">{!languageMap.Description__c}</td>
+                        <td width="15%" style="font-weight: bold;">{!languageMap.Hours__c}</td>
+                        <td width="15%" style="font-weight: bold;">
+                            <apex:outputPanel rendered="{!event.Charging__c!=False}">{!languageMap.Cost_per_Hour__c}
+                                <br/>{!IF(event.Language__c = 'German' , 'exkl. MWST' , 'excl. TVA')}</apex:outputPanel>&nbsp;</td>
+                        <td width="15%" style="font-weight: bold;">
+                            <div align="center">
+                                <apex:outputPanel rendered="{!event.Charging__c!=False}">{!languageMap.Total_Cost__c}
+                                    <br/>{!IF(event.Language__c = 'German' , 'exkl. MWST' , 'excl. TVA')}</apex:outputPanel>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <hr/>
+                <apex:outputPanel layout="block" rendered="{!IF(OR(event.Language__c <> 'French', AND(event.Language__c = 'French', OR( AND( NOT(ISBLANK(event.Travel_Time_From__c)), event.Travel_Time_From__c > 0)), AND( NOT(ISBLANK(event.Travel_Time_To__c)), event.Travel_Time_To__c > 0))), TRUE, FALSE)}">
+                    <table width="655px">
+                        <tr style="vertical-align: text-top;font-size:12px;">
+                            <td width="55%">
+                                {!languageMap.Services_Provided__c}
+                                <br/> {!event.Activity_Description__c}
+                            </td>
+                            <td width="15%">
+                                <apex:outputText value="{!IF(event.Activity_Hours__c <> null, event.Activity_Hours__c, 0.00)}"
+                                />
+                            </td>
+                            <!-- {!event.Activity_Hours__c} -->
+                            <td width="15%">
+                                <apex:outputPanel rendered="{!event.Charging__c!=False}">
+                                    <apex:outputText value="CHF {!IF(event.Hourly_Cost__c <> null, event.Hourly_Cost__c, 0.00)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- CHF {!event.Hourly_Cost__c} -->
+                            <td width="15%" style="text-align:right;">
+                                <apex:outputPanel rendered="{!event.Total_Activity_Cost__c != 0.0 && event.Charging__c!=False}">
+                                    <apex:outputText value="CHF {!IF(event.Total_Activity_Cost__c <> null, event.Total_Activity_Cost__c, 0.00)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- CHF {!event.Total_Activity_Cost__c } -->
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">{!languageMap.Travel_Time_To__c}</td>
+                            <td width="15%">{!event.Travel_Time_To__c}</td>
+                            <td width="15%">
+                                <apex:outputPanel rendered="{!event.Charging__c!=False}">CHF {!event.Hourly_Cost__c}</apex:outputPanel>&nbsp;</td>
+                            <td width="15%" style="text-align:right;">
+                                <apex:outputPanel rendered="{!event.Total_Time_To_Cost__c != 0.0 && event.Charging__c!=False}">CHF {!event.Total_Time_To_Cost__c}</apex:outputPanel>&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">{!languageMap.Travel_Time_From__c}</td>
+                            <td width="15%">{!event.Travel_Time_From__c}</td>
+                            <td width="15%">
+                                <apex:outputPanel rendered="{!event.Charging__c !=False}">CHF {!event.Hourly_Cost__c}</apex:outputPanel>&nbsp;</td>
+                            <td width="15%" style="text-align:right;">
+                                <apex:outputPanel rendered="{!event.Total_Time_From_Cost__c != 0.0 && event.Charging__c!=False}">CHF {!event.Total_Time_From_Cost__c}</apex:outputPanel>&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%" style="font-weight: bold;font-family:SansSerif;">{!languageMap.Total__c}</td>
+                            <td width="15%" style="font-weight: bold;font-family:SansSerif;">
+                                <apex:outputPanel rendered="{!event.Total_On_Tech_Hours__c!= 0.0}">{!event.Total_On_Tech_Hours__c}</apex:outputPanel>&nbsp;</td>
+                            <td width="15%" style="font-weight: bold;">
+                                <b>&nbsp;</b>
+                            </td>
+                            <td width="15%" style="text-align:right;font-weight: bold;font-family:SansSerif;">
+                                <apex:outputPanel rendered="{!event.Total_Actual_Cost__c!= 0.0 && event.Charging__c!=False}">CHF {!event.Total_Actual_Cost__c}</apex:outputPanel>&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="100%" colspan="4">
+                                <br/>
+                            </td>
+                        </tr>
+                    </table>
+                    <apex:outputPanel layout="block" rendered="{!isSwissEvent}">
+                        <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(event.According_to_Order__c == TRUE, TRUE, FALSE)}">
+                            <table style="width: 655px">
+                                <tr style="vertical-align: text-top;">
+                                    <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.According_to_Order__c}</td>
+                                    <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+                                        <apex:outputField value="{!event.According_to_Order__c}" />
+                                    </td>
+                                    <td width="10%" style="font-family:SansSerif; vertical-align: middle;"></td>
+                                    <td width="60%" style="font-family:SansSerif; vertical-align: middle;"></td>
+                                </tr>
+                            </table>
+                        </apex:outputPanel>
+                        <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(event.According_to_Order__c == FALSE, TRUE, FALSE)}">
+                            <table style="width: 655px">
+                                <tr style="vertical-align: text-top;">
+                                    <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.According_to_Order__c}</td>
+                                    <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+                                        <apex:outputField value="{!event.According_to_Order__c}" />
+                                    </td>
+                                    <td width="10%" style="font-family:SansSerif; vertical-align: middle;"></td>
+                                    <td width="60%" style="font-family:SansSerif; vertical-align: middle;"></td>
+                                </tr>
+                                <!--
+                                <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(AND(event.Extra_Effort__c == TRUE), TRUE, FALSE)}">
+	                                <apex:outputPanel layout="block" rendered="{!IF(AND(event.Extra_Effort__c, event.Extra_Effort_Needed__c <> 'Because of Trimble', event.Extra_Effort_Needed__c <> 'Because of Customer'), TRUE, FALSE)}" >
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort__c}</td>
+		                                <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+			                                <apex:outputField value="{!event.Extra_Effort__c}" />
+		                                </td>
+		                                <td width="10%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort_Reason__c}:</td>
+		                                <td width="60%" style="font-family:SansSerif; vertical-align: middle;">
+			                                <apex:outputPanel layout="block">
+				                                <apex:outputField value="{!event.Extra_Effort_Reason__c}" />
+			                                </apex:outputPanel>
+		                                </td>
+	                                </tr>
+	                                </apex:outputPanel>
+	
+	                                <apex:outputPanel layout="block" rendered="{!IF(event.Extra_Effort_Needed__c == 'Because of Customer', TRUE, FALSE)}" >
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort__c}</td>
+		                                <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+			                                <apex:outputField value="{!event.Extra_Effort__c}" />
+		                                </td>
+	                                </tr>
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="100%" colspan="4">
+			                                <apex:outputText value="{!languageMap.Extra_Effort_Description__c}" rendered="{!event.Extra_Effort__c}" />
+			                                <br/>
+		                                </td>
+	                                </tr>
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="100%" colspan="4">
+			                                <br/>
+		                                </td>
+	                                </tr>
+	                                </apex:outputPanel>
+	
+	                                <apex:outputPanel layout="block" rendered="{!IF(event.Extra_Effort_Needed__c == 'Because of Trimble', TRUE, FALSE)}" >
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort__c}</td>
+		                                <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+			                                <apex:outputField value="{!event.Extra_Effort__c}" />
+		                                </td>
+	                                </tr>
+	                                <tr style="vertical-align: text-top;">
+		                                <td width="100%" colspan="4">
+			                                <br/>
+		                                </td>
+	                                </tr>
+	                                </apex:outputPanel>
+                                </apex:outputPanel>
+                                -->
+                                <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(AND(event.Extra_Effort__c == TRUE, event.Extra_Effort_Needed__c == 'Because of Customer'), TRUE, FALSE)}">
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort__c}</td>
+                                        <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputField value="{!event.Extra_Effort__c}" />
+                                        </td>
+                                        <td width="10%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort_Reason__c}:</td>
+                                        <td width="60%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputPanel layout="block">
+                                                <apex:outputField value="{!event.Extra_Effort_Reason__c}" />
+                                            </apex:outputPanel>
+                                        </td>
+                                        <!--
+                                        <apex:outputPanel layout="block" rendered="{!IF(AND(event.Extra_Effort__c, event.Extra_Effort_Needed__c <> 'Because of Trimble', event.Extra_Effort_Needed__c <> 'Because of Customer'), TRUE, FALSE)}" >
+                                        <td width="10%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort_Reason__c}:</td>
+                                        <td width="60%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputPanel layout="block">
+                                                <apex:outputField value="{!event.Extra_Effort_Reason__c}" rendered="{!IF(AND(event.Extra_Effort__c, event.Extra_Effort_Needed__c <> 'Because of Trimble', event.Extra_Effort_Needed__c <> 'Because of Customer'), TRUE, FALSE)}" />
+                                            </apex:outputPanel>
+                                        </td>
+                                        </apex:outputPanel>
+                                        -->
+                                    </tr>
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="100%" colspan="4">
+                                            <apex:outputText value="{!languageMap.Extra_Effort_Description__c}" rendered="{!event.Extra_Effort__c}" />
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="100%" colspan="4">
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(AND(event.Extra_Effort__c == TRUE, event.Extra_Effort_Needed__c == 'Because of Trimble'), TRUE, FALSE)}">
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Extra_Effort__c}</td>
+                                        <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputField value="{!event.Extra_Effort__c}" />
+                                        </td>
+                                    </tr>
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="100%" colspan="4">
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel style="width: 655px" layout="block" rendered="{!IF(event.Reduced_Effort__c == TRUE, TRUE, FALSE)}">
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="20%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Reduced_Effort__c}</td>
+                                        <td width="10%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputField value="{!event.Reduced_Effort__c}" />
+                                        </td>
+                                        <td width="10%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Reduced_Effort_Reason__c}:</td>
+                                        <td width="60%" style="font-family:SansSerif; vertical-align: middle;">
+                                            <apex:outputPanel layout="block">
+                                                <apex:outputField value="{!event.Reduced_Effort_Reason__c}" rendered="{!event.Reduced_Effort__c}" />
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="100%" colspan="4">
+                                            {!languageMap.Reduced_Effort_Description__c}
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                    <tr style="vertical-align: text-top;">
+                                        <td width="100%" colspan="4">
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </apex:outputPanel>
+                            </table>
+                        </apex:outputPanel>
+                        <table style="width: 655px">
+                            <tr style="vertical-align: text-top;">
+                                <td width="33%" style="font-weight: bold;font-family:SansSerif; vertical-align: middle;">{!languageMap.Time_Information__c}:</td>
+                            </tr>
+                            <tr style="vertical-align: text-top;">
+                                <td width="33%" style="font-family:SansSerif; vertical-align: middle;">
+                                    <b>{!languageMap.Arrival_Time__c}:&nbsp;</b>
+                                    <apex:outputField value="{!event.Arrival_Time__c}" style="vertical-align: middle;" />
+                                </td>
+                                <td width="33%" style="font-family:SansSerif; vertical-align: middle;">
+                                    <b>{!languageMap.Lunch_Break__c}:&nbsp;</b>
+                                    <apex:outputField value="{!event.Lunch_Break_Hours__c}" style="vertical-align: middle;" />
+                                </td>
+                                <td width="33%" style="font-family:SansSerif; vertical-align: middle;">
+                                    <b>{!languageMap.Completed_Time__c}:&nbsp;</b>
+                                    <apex:outputField value="{!event.Completed_Time__c}" style="vertical-align: middle;" />
+                                </td>
+                            </tr>
+                            <tr style="vertical-align: text-top;">
+                                <td width="100%" colspan="4">
+                                    <br/>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="display: table; width: 655px; text-align: left; font-family:SansSerif;">
+                            <div style="display: table-row-group;">
+                                <div style="display: table-row;">
+                                    <!--<div style="display: table-cell; width: 23%">{!languageMap.Work_Done__c}:</div>-->
+                                    <div style="display: table-cell; width: 38%">
+                                        <b>{!languageMap.OnSite_Effort_Pending__c}:&nbsp;</b>
+                                        <apex:outputField value="{!event.OnSite_Effort_Pending__c}"/>
+                                    </div>
+                                    <!--<div style="display: table-cell; width: 38%">
+                                        {!languageMap.OnSite_Effort_Completed__c}:
+                                        <apex:outputField value="{!event.OnSite_Effort_Completed__c}" style="vertical-align: middle;" />
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                        <table>
+                            <tr style="vertical-align: text-top;">
+                                <td width="100%" colspan="4">
+                                    <br/>
+                                </td>
+                            </tr>
+                        </table>
+                        <apex:outputPanel layout="block" style="display: table; width: 655px; text-align: left; font-weight: bold;font-family:SansSerif;" rendered="{!event.Additional_Item_Needed__c}">
+                            <div style="width: 220px">
+                                <div style="">
+                                    <div style="display: table-cell;">
+                                        <apex:outputField value="{!event.Additional_Item_Needed__c}" style="vertical-align: middle;" />
+                                    </div>
+                                    <div style="display: table-cell;">
+                                        <apex:outputText value="{!languageMap.Additional_Item_Needed__c}" style="vertical-align: middle; padding-left: 1em;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: table-row-group;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell; padding-left: 5em; width: 30%">
+                                        {!languageMap.Additional_Item_Number__c}:
+                                    </div>
+                                    <div style="display: table-cell;">
+                                        <apex:outputField value="{!event.Additional_Item_Number__c}" style="vertical-align: middle;"/>
+                                    </div>
+                                </div>
+                                <!--<div style="display: table-row;">
+                                    <div style="display: table-cell; padding-left: 5em; width: 30%">
+                                        {!languageMap.Additional_No_of_Items__c}:
+                                    </div>
+                                    <div style="display: table-cell;">
+                                        <apex:outputText value="{!event.Additional_No_of_Items__c}" style="vertical-align: middle;" />
+                                    </div>
+                                </div>-->
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <table style="width: 655px">
+                        <tr style="vertical-align: text-top;">
+                            <td width="100%" colspan="4">
+                                <apex:outputPanel layout="block" rendered="{!IF(se.External_Description__c != NULL || se.External_Description__c != '', TRUE, FALSE)}">
+                                    <br/>
+                                    <br/>
+                                    <span style="font-family:SansSerif;">
+                                        <b>{!languageMap.Activity_Description__c}</b>
+                                    </span>
+                                    <br/>
+                                    <br/>
+                                    <apex:outputfield value="{!se.External_Description__c}" style="font-weight:bold;" />
+                                    <br/>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                <!-- ONLY French Documents shoud not show Travel Time From & Travel Time To Row in Table -->
+                <apex:outputPanel layout="block" rendered="{!IF(AND(event.Language__c = 'French', OR(ISBLANK(event.Travel_Time_From__c), event.Travel_Time_From__c = 0), OR(ISBLANK(event.Travel_Time_To__c), event.Travel_Time_To__c = 0)), TRUE, FALSE)}">
+                    <table width="655px">
+                        <tr style="vertical-align: text-top;font-size:12px;">
+                            <td width="55%">
+                                {!languageMap.Services_Provided__c}
+                                <br/> {!event.Activity_Description__c}
+                            </td>
+                            <td width="15%">
+                                <apex:outputText value="{!IF(event.Activity_Hours__c <> null, event.Activity_Hours__c, 0.00)}"
+                                />
+                            </td>
+                            <!-- {!event.Activity_Hours__c} -->
+                            <td width="15%">
+                                <apex:outputPanel rendered="{!event.Charging__c!=False}">
+                                    <apex:outputText value="CHF {!IF(event.Hourly_Cost__c <> null, event.Hourly_Cost__c, 0.00)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- CHF {!event.Hourly_Cost__c} -->
+                            <td width="15%" style="text-align:right;">
+                                <apex:outputPanel rendered="{!event.Total_Activity_Cost__c != 0.0 && event.Charging__c!=False}">
+                                    <apex:outputText value="CHF {!IF(event.Total_Activity_Cost__c <> null, event.Total_Activity_Cost__c, 0.00)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- CHF {!event.Total_Activity_Cost__c } -->
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="15%">&nbsp;</td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="55%" style="font-weight: bold;font-family:SansSerif;">{!languageMap.Total__c}</td>
+                            <td width="15%" style="font-weight: bold;font-family:SansSerif;">
+                                <apex:outputPanel rendered="{!event.Total_On_Tech_Hours__c!= 0.0}">
+                                    <apex:outputText value="{!IF(event.Total_On_Tech_Hours__c <> null, event.Total_On_Tech_Hours__c, 0.0)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- {!event.Total_On_Tech_Hours__c} -->
+                            <td width="15%" style="font-weight: bold;">
+                                <b>&nbsp;</b>
+                            </td>
+                            <td width="15%" style="text-align:right;font-weight: bold;font-family:SansSerif;">
+                                <apex:outputPanel rendered="{!event.Total_Actual_Cost__c!= 0.0 && event.Charging__c!=False}">
+                                    <apex:outputText value="CHF {!IF(event.Total_Actual_Cost__c <> null, event.Total_Actual_Cost__c, 0.0)}"
+                                    /></apex:outputPanel>&nbsp;</td>
+                            <!-- CHF {!event.Total_OnTech_Cost__c} -->
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="100%" colspan="4">
+                                <br/>
+                            </td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td width="100%" colspan="4">
+                                <apex:outputPanel layout="block" rendered="{!IF(se.External_Description__c != NULL || se.External_Description__c != '', TRUE, FALSE)}">
+                                    <span style="font-family:SansSerif;">
+                                        <b>{!languageMap.Activity_Description__c}</b>
+                                    </span>
+                                    <br/>
+                                    <br/>
+                                    <apex:outputfield value="{!se.External_Description__c}" style="font-weight:bold;" />
+                                    <br/>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+            </div>
+            <div class="footer">
+                <table style="font-family: Arial Unicode MS;font-size:12px;">
+                    <tr>
+                        <td width="100%" colspan="4">
+                            <table width="670px">
+                                <tr>
+                                    <td width="2%">&nbsp;</td>
+                                    <td width="46%">
+                                        <hr/>
+                                    </td>
+                                    <td width="6%">&nbsp;</td>
+                                    <td width="46%">
+                                        <hr/>
+                                    </td>
+                                </tr>
+                                <!-- <tr style="vertical-align: text-top;"> 
+                                        <td width="2%">&nbsp;</td>
+                                        <td><i><apex:outputText value="{0,date,dd'.'MM'.'yyyy}"><apex:param value="{!TODAY()}" /></apex:outputText>{!IF(contains(languageMap.Customer_Signature__c, "Date"), SUBSTITUTE(languageMap.Customer_Signature__c, 'Date', ''), IF(contains(languageMap.Customer_Signature__c, "Datum"), SUBSTITUTE(languageMap.Customer_Signature__c, 'Datum', ''), NULL ))}</i></td>
+                                        <td>&nbsp;</td>
+                                        <td><i><apex:outputText value="{0,date,dd'.'MM'.'yyyy}"><apex:param value="{!TODAY()}" /></apex:outputText>{!IF(contains(languageMap.Plancal_Service_Signature__c, "Date"), SUBSTITUTE(languageMap.Plancal_Service_Signature__c, 'Date', ''), IF(contains(languageMap.Plancal_Service_Signature__c, "Datum"), SUBSTITUTE(languageMap.Plancal_Service_Signature__c, 'Datum', ''), NULL ))}</i></td>
+                                    </tr> -->
+                                <tr style="vertical-align: text-top;">
+                                    <td width="2%">&nbsp;</td>
+                                    <td>
+                                        <i>{!languageMap.Customer_Signature__c}</i>
+                                    </td>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <i>{!languageMap.Plancal_Service_Signature__c}</i>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </body>
+
+        </html>
+        <script>
+            window.onload = function () {
+                //alert('DOM Loaded');
+                callActionMethod();
+            }
+
+            function callActionMethod() {
+                callToMethod();
+            }
+        </script>
+        <apex:actionFunction name="callToMethod" action="{!generateAttachment}" reRender="pagetest" />
+    </apex:form>
+</apex:page>

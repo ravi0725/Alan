@@ -1,0 +1,557 @@
+<apex:page id="pgId" controller="LinkAccountController" showHeader="false" sidebar="false" showChat="false">
+    <style>
+        #EBSTableGrid, #SFDCTableGrid, #SelectedAddressGrid{
+            font-size : 11px;
+        }
+        
+        #EBSTableGrid_headers, #SFDCTableGrid_headers, #SelectedAddressGrid_headers{
+            font-size : 11px;
+            font-weight: bolder;
+        }
+        
+        #EBSTableGrid_scroll, #SFDCTableGrid_scroll, #SelectedAddressGrid_scroll{
+            font-size : 11px;
+        }
+        
+        #SFDCTableGrid_caption{
+            text-align: left;
+            cursor: pointer;
+            text-decoration:underline;
+        }
+        
+        .loadingScreen{
+            z-index:199;
+            width:100%;
+            height:97%;
+            background-color:black;
+            position:absolute;
+            opacity:0.4;
+            filter:alpha(40);
+            display:none;
+        }
+        
+        .loadingStyle{
+            z-index:999;
+            width:200px;
+            height:50px;
+            background-color:#3EAEDC;
+            color:white;
+            font-size:24px;
+            text-align:center;
+            border-radius:6px;
+            position:absolute;
+            left:40%;
+            top:35%;
+        }
+        
+        #prdFamilyDivId{
+            z-index:300;
+            width:800px;
+            height:250px;
+            background-color:white;
+            text-align:left;
+            border-radius:6px;
+            position:absolute;
+            left:25%;
+            top:30%;
+        }
+            
+    </style>
+    <script>
+        function startLoad(){
+            document.getElementById("loadId").style.display = "block";
+            document.getElementById("loadTextId").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("loadId").style.display = "none";
+            document.getElementById("loadTextId").style.display = "none";
+        }
+        
+        function setSelectedSFDCAcccount(SFDCAccountId,SFDCAccountName){
+            document.getElementById("SFDCAccountName").value = SFDCAccountName;
+            SearchSFDCAccount(SFDCAccountId);
+        }
+    
+        function OpenAccountSearch(){
+            var accountSearchString = document.getElementById("SFDCAccountName").value;
+            window.open('/apex/LinkAccountLookup?lksrch=' + accountSearchString,'Search Account','top=150,left=150,width=800,height=480');    
+        }
+    </script>
+    <apex:form id="formId">
+        <div id="loadId" class="loadingScreen"/>
+        <div id="loadTextId" class="loadingStyle" style="display:none;">
+            Loading . . . 
+            <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+        </div>
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <apex:actionFunction name="SearchSFDCAccount" reRender="SFDCSearchResult,SelectedAddressPanel,mergeScriptPanel,ErrorMsgId" status="statusId" action="{!searchSFDCAccount}">
+            <apex:param assignTo="{!SFDCAccountId}" name="SFDCAccountId" value=""/>
+        </apex:actionFunction>
+        <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-1.9.1.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-ui.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.core.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.lob.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.theme.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.css')}"/>
+        <script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.8.3.js"></script>
+        <apex:pageblock id="pbId">
+            <apex:pageMessages id="ErrorMsgId"></apex:pageMessages>
+            <apex:pageBlockSection columns="2" id="pbsId">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Enterprise Account Number : </apex:outputLabel>
+                    <apex:outputPanel >
+                        <apex:inputText value="{!EBSAccountId}"/>
+                        <apex:commandButton value="Search" reRender="SelectedAddressPanel,EBSSearchResult,ErrorMsgId" status="statusId" action="{!searchEBSAccount}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >SFDC Account : </apex:outputLabel>
+                    <apex:outputPanel >
+                        <input type="text" value="{!SFDCAccountName}" id="SFDCAccountName"/>
+                        <a onClick="OpenAccountSearch();" target="_blank"><apex:image url="{!$Resource.Search}" height="18px" width="18px"></apex:image></a>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel id="EBSSearchResult">
+                        <table style="overflow:scroll" id="EBSTableGrid">
+                        </table>
+                        <script> 
+                        $(function () {
+                            var documentWidth = $( document ).width();
+                            $("#EBSTableGrid").igGrid({
+                                width: (documentWidth / 2) + "px",
+                                height: "300px",
+                                autoGenerateColumns: false,
+                                caption:"{!EBSAccTableCaption}",
+                                dataSource: {!EBSAccAddresses},
+                                columns : [
+                                {
+                                    headerText : "FCH Pary Site Id",
+                                    key : "FCH_Address_Id",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Enterprise Address Number",
+                                    key : "EBS_Address_Id",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 1",
+                                    key : "Street_1",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 2",
+                                    key : "Street_2",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 3",
+                                    key : "Street_3",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 4",
+                                    key : "Street_4",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "City",
+                                    key : "City",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "State",
+                                    key : "State",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "Country",
+                                    key : "Country",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "County",
+                                    key : "County",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "Zip",
+                                    key : "Zip",
+                                    dataType : "String",
+                                    width : "100px"
+                                }
+                                ],
+                                features: [
+                                    {
+                                        name: "Selection",
+                                        mode: "row",
+                                        multipleSelection: false,
+                                        activation: true
+                                    },
+                                    {
+                                        name: "Filtering"
+                                    }
+                                ]
+                            });
+                            $("#EBSTableGrid_caption").css("text-align","left");
+                        });
+                        </script>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel id="SFDCSearchResult">
+                        <script>
+                        $(function () {
+                            var documentWidth = $( document ).width() - 80;
+                            $("#SFDCTableGrid").igGrid({
+                                width: (documentWidth / 2) + "px",
+                                height: "300px",
+                                autoGenerateColumns: false,
+                                caption:"{!SFDCAccTableCaption}",
+                                dataSource: {!SFDCAccAddresses},
+                                columns : [
+                                {
+                                    headerText : "Salesforce Id",
+                                    key : "SFDC_Id",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 1",
+                                    key : "Street_1",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 2",
+                                    key : "Street_2",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 3",
+                                    key : "Street_3",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "Address Line 4",
+                                    key : "Street_4",
+                                    dataType : "String",
+                                    width : "120px"
+                                },
+                                {
+                                    headerText : "City",
+                                    key : "City",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "State",
+                                    key : "State",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "Country",
+                                    key : "Country",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "County",
+                                    key : "County",
+                                    dataType : "String",
+                                    width : "100px"
+                                },
+                                {
+                                    headerText : "Zip",
+                                    key : "Zip",
+                                    dataType : "String",
+                                    width : "100px"
+                                }
+                                ],
+                                features: [
+                                    {
+                                        name: "Selection",
+                                        mode: "row",
+                                        multipleSelection: false,
+                                        activation: true
+                                    },
+                                    {
+                                        name: "Filtering",
+                                        AllowRowFiltering: "true"
+                                        
+                                    }
+                                ]
+                            });
+                            
+                            
+                            $("#SFDCTableGrid_caption").click(function(){
+                                window.open('/{!SFDCAccountId}','_blank');
+                            });
+                        });
+                        </script>
+                        <table id="SFDCTableGrid">
+                        </table>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <div style="text-align:center">
+                <apex:commandButton value="Add" status="statusId" reRender="mergeTableId" onClick="AddSelectedAddress();"/>
+                <apex:commandButton value="Remove" status="statusId" reRender="mergeTableId" onClick="RemoveSelectedAddress();"/>
+                <apex:commandButton id="saveId" value="Save" reRender="mergeTableId"  onClick="processMerging();"/>
+            </div>
+            <apex:outputPanel id="mergePanelId">
+            <!-- dataSource: {!SFDCAccAddresses}, -->
+                
+            </apex:outputPanel>
+        </apex:pageblock>
+        
+        <apex:outputPanel id="SelectedAddressPanel">
+            <table id="SelectedAddressGrid">
+            </table>
+            <script>
+                $(function () {
+                    $("#SelectedAddressGrid").igGrid({
+                        width: "100%",
+                        height: "300px",
+                        caption:"{!SFDCAccountName} (Enterprise Account Number : {!EBSAccountId}   |   FCH Party Id : {!FCHAccountId}   |   SFDC Id : {!SFDCAccountId} )",
+                        autoGenerateColumns: false,
+                        columns : [
+                        {
+                            headerText : "FCH Pary Site Id",
+                            key : "FCH_Address_Id",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Enterprise Address Number",
+                            key : "EBS_Address_Id",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Salesforce Id",
+                            key : "SFDC_Id",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Address Line 1",
+                            key : "Street_1",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Address Line 2",
+                            key : "Street_2",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Address Line 3",
+                            key : "Street_3",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "Address Line 4",
+                            key : "Street_4",
+                            dataType : "String",
+                            width : "120px"
+                        },
+                        {
+                            headerText : "City",
+                            key : "City",
+                            dataType : "String",
+                            width : "100px"
+                        },
+                        {
+                            headerText : "State",
+                            key : "State",
+                            dataType : "String",
+                            width : "100px"
+                        },
+                        {
+                            headerText : "Country",
+                            key : "Country",
+                            dataType : "String",
+                            width : "100px"
+                        },
+                        {
+                            headerText : "County",
+                            key : "County",
+                            dataType : "String",
+                            width : "100px"
+                        },
+                        {
+                            headerText : "Zip",
+                            key : "Zip",
+                            dataType : "String",
+                            width : "100px"
+                        }
+                        ],
+                        features: [
+                            {
+                                name: "Selection",
+                                mode: "row",
+                                multipleSelection: false,
+                                activation: true
+                            },
+                            {
+                                name: "Filtering"
+                            }
+                        ]
+                    });
+                });
+            </script>
+        </apex:outputPanel>
+        <apex:actionFunction name="Save" action="{!Save}" reRender="pbId,SelectedAddressPanel,mergeScriptPanel,ErrorMsgId" status="statusId"/>     
+        <apex:outputpanel id="mergeScriptPanel">
+            <apex:actionFunction name="sendMergeDetails" action="{!makeCallout}" oncomplete="if({!statusMessage == 'Success'})Save();" reRender="ErrorMsgId" status="statusId">
+                <apex:param name="JSONmergeIds" assignTo="{!JSONmergeIds}" value=""/>
+            </apex:actionFunction>
+            <script>
+                $(document).ready(function(){ 
+                    $("#SelectedAddressGrid_headers").hide();
+                    $("#SelectedAddressGrid_scroll").hide();
+                });
+                
+                function AddSelectedAddress(){
+                    var row1 = $("#EBSTableGrid").igGridSelection("selectedRow");
+                    var row = $("#SFDCTableGrid").igGridSelection("selectedRow");
+    
+                    $("#SelectedAddressGrid").igGrid("renderNewRow", {
+                        FCH_Address_Id: $("#EBSTableGrid").igGrid("getCellText", row1.index, "FCH_Address_Id"),
+                        EBS_Address_Id: $("#EBSTableGrid").igGrid("getCellText", row1.index, "EBS_Address_Id"),
+                        SFDC_Id: $("#SFDCTableGrid").igGrid("getCellText", row.index, "SFDC_Id"),
+                        Street_1: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Street_1"),
+                        Street_2: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Street_2"),
+                        Street_3: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Street_3"),
+                        Street_4: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Street_4"),
+                        City: $("#SFDCTableGrid").igGrid("getCellText", row.index, "City"),
+                        State: $("#SFDCTableGrid").igGrid("getCellText", row.index, "State"),
+                        Country: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Country"),
+                        County: $("#SFDCTableGrid").igGrid("getCellText", row.index, "County"),
+                        Zip: $("#SFDCTableGrid").igGrid("getCellText", row.index, "Zip")
+                     });
+                     
+                    $("#SelectedAddressGrid_headers").show();
+                    $("#SelectedAddressGrid_scroll").show();
+                     
+                    $("#EBSTableGrid tr:eq(" + row1.index + ")").css("display","none");
+                    $("#SFDCTableGrid tr:eq(" + row.index + ")").css("display","none");
+                    
+                    $("#EBSTableGrid tr:eq(" + row1.index + ")").addClass("EBShidden");
+                    $("#SFDCTableGrid tr:eq(" + row1.index + ")").addClass("SFDChidden");
+                    
+                    $("#EBSTableGrid").igGridSelection("clearSelection");
+                    $("#SFDCTableGrid").igGridSelection("clearSelection");
+                    $("#SelectedAddressGrid").igGridSelection("clearSelection");
+                }
+            
+                function RemoveSelectedAddress(){
+                    var row = $("#SelectedAddressGrid").igGridSelection("selectedRow");
+                    
+                    var selectedEBSId = $("#SelectedAddressGrid tr:eq(" + row.index + ") td:first").text();
+                    var selectedSFDCId = $("#SelectedAddressGrid tr:eq(" + row.index + ") td:nth-child(3)").text();
+                    var cnt = 0;
+                    var EBSCnt = null;
+                    $("#EBSTableGrid").igGrid("allRows").each(function( index ) {
+                        if($("#EBSTableGrid").igGrid("getCellText", cnt, "FCH_Address_Id").indexOf(selectedEBSId) != -1){
+                            $("#EBSTableGrid").igGrid("renderNewRow", {
+                                FCH_Address_Id: $("#EBSTableGrid").igGrid("getCellText", cnt, "FCH_Address_Id"),
+                                EBS_Address_Id: $("#EBSTableGrid").igGrid("getCellText", cnt, "EBS_Address_Id"),
+                                Street_1: $("#EBSTableGrid").igGrid("getCellText", cnt, "Street_1"),
+                                Street_2: $("#EBSTableGrid").igGrid("getCellText", cnt, "Street_2"),
+                                Street_3: $("#EBSTableGrid").igGrid("getCellText", cnt, "Street_3"),
+                                Street_4: $("#EBSTableGrid").igGrid("getCellText", cnt, "Street_4"),
+                                City: $("#EBSTableGrid").igGrid("getCellText", cnt, "City"),
+                                State: $("#EBSTableGrid").igGrid("getCellText", cnt, "State"),
+                                Country: $("#EBSTableGrid").igGrid("getCellText", cnt, "Country"),
+                                County: $("#EBSTableGrid").igGrid("getCellText", cnt, "County"),
+                                Zip: $("#EBSTableGrid").igGrid("getCellText", cnt, "Zip")
+                            });
+                            EBSCnt = cnt;
+                        }
+                        cnt++;
+                    });
+                    
+                    
+                    var SFDCnt = null;
+                    cnt = 0;
+                    $("#SFDCTableGrid").igGrid("allRows").each(function( index ) {
+                        if($("#SFDCTableGrid").igGrid("getCellText", cnt, "SFDC_Id").indexOf(selectedSFDCId) != -1){
+                            $("#SFDCTableGrid").igGrid("renderNewRow", {
+                                SFDC_Id: $("#SFDCTableGrid").igGrid("getCellText", cnt, "SFDC_Id"),
+                                Street_1: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Street_1"),
+                                Street_2: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Street_2"),
+                                Street_3: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Street_3"),
+                                Street_4: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Street_4"),
+                                City: $("#SFDCTableGrid").igGrid("getCellText", cnt, "City"),
+                                State: $("#SFDCTableGrid").igGrid("getCellText", cnt, "State"),
+                                Country: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Country"),
+                                County: $("#SFDCTableGrid").igGrid("getCellText", cnt, "County"),
+                                Zip: $("#SFDCTableGrid").igGrid("getCellText", cnt, "Zip")
+                            });
+                            SFDCnt = cnt;
+                        }
+                        cnt++;
+                    });
+                    
+                    
+                    $("#EBSTableGrid").igGridSelection("clearSelection");
+                    $("#SFDCTableGrid").igGridSelection("clearSelection");
+                    $("#SelectedAddressGrid").igGridSelection("clearSelection");
+                    
+                    if(EBSCnt != null && SFDCnt != null)$("#SelectedAddressGrid tr:eq(" + row.index + ")").remove();
+                    if(EBSCnt != null)$("#EBSTableGrid tr:eq(" + EBSCnt + ")").remove();
+                    if(SFDCnt != null)$("#SFDCTableGrid tr:eq(" + SFDCnt + ")").remove();
+                }
+                
+                function processMerging(){
+                    var $table = $("#SelectedAddressGrid"),
+                        rows = [],
+                        header = [];
+                        
+                    $("#SelectedAddressGrid_headers").find("thead th").each(function () {
+                        if($(this).attr('id') != null){
+                            header.push($(this).attr('id').replace("SelectedAddressGrid_", ""));
+                        }
+                    });
+                    
+                    $table.find("tbody tr").each(function () {
+                        var row = {};
+                    
+                        $(this).find("td").each(function (i) {
+                            if(i == 0 || i == 1 || i == 2){
+                                var key = header[i],
+                                    value = $(this).html();
+                                row[key] = value;
+                            }
+                        });
+                    
+                        rows.push(row);
+                    });
+                    //alert(JSON.stringify(rows));
+                    sendMergeDetails(JSON.stringify(rows));
+                }
+    
+            </script>
+        </apex:outputpanel>
+        
+    </apex:form>
+</apex:page>

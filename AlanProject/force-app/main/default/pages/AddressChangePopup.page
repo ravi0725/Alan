@@ -1,0 +1,32 @@
+<apex:page controller="AddressChangePopupController">
+ <head>
+<script>
+   
+    window.onload = finalize;
+        
+    function finalize()
+      {
+         
+           var r = confirm("Bill To Account/Address has been changed at the quote header. \n Do you want to cascade the change to all the quote lines?");
+            if (r == true)
+              {
+              
+                ChangeAddress();
+                
+                
+              }
+            else
+              {
+              
+                SkipChange(); 
+             
+              }
+        }   
+
+   </script>
+</head>
+<apex:form >
+ <apex:actionFunction name="ChangeAddress" action="{!ChangeAddress}"/>
+  <apex:actionFunction name="SkipChange" action="{!SkipChange}"/> 
+  </apex:form>
+</apex:page>

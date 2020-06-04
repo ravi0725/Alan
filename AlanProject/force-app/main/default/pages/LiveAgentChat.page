@@ -1,0 +1,41 @@
+<apex:page >
+
+
+<center><span style="align:center;font-size:16pt;font-family: open sans,sans-serif;line-height:115%;color:rgb(0,95,158)"><b>Trimble ProjectSight <br/> Live-Chat Support</b></span></center><br/>
+<span style="font-size:12pt;font-family: open sans,sans-serif;">
+Trimble’s ProjectSight Support Live Chat is exclusively available
+to ProjectSight clients Monday thru <span tabindex="0" class="aBn" data-term="goog_354830013"><span class="aQJ">Friday</span></span>, <span tabindex="0" class="aBn" data-term="goog_354830014">
+<span class="aQJ">7am-4pm</span></span> pacific time (excluding <a href="https://drive.google.com/open?id=0B16ijxZiSTMMdDctckZlSzRWY3c" target="_blank">Trimble’s US holiday schedule</a>) <span>&nbsp;</span>
+<br/><br/>
+ 
+Live Chat is intended to be used for short questions you may
+have in reference to ProjectSight functionality. For more detailed questions of
+problems using ProjectSight, please complete a ‘<a href="https://trimble.force.com/clientsupport/500/e?retURL=%2Fclientsupport%2F500%2Fo" target="_blank">New Case</a>’ submission using the
+online form. More urgent matters, Trimble’s ProjectSight support analyst are
+available via phone Mon-Fri, <span tabindex="0" class="aBn" data-term="goog_354830015"><span class="aQJ">5am-5pm PT</span></span> (excluding Trimble’s US holiday
+schedule, available at the link above)
+
+<br/><br/> 
+
+Click the Live Chat logo and a new window will appear. You may need to disable your browsers pop-up blocker. Complete the required fields and a support analyst will be with you shortly.</span>
+<br/><br/><br/> 
+
+
+<!-- Code Copied from Button Configuration -->
+<img id="liveagent_button_online_57331000000NZzG" style="display: none; border: 0px none; cursor: pointer" onclick="liveagent.startChat('57331000000NZzG')" 
+src="{!$Resource.PSLiveChatOnline}" />
+<img id="liveagent_button_offline_57331000000NZzG" style="display: none; border: 0px none; " src="{!$Resource.PSLiveChatOffline}" />
+
+<script type="text/javascript">
+if (!window._laq) { window._laq = []; }
+window._laq.push(function(){liveagent.showWhenOnline('57331000000NZzG', document.getElementById('liveagent_button_online_57331000000NZzG'));
+liveagent.showWhenOffline('57331000000NZzG', document.getElementById('liveagent_button_offline_57331000000NZzG'));
+});</script>
+
+
+<!-- Code Copied from Deployment -->
+<script type='text/javascript' src='https://c.la4-c2-was.salesforceliveagent.com/content/g/js/38.0/deployment.js'></script>
+<script type='text/javascript'>
+liveagent.init('https://d.la4-c2-was.salesforceliveagent.com/chat', '572310000006rkf', '00Di0000000YVBC');
+</script>
+</apex:page>

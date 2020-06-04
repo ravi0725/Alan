@@ -1,0 +1,58 @@
+<apex:page standardController="Case"  showChat="false" showHeader="false" sidebar="false">
+    <apex:includeScript value="/support/console/29.0/integration.js"/>
+    <script>
+        var tabId;
+        window.onload=function(){
+            sforce.console.getEnclosingTabId(setTitleOfPage);
+        };
+        
+        var setTitleOfPage = function setTitleOfPage(result) {
+             sforce.console.getPageInfo(result.Id, showPageInfo);
+        };
+        
+        var showPageInfo = function showPageInfo(result) {
+            var obj = JSON.parse(result.pageInfo);
+            var objectName = '';
+            if(obj.objectName == null){
+                objectName = '{!Case.CaseNumber}';
+            }else{
+                objectName = obj.objectName;
+            }
+            if(obj.url.indexOf('clone') != -1){
+                if({!Case.Record_Type_Name__c = $Label.GCCM_Support_Case_Record_Type}){
+                    sforce.console.setTabTitle('New Case');
+                }else if({!Case.Record_Type_Name__c = $Label.GCCM_Support_Issue_Record_Type}){
+                    sforce.console.setTabTitle('New Issue');
+                    sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+                    sforce.console.getFocusedSubtabId(closeSubtab);
+                }/*else if({!Case.Record_Type_Name__c = $Label.RE_WS_Proliance_Support_Case_Record_Type}){
+                    sforce.console.setTabTitle('New Case');
+                }else if({!Case.Record_Type_Name__c = $Label.RE_WS_Proliance_Support_Issue_Record_Type  }){
+                    sforce.console.setTabTitle('New Issue');
+                    sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+                    sforce.console.getFocusedSubtabId(closeSubtab);
+                }*/
+            }else{
+                if({!Case.Record_Type_Name__c = $Label.GCCM_Support_Case_Record_Type}){
+                    sforce.console.setTabTitle('Case - ' + objectName);
+                }else if({!Case.Record_Type_Name__c = $Label.GCCM_Support_Issue_Record_Type}){
+                    sforce.console.setTabTitle('Issue - ' + objectName);
+                    sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+                    sforce.console.getFocusedSubtabId(closeSubtab);
+                }/*else if({!Case.Record_Type_Name__c = $Label.RE_WS_Proliance_Support_Case_Record_Type}){
+                    sforce.console.setTabTitle('Case - ' + objectName);
+                }else if({!Case.Record_Type_Name__c = $Label.RE_WS_Proliance_Support_Issue_Record_Type  }){
+                    sforce.console.setTabTitle('Issue - ' + objectName);
+                    sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+                    sforce.console.getFocusedSubtabId(closeSubtab);
+                }*/
+            }
+        };
+        
+        var closeSubtab = function closeSubtab(result) {
+            var tabId = result.id;
+            sforce.console.setTabStyle('background:#FEDC95;', tabId);
+        };
+    
+    </script>
+</apex:page>

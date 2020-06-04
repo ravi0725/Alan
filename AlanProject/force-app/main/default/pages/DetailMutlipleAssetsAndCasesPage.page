@@ -1,0 +1,83 @@
+<apex:page controller="EditMultipleAssetsAndCasesClass" tabStyle="Asset" showheader="true" sidebar="true">
+<script type="text/javascript"> 
+  function openLookup(baseURL, width, modified, searchParam){
+     //alert('test');
+    
+    var caseidcheck="{!caseId}";
+    alert(caseidcheck);
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+ 
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    //alert(lookupType);
+    if (modified == '1') baseURL = baseURL + searchParam;
+ 
+    var isCustomLookup = false;
+ 
+    // Following "001" is the lookup type for Account object so change this as per your standard or custom object
+    if(lookupType == "02i"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomAssetAccountlookupPage?txt=" + txtId;
+ 
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+         //baseURL = baseURL + "&lksearch==" + searchParam+"&+caseidcheck;
+         baseURL = baseURL + "&lksearch=" + searchParam+"&caseid="+caseidcheck;
+      }
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      alert(txtId.indexOf('Assetid'));
+      if(txtId.indexOf('Assetid') >= -1 ){
+        isCustomLookup = true;
+      }
+    }
+ 
+ 
+    if(isCustomLookup == true){
+      openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+</script>
+ <apex:sectionHeader title="{!$Label.Asset_Edit}" subtitle="{!assets.Asset__r.Name}" />
+<apex:form id="myform">    
+  <apex:pageBlock title="{!$Label.Asset_Edit}" mode="edit">          
+     <apex:pageBlockButtons location="both">   
+        <apex:commandButton action="{!updateAssets}" value="{!$Label.Save}"/>     
+        <apex:commandButton action="{!cancel}" value="{!$Label.Cancel}"/>
+     </apex:pageBlockButtons>
+     <apex:pageBlockSection collapsible="false" columns="2" title="{!$Label.Asset_Information}">         
+        <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Multiple_Assets_Case_Junction__c.Fields.Asset__c.label}"/>  
+           <apex:inputField value="{!assets.Asset__c}"  id="Assetid"/>              
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Multiple_Assets_Case_Junction__c.Fields.CurrencyIsoCode.label}"/>                      
+           <apex:outputPanel >
+             <div class="requiredInput">
+               <div class="requiredBlock"/>
+               <apex:selectList size="1" value="{!assets.CurrencyIsoCode}" required="true">
+                 <apex:selectOptions value="{!Currencyoptions}"/>
+               </apex:selectList>               
+             </div>
+           </apex:outputPanel>             
+        </apex:pageBlockSectionItem>        
+        <apex:outputField value="{!assets.Case__c}"/>        
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+</apex:form>  
+</apex:page>

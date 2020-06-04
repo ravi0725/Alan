@@ -1,0 +1,243 @@
+<apex:page controller="FinalizeOpportunityCustomController" >
+    <script>
+    function validateForm(){
+        updateopportunity();
+    }   
+    
+    function cancelQuoteFn(){
+        cancelquoteJS();
+    }    
+    
+    function KillNextButton(){
+        var obj= document.getElementById('nextid')
+        var objcan= document.getElementById('cancelid')
+        objcan.style.visibility = 'hidden';
+        obj.style.visibility = 'hidden';
+    }      
+    </script>
+    
+    <apex:form >
+        <apex:actionFunction name="updateopportunity" action="{!updateopportunity}"/>
+        <apex:actionFunction name="cancelquoteJS" action="{!cancelquote}"/> 
+        <!-- <apex:pageMessages /> -->     
+        
+        <!-- <apex:actionFunction name="updateopportunity" action="{!updateopportunity}" status="closer"/> -->
+        
+        <!-- Added this output panel to show the pop up when Submit order button is clicked without calculating tax -->
+        <apex:outputPanel id="expQuotePopup_tax" rendered="{!taxFlag}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                    
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="{!$Label.Calculate_Tax_Message}" />
+                            </div>    
+                        </apex:outputPanel>
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="expQuotePopup" rendered="{!taxFlag == false}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                    
+                    <div id="errorMessage" style="color:red;"></div>
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <input type="button" style="btn" class="btn" value="{!$Label.Next}" onclick="KillNextButton();return validateForm();" id="nextid"/>
+                                <input type="button" class="btn" value="{!$Label.Cancel}" id="cancelid" onclick="KillNextButton(); cancelQuoteFn();"/>
+                                <apex:actionStatus startText="{!$Label.Finalizing}" stopText="" onStop="window.close();" id="closer"/>
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="{!$Label.Finalize_Quote_Order}" />
+                            </div>    
+                        </apex:outputPanel>
+                    </apex:pageblockSection>
+                    
+                </apex:pageBlock>
+            </apex:outputPanel>
+        </apex:outputPanel>   
+        
+        <apex:outputPanel id="submitPopup" rendered="{!errorPopUp}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="{!$Label.Error_Submitting_Order} {!errorMessage}" />
+                            </div>    
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>  
+        <apex:outputPanel id="submitPopup2" rendered="{!creditcheck}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="Customer does not have available credit. The Credit Dept. has been notified to evaluate the customer." />
+                            </div>    
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>  
+        <apex:outputPanel id="submitPopup21" rendered="{!ProfessionalService}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="Fusion contract creation notification has been sent to Fusion contract owner." />
+                            </div>    
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>  
+        
+        <apex:outputPanel id="MEPNAValidate" rendered="{!MEPNAValidationCheck}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Back}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="Please enter value in Shipping Method and Freight Terms." />
+                            </div>    
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>  
+        
+        <apex:outputPanel id="submitPopup1" rendered="{!orderSubmitted}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock >
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                <apex:commandButton value="{!$Label.Ok}" action="{!cancelquote}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                            <div id="pbField" style="text-align:center">
+                                <apex:outputText value="{!$Label.Order_Submitted_Succ}" />
+                            </div>    
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>    
+    </apex:form>       
+    <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 180px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 400px;
+            margin-left: -150px;
+            top:200px;
+        }
+    </style>
+</apex:page>

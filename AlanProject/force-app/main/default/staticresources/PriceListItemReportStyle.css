@@ -1,0 +1,64 @@
+	@page {
+	size: 250mm 297mm;
+	font-family: Arial;
+	}
+
+	.resultparentcolFirst{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-left-style:none;
+		border-bottom-style:none;
+		 padding-left:3px;
+		 padding-top:3px;
+		 padding-bottom:3px;
+	}
+	
+	
+	.resultparentcolMiddle{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-bottom-style:none;
+		border-left-style:none;
+		padding-left:3px; 
+		padding-top:3px;
+		 padding-bottom:3px;
+	}
+	
+	.resultparentcolLast{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-left-style:none;
+		border-bottom-style:none;
+		 padding-top:3px;
+		 padding-bottom:3px;
+	}
+	
+	.resultchildcolFirst{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-left-style:none;
+		border-top-style:none;
+		border-bottom-style:none;
+		 padding-top:3px;
+		 padding-bottom:3px;
+	}
+   
+	.resultchildcolMiddle{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-bottom-style:none;
+		border-left-style:none;
+		border-top-style:none;
+		 padding-top:3px;
+		 padding-bottom:3px;
+	}
+	
+	.resultchildcolLast{
+		border-width:{!IF(displayType == 'PDF' , '1px' , '2px'};
+		border-style:solid;
+		border-left-style:none;
+		border-bottom-style:none;
+		border-top-style:none;
+		 padding-top:3px;
+		 padding-bottom:3px;
+	}

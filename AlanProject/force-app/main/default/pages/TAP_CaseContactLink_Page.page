@@ -1,0 +1,93 @@
+<apex:page standardcontroller="Case" extensions="TAP_CaseContactLinkController" lightningStylesheets="true" >
+
+<apex:slds />
+<apex:pageBlock title="" rendered="{!NOT(ContactAlreadyExists )}">
+        <b>Related Contacts matching with Web Email (SuppliedEmail) - {!WebEmail }</b> 
+        <br/><br/>
+        <apex:outputText rendered="{!((NoContacts)||(NoWebEmail))}">
+        The User Email does not exist in our Contacts Database. Please, add this Contact to existing Account or create a new Account and new Contact.
+        </apex:outputText>
+        
+        <!-- <apex:sectionHeader subtitle="No Contact fetched per Web Email or Web Email Field is Blank" /> -->
+        <apex:slds />
+        <!-- <apex:pageBlockTable value="{!ContList }" var="c1" styleClass="outBorder" width="200px" rendered="{!!NoContacts}">   -->
+        <apex:pageBlockTable value="{!ContList }" var="c1" styleClass="outBorder" width="200px" rendered="{!NOT((NoContacts)||(NoWebEmail))}">
+        <apex:slds />
+            <apex:column value="{!c1.name}"/>
+            <apex:column value="{!c1.Email}"/>
+            <apex:column value="{!c1.Account.Name}"/>
+            <apex:column value="{!c1.Account.EAN_OAN__c}"/>
+            <apex:column headerValue="Link to Case">
+                <apex:outputLink value="/{!CaseId}/e?retURL=%2F{!CaseId}&cas3_lkid={!c1.Id}" target="_blank">Link Contact to Case </apex:outputLink> 
+            </apex:column>
+          </apex:pageblockTable>
+          
+        <!-- 
+        <apex:column headerValue="Link to Case Console">
+            <apex:outputLink value="/{!CaseId}/e?retURL=/console#%2F{!CaseId}%3FsrPos%3D0%26srKp%3D500&cas3_lkid={!c1.Id}" target="_blank">Link Contact to Case Console </apex:outputLink>
+            <apex:outputLink value="/{!CaseId}/e?retURL=/console#%2F{!CaseId}%2Fe&cas3_lkid={!c1.Id}" target="_blank">Link Contact to Case Console </apex:outputLink>
+        </apex:column>
+        -->
+        <!-- 
+        <apex:pageblock >
+             <apex:outputPanel layout="block" styleClass="full_width">
+                <table id="tableAccountContacts" class="list" border="0" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tbody> 
+                         <apex:repeat id="repeatContacts" value="{!ContList }" var="con">
+                            <tr class="dataRow">
+                                <td class="dataCell">
+                                    <a href="#" onclick="updateTAPCase('{!con.AccountId}','{!con.Id}'); return false">Link to Case</a>
+                                </td>
+                                <td class="dataCell"><a href="#" onClick="openTab('{!con.Id}','{!con.Name}'); return false">
+                                    <apex:outputText value="{!con.Name}" /></a></td>
+                                <td class="dataCell"><apex:outputField value="{!con.Account.Name}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!con.Email}"/></td>
+                                
+                            <apex:includeScript value="/soap/ajax/30.0/connection.js"/>
+        
+                            <script type="text/javascript">
+                                function updateTAPCase(accountId, contactId);
+                                {
+                                    var cs= new sforce.SObject("Case");
+                                    cs.id = "{!CaseId}";
+                                    cs.ContactId = "{!contactId}";
+                                    cs.AccountId = "{!accountId}";
+                                    sforce.connection.update([cs]); 
+                                    system.debug('ContactId **>'ContactId );
+                                    system.debug('CaseId**>'CaseId );
+                                    window.location.reload(); //to reload the window and show the updated values
+                                }
+                            </script>
+                                
+                            </tr> 
+                        </apex:repeat>
+                    </tbody>
+                </thead>
+            </table>
+            </apex:outputPanel>
+        </apex:pageblock>
+        -->
+        
+
+
+        
+                
+        <!-- </apex:pageBlockTable> -->
+        <!-- <apex:dataTable value="{!ContList }" var="c" styleClass="outBorder" width="200px" rendered="{!!NoContacts}">
+            <apex:column styleClass="inBorder">
+                <apex:facet name="header">Full Name</apex:facet>
+                <apex:outputText >{!c.Name}</apex:outputText>
+            </apex:column>       
+            <apex:column styleClass="inBorder">
+                <apex:facet name="header">Account</apex:facet>
+                <apex:outputText >{!c.Account.Name}</apex:outputText>
+            </apex:column>              
+        </apex:dataTable> -->
+    </apex:pageBlock>
+    <div style="text-align:center;font-size: 15px; bold">
+               <br/><br/>
+               <apex:outputText value="Confirmation: Contact has been linked to this Case successfully." rendered="{!(ContactAlreadyExists )}" style="bold"/> 
+           </div>
+
+</apex:page>

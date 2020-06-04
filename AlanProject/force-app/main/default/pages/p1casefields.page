@@ -1,0 +1,32 @@
+<apex:page standardController="Case"  extensions="savep1" rendered="{!OR(Case.IsP1Case__c=TRUE,Case.Priority1_Follow_up__c = TRUE)}" showHeader="false" tabStyle="Client_Liaison_Action_Items__c">
+    <apex:pageBlock >
+        <center>
+            <apex:pageBlockSection title="P1: Case followup related fields" columns="2" >
+                <apex:outputField value="{!Case.IsP1Case__c}" /> 
+                <apex:outputField value="{!Case.Product_Lead__c}" />  
+                
+                <apex:outputField value="{!Case.Case_Closed_Date_and_Time__c}" />
+                <apex:outputField value="{!Case.P1_Case_Followup_Complete_Date_and_Time__c}" />
+                
+                <apex:outputField value="{!Case.Day_of_the_Priory_Closed_Date__c}" />
+                <apex:outputField value="{!Case.Priority_P1_Followup_Deadline_Date__c}" />
+                                              
+                <apex:outputField value="{!Case.P1_Case_Escalated_to_Management__c}" />
+                <apex:outputField value="{!Case.P1_Customer_Follow_up_Notes__c}" />
+            </apex:pageBlockSection>
+        </center>
+        <center>
+        <apex:form >
+            <center>
+            
+                <apex:pageBlocksection title="P1: Case followup Notes" columns="2">
+
+                <apex:inputField value="{!Case.P1_Customer_Follow_up_Notes__c}" /> 
+                <apex:commandButton id="savebtn" value="Update" action="{!Savep1}" />
+                </apex:pageBlocksection>
+            
+            </center>
+        </apex:form>
+        </center>
+    </apex:pageBlock> 
+</apex:page>

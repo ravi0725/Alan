@@ -1,0 +1,157 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c" tabstyle="Apttus_Proposal__Proposal__c" extensions="CartViewRelatedListController">
+<apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+    <script>
+       $j = jQuery.noConflict();
+       var selectedId = '';
+       var selectedIds;       
+       
+       function validateCheckboxes(){           
+           if(selectedId != ''){
+              return true;
+           }           
+           document.getElementById('j_id0:j_id2:j_id5:errorPages').style.display="block";
+           //document.getElementById('em').style.innerHTML="Please select checkbox";
+           return false;
+       }
+       var areaIds = [];
+
+       function saveSelection() {          
+          selectedIds = areaIds.join('');
+          $j(':checkbox').each(function(){
+            if (this.checked) {
+              if (selectedIds.indexOf(this.id) === -1) {
+                areaIds.push(this.id);
+                selectedIds = selectedIds + this.id;
+              }
+            } else {
+              if (selectedIds.indexOf(this.id) !== -1) {
+                for (i=0; i < areaIds.length; i++) {
+                    if (areaIds[i] === this.id) {
+                        areaIds.splice(i, 1);
+                        selectedIds = areaIds.join('');
+                    }
+                }
+              }
+            }                      
+          });
+          selectedId = selectedIds;          
+       }   
+       
+       function launchWindow(){
+          window.open("/apex/cartViewApprovalList"); 
+       }  
+    </script>
+    <apex:form >
+       <apex:actionFunction name="validate" action="{!validateChecks}" rerender="errorPage">
+           <apex:param name="selectedIds" assignTo="{!selectedId}" value=""/>
+       </apex:actionFunction>
+       <span id="j_id0:j_id2:j_id5:errorPages" style="display:none;"> 
+            <div class="message errorM4" role="alert">
+              <table class="messageTable" cellspacing="0" cellpadding="0" border="0" style="padding:0px;margin:0px;">
+                <tbody>
+                  <tr valign="top">
+                    <td>
+                        <img class="msgIcon" title="error" src="/s.gif" alt="error"/>
+                    </td>
+                    <td class="messageCell">
+                        <div id="j_id0:j_id2:j_id5:errorPage:j_id10:j_id12" class="messageText">
+                          <span id="j_id0:j_id2:j_id5:errorPage:j_id10:j_id13">
+                           <h4></h4>
+                          </span>
+                          {!$Label.Quote_Select_Items}
+                          <br/>
+                        </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td> </td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </span>     
+        <span id="cancelledStatus"> 
+            <div class="message errorM4" role="alert">
+              <table class="messageTable" cellspacing="0" cellpadding="0" border="0" style="padding:0px;margin:0px;">
+                <tbody>
+                  <tr valign="top">
+                    <td>
+                        <img class="msgIcon" title="error" src="/s.gif" alt="error"/>
+                    </td>
+                    <td class="messageCell">
+                        <div id="j_id0:j_id2:j_id5:errorPage1:j_id10:j_id12" class="messageText">
+                          <span id="j_id0:j_id2:j_id5:errorPage1:j_id10:j_id13">
+                           <h4></h4>
+                          </span>
+                          {!$Label.Quote_Approval_Cancelled}
+                          <br/>
+                        </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td> </td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </span> 
+        <apex:pageMessages />                       
+        <apex:pageblock id="pb" title="{!$Label.Approval_Process}">
+        <apex:pageblockButtons location="top" rendered="{!AND(approvalRequestList != null, approvalRequestList.size > 0, productConfigList.size > 0)}">
+            <apex:outputPanel rendered="{!productConfig.Apttus_CQApprov__Approval_Status__c = 'Pending Approval'}">               
+              <apex:outputLink onclick="return validateCheckboxes();" target="_parent" style="text-decoration:none;" value="/apex/ApprovalAction?quoteId={!proposal.Id}&returnButtonLabel=Return+to+Quote&action=cancel&lineItemIds=&approvalType=cart&includeHeaderApprovals=true">                
+                <input type="button" value="{!$Label.Cancel_Approvals}" class="btn" />              
+              </apex:outputLink>  
+            </apex:outputPanel>                        
+          </apex:pageblockButtons>
+        <apex:outputPanel rendered="{!AND(approvalRequestList != null, approvalRequestList.size > 0, productConfigList.size > 0)}">                                 
+          <apex:pageBlockSection title="{!$Label.Cart}" columns="1">             
+             <table style="white-space:nowrap;">                
+                <tr>
+                  <td width="1%"><input type="checkbox" id="{!configWrapper.config.Id}" onclick="saveSelection();"/>&nbsp;&nbsp;&nbsp;</td>    
+                  <td width="2%"><span style="font-weight: bold;">{!$ObjectType.Apttus_Config2__ProductConfiguration__c.Fields.Name.label}:</span></td>
+                  <td width="38%">{!configWrapper.config.Name}&nbsp;&nbsp;&nbsp;</td>
+                  <td width="7%"><span style="font-weight: bold">{!$ObjectType.Apttus_Config2__ProductConfiguration__c.Fields.Apttus_CQApprov__Approval_Status__c.label}:</span></td>
+                  <td width="52%">{!configWrapper.config.Apttus_CQApprov__Approval_Status__c}</td>
+                </tr>
+             </table>
+          </apex:pageBlockSection>          
+          
+          <apex:pageBlockTable value="{!approvalRequestList}" var="approvalRequest">
+             <apex:column value="{!approvalRequest.Apttus_Approval__StepSequence__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__StepSequence__c.label}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Step_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__Step_Name__c.label}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Assigned_To_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__Assigned_To_Name__c.label}"/>
+             <apex:column value="{!approvalRequest.Assigned_To_Queue_Members__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Assigned_To_Queue_Members__c.label}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Approval_Status__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__Approval_Status__c.label}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__SubmissionComment1__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__SubmissionComment1__c.label}"/>
+             <apex:column value="{!approvalRequest.Apttus_Approval__Approver_Comments__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request__c.Fields.Apttus_Approval__Approver_Comments__c.label}"/>
+             <apex:column headerValue="{!$Label.Attachment}">
+                 <apex:commandlink value="{!$Label.View_Attachment}"  action="{!viewattach}" target="_Blank">
+                  <apex:param name="uploadType" value="{!approvalRequest.id}" assignTo="{!uploadType}"/>
+               </apex:commandLink>
+             </apex:column>
+          </apex:pageBlockTable>
+          <apex:outputPanel id="opt1" rendered="{!remainder != 0}">
+            <apex:commandLink action="{!loadMoreApprovalRequest}" rerender="pb">             
+              {!$Label.Show} {!remainder} {!$Label.more} >>           
+            </apex:commandLink>
+          </apex:outputPanel>      
+          <apex:outputPanel id="opt2" rendered="{!AND(approvalRequestList != null, approvalRequestList.size > 0, remainder != 0)}">
+             | <apex:outputLink target="_blank" style="cursor:pointer;text-decoration:underline;" value="/apex/cartViewApprovalList?id={!quoteId}">
+                 {!$Label.Go_to_list} ({!totalSize}) >>
+               </apex:outputLink>
+          </apex:outputPanel>
+       </apex:outputPanel>   
+       <apex:outputLabel value="{!$Label.Quote}" rendered="{!AND(approvalRequestList != null, approvalRequestList.size <= 0)}" />
+       </apex:pageblock>
+    </apex:form>
+    <script>
+       if('{!configStatus}' == 'Cancelled'){
+           document.getElementById('cancelledStatus').style.display="block";
+       }else{       
+           document.getElementById('cancelledStatus').style.display="none";
+       }    
+    </script>
+</apex:page>

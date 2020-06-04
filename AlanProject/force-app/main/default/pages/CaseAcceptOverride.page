@@ -1,0 +1,29 @@
+<apex:page standardController="Case" extensions="CaseAcceptOverrideController" recordSetVar="cases">
+  <script>
+      window.onload = function(){          
+          callActionMethod();           
+      }
+      
+      function callActionMethod(){
+          callToMethod();
+      } 
+   </script>
+   <apex:form id="frmMessage">
+      <apex:actionFunction name="callToMethod" action="{!checkOwner}" reRender="msg, redirectPanel"/>
+      <apex:actionFunction name="callToRedirectMethod" action="{!redirect}" reRender="msg"/>      
+      <apex:pagemessages id="msg"/>
+      <apex:outputPanel id="redirectPanel">
+         <script>
+            if({!AND(errorCaseList != null, errorCaseList.size <= 0)}){
+                callRedirectMethod();
+            }
+            function callRedirectMethod(){
+              callToRedirectMethod();
+            }
+         </script><br/>
+         <apex:outputPanel rendered="{!OR(AND(errorCaseList != null, errorCaseList.size > 0), mandatoryFlag)}">
+            <a href="/500">{!$Label.Click_here}</a> {!$Label.Back_to_Cases_List} 
+         </apex:outputPanel>
+      </apex:outputPanel>
+   </apex:form>  
+</apex:page>

@@ -1,0 +1,8 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <lightning:card iconName="custom:custom19" title="Task Workflow Group">
+        <div class="slds-p-left_large slds-p-right_medium">	
+            <lightning:recordForm   recordId="{!v.recordId}" objectApiName="TTraining_Course_Templates__c" fields="Task_Workflow_Group__c" />
+        </div>
+    </lightning:card>
+</aura:component>

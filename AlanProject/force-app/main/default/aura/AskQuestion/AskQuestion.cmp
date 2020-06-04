@@ -1,0 +1,45 @@
+<aura:component controller="AskAQuestionController" implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="HeaderLabel" type="String" default="Don't see what you're looking for?" access="global" />
+	<aura:attribute name="TopicId" type="String" default="" access="global" />
+    <aura:attribute name="TopicName" type="String" default="" access="global" />
+    <aura:attribute name="QuestionVal" type="String" default="" access="global" />
+    <aura:attribute name="AskCommunityLabel" type="String" default="Ask a Question" access="global" />
+	<aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+<div style="box;text-align: center;">
+    <span >{!v.HeaderLabel}</span><br/><br/>
+    <button class="slds-button slds-button_brand askCommunityBtn forceCommunityAskCommunity" onclick="{!c.openModel}">{!v.AskCommunityLabel}</button>
+</div>
+     <div class="slds-m-around--xx-large">
+    	  
+    <aura:if isTrue="{!v.isOpen}">
+        <!--###### MODAL BOX Start From Here ######--> 
+      <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+        <div class="slds-modal__container">
+          <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+          <div class="slds-modal__header">
+            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+            X
+            <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="header99" class="slds-text-heading--medium">{!v.TopicName}</h2>
+          </div>
+          <!--###### MODAL BOX BODY Part Start From Here ######-->
+          <div class="slds-modal__content slds-p-around--medium">
+              <label class="slds-form-element__label" for="Question"><span style="color:red">*</span>   Question</label>
+				<div class="slds-form-element__control">  
+              <ui:inputtextarea aura:id="Question"  class="slds-input" rows="3" value="{!v.QuestionVal}" placeholder="What would you like to know?"/>
+          		</div>
+           </div>
+          <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+          <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+            <button class="slds-button slds-button--brand" onclick="{!c.likenClose}">Ask</button>
+          </div>
+        </div>
+      </div>
+      <div class="slds-backdrop slds-backdrop--open"></div>
+      <!--###### MODAL BOX Part END Here ######-->
+    </aura:if>    
+    </div>
+</aura:component>

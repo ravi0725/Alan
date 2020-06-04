@@ -1,0 +1,82 @@
+<apex:page controller="AcceptProposalCustomController"   action="{!UpdateStage}">
+
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Proposal__YUILibrary, '/yui/build/assets/skins/sam/skin.css')}" /> 
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Proposal__YUILibrary, '/yui/build/yahoo-dom-event/yahoo-dom-event.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Proposal__YUILibrary, '/yui/build/dragdrop/dragdrop-min.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Proposal__YUILibrary, '/yui/build/container/container-min.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.Apttus_Proposal__YUILibrary, '/yui/build/animation/animation-min.js')}" />
+    
+    <script type="text/javascript">
+            
+        // Create a namespace for our custom functions
+        YAHOO.namespace("force.com");
+        
+        // wait panel
+        
+        /**
+         * Builds the wait panel.
+         */
+        YAHOO.force.com.buildWaitPanel = function() {
+            document.body.className = document.body.className + " yui-skin-sam";
+            YAHOO.force.com.waitPanel = new YAHOO.widget.Panel(
+                "waitPanel",  // The id of our dialog container
+                { 
+                        width           :   "300px", // You can play with this until it's right
+                        visible         :   false,   // Should be invisible when rendered
+                        draggable       :   false,   // Make the dialog draggable
+                        close           :   false,   // Don't include a close title button
+                        modal           :   true,    // Make it modal
+                        fixedCenter     :   true,    // Keep centered if window is scrolled
+                        zindex          :   40,      // Make sure it's on top of everything
+                        constraintoviewport: true,
+                        
+                        // This line adds the appear/disapper fade effect
+                        effect          :   {effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}
+                                    
+                }
+            );
+            
+            // header
+            YAHOO.force.com.waitPanel.setHeader("Accepting and Synchronizing with Opportunity...");
+            // set image
+            YAHOO.force.com.waitPanel.setBody('<center><img src="{!URLFOR($Resource.Apttus_Config2__Image_LoadingPage)}" /></center>');
+            // Render the dialog to the document.body level of the DOM
+            YAHOO.force.com.waitPanel.render(document.body);
+            
+        }
+        
+        // Function called when the DOM is ready to create the dialog,
+        // render the dialog into the document body, add our dialog skin
+        // css to the body tag, and wire up the buttons on our dialog   
+        YAHOO.force.com.onDOMReady = function() {
+            
+            // build the wait panel
+            YAHOO.force.com.buildWaitPanel();
+            // show modal panel
+            YAHOO.force.com.waitPanel.show();
+            // invoke accept function
+            //callToActionMethod(); 
+            
+        }
+        
+        // build the tree as soon as the DOM is in a usable state
+        YAHOO.util.Event.onDOMReady(YAHOO.force.com.onDOMReady);    
+        
+    </script>
+
+<apex:form >
+    <!--<script>
+        window.open("/apex/Apttus_QPConfig__ProposalSyncWithOpportunity?id={!quoteId}");
+        window.location.href = "/apex/Apttus_QPConfig__ProposalAccept?id={!quoteId}";        
+    </script> -->
+    <iframe src="/apex/Apttus_QPConfig__ProposalAccept?id={!quoteId}" height="0" width="0" />
+    <iframe src="/apex/Apttus_QPConfig__ProposalSyncWithOpportunity?id={!quoteId}" height="0" width="0" id="optySyncFrame" onload="callDelayMethod()"/> 
+    <script> 
+      
+      function callDelayMethod(){  
+         setTimeout(callToActionMethod,4000);           
+      }      
+    </script> 
+    <apex:actionFunction name="callToActionMethod" action="{!callActionMethod}" />
+</apex:form>
+</apex:page>

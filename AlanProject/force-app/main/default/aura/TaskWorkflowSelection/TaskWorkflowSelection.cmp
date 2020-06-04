@@ -1,0 +1,12 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="CourseTemplateFields" type="String[]" default="['Task_Workflow_Group']" />
+    <lightning:card class="slds-p-around_medium">
+        <lightning:recordForm
+    	recordID = "{!V.recordid}"
+    	ObjectAPIName="TTraining_Course_Templates__c"
+    	fields="{V.CourseTemplateFields}"
+    	Columns="1"
+    	Mode="edit">    
+        </lightning:recordForm>
+    </lightning:card>   
+</aura:component>

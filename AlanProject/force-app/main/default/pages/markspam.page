@@ -1,0 +1,33 @@
+<apex:page standardController="Case"   recordSetVar="Cases"   extensions="quickSpamController" lightningStylesheets="true">
+  
+  <apex:slds />
+  <apex:form >
+      
+     <apex:sectionHeader />
+     <apex:commandButton value="Back" action="{!Cancel}" rendered="{!if($Profile.Name =='System Administrator' || $Profile.Name =='TAP - Support Manager' || $Profile.Name =='TAP - Support Rep', FALSE, TRUE)}"  />
+      
+     <!-- <apex:pageBlock rendered="{!if($Profile.Name =='System Administrator' || $Profile.Name =='TAP - Support Manager' || $Profile.Name =='TAP - Support Rep', TRUE, FALSE)}" > -->
+     <apex:pageBlock >
+     <apex:pageMessages ></apex:pageMessages>
+       <apex:pageBlockTable value="{!selected}" var="Case">
+       
+         <apex:column headervalue="Case number">
+             <apex:outputlink value="/{!Case.ID}">
+                 <apex:outputtext value="{!Case.CaseNumber}">
+                 </apex:outputText>
+             
+             </apex:outputlink>
+        </apex:column>
+        
+         <apex:column value="{!Case.Status}"/>
+         <!-- <apex:column value="{!Case.Owner.Name}" -->/>
+         
+     <apex:slds />      
+       </apex:pageBlockTable>
+       <apex:pageBlockButtons location="both">
+         <apex:commandButton value="Mark Spam" action="{!markspam}"/>
+         <apex:commandButton value="Cancel" action="{!Cancel}"/>
+       </apex:pageBlockButtons>
+     </apex:pageBlock>
+  </apex:form>
+</apex:page>

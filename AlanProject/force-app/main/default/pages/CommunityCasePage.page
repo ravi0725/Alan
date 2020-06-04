@@ -1,0 +1,10 @@
+<apex:page standardController="Case" tabStyle="Case" extensions="CommunityCaseClass">
+<apex:form >
+<apex:sectionHeader title="{!$Label.Cases}" subtitle="{!$Label.Home}"/>
+<apex:pageBlock >
+   <apex:pageblockButtons location="top">
+    <apex:commandButton value="{!$Label.New}" action="{!newCase}"/>
+   </apex:pageblockButtons>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

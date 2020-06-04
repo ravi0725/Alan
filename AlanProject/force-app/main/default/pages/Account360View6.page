@@ -1,0 +1,1171 @@
+<apex:page id="pgId" controller="Account360ViewController" lightningStylesheets="true" readOnly="true" showHeader="false" standardStylesheets="false" sidebar="false" docType="html-5.0" applyBodyTag="False" applyHtmlTag="False">
+    <head>
+        <title>Account Dashboard</title>
+    </head>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-1.9.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'jquery-ui.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.core.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.dynamicCellSelection, 'infragistics.lob.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MasterJQuery, '/css/themes/infragistics/infragistics.theme.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MasterJQuery, '/css/structure/infragistics.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.MasterJQuery, 'modernizr-2.8.3.js')}"/>
+    <apex:includeScript value="/support/console/43.0/integration.js"/>
+    
+    
+    <style type="text/css">
+       
+        .ui-iggrid-headertext{
+            word-wrap: break-word !important;
+            white-space: normal !important;
+        }
+        
+        .tooltip {
+        display:none;
+        position:absolute;
+        border:1px solid #333;
+        background-color:white;
+        border-radius:5px;
+        padding:10px;
+        color:black;
+        font-size:12px Arial;
+        z-index:1000;
+        }
+        
+        /* Create two equal columns that floats next to each other */
+        .column {
+        width: 50%;
+        padding: 10px;
+        }
+        
+        /* Clear floats after the columns */
+        .row:after {
+        display: table;
+        }  
+        
+        .ui-iggrid .ui-iggrid-headercaption, .ui-iggrid .ui-iggrid-footer, .ui-iggrid .ui-iggrid-toolbar {
+        padding: .6em .4em;
+        }
+        
+        body{
+        font-size:9px !important;
+        }
+        
+        .ui-igeditor-input-container , .ui-igedit-dropdown-button , .ui-igedit-container, .ui-igeditor-input-container{
+        height:auto;
+        }
+        
+        .ui-iggrid-pagesizedropdown{
+        height:16px;
+        }
+        
+        .ui-iggrid-paging{
+        height:18px;
+        }
+        
+        .ui-icon-gear:before {
+        content: '&#9881;';
+        }
+        
+        .ui-icon-arrowthick-1-n:before {
+        content: '&#x21e7;';
+        }
+        
+        .ui-icon-arrowthick-1-s:before {
+        content: '&#x21e9;';
+        }
+        
+        .ui-icon-arrowstop-1-e:before {
+        content: '&#x276d;&#x276d;';
+        padding-right:4px;
+        }
+        
+        .ui-icon-arrowstop-1-w:before {
+        content: '&#x276c;&#x276c;';
+        padding-left:4px;
+        }
+        
+        .ui-icon-triangle-1-w:before {
+        content: '&#x276e;';
+        }
+        
+        
+        .ui-icon-triangle-1-e:before {
+        content: '&#x276f;';
+        }
+        
+        .ui-icon-triangle-1-s:before {
+        content: '&#x276f;';
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+        
+        }
+        
+        .ui-datepicker .ui-datepicker-prev .ui-icon::before {
+        content: '&lsaquo;'!important;
+        }
+        .ui-datepicker .ui-datepicker-next .ui-icon::before {
+        content: '&rsaquo;'!important;
+        }
+        .ui-icon-circle-close:before {
+        content: '&#10539;';
+        }            
+        .ui-icon-gripsmall-diagonal-se:before {
+        content: '&#8690;';
+        }
+        .ui-icon-close:before {
+        content: '&#x2612;';
+        padding-top:1px;
+        padding-left:2px;
+        }
+        
+        .ui-icon-check:before {
+        content: '&#x2714;'!important;
+        }
+        
+        .loadingScreen{
+        z-index:199;
+        width:100%;
+        height:97%;
+        background-color:black;
+        position:absolute;
+        opacity:0.4;
+        filter:alpha(40);
+        display:none;
+        }
+        
+        .loadingStyle{
+        z-index:999;
+        width:200px;
+        height:30px;
+        background-color:#3EAEDC;
+        color:white;
+        font-size:24px;
+        text-align:center;
+        border-radius:6px;
+        position:absolute;
+        left:40%;
+        top:35%;
+        }
+        
+        
+        #buttonPanelId1, #buttonPanelId2{
+        float:left; 
+        }
+        
+        .ui-igtrialwatermark{
+        display:none!important;
+        }
+        
+        #EndCustomerHistoryTableGrid_headers_v, #CustomerInfoTableGrid_headers_v, #iStoreNoteTableGrid_headers_v,
+        #AllEntitlementTableGrid_headers_v, #OrderTableGrid_headers_v, #EntitlementTableGrid_headers_v, #CaseTableGrid_headers_v,
+        #ActivityTableGrid_headers_v{ 
+        background-color:#2F8DCB!important;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px; 
+        }
+        
+        
+        .ui-widget-header{
+        background:none!important;
+        } 
+        
+        .ui-iggrid-rowselector-header{
+        background-color:#2F8DCB!important;
+        }
+        
+        .ui-iggrid-rowselector-class, .ui-iggrid-paging-item, .ui-iggrid-page-hover, .ui-state-hover{
+        background-color:#c0e5f5!important;
+        }
+        
+        .ui-state-hover{
+        color:black!important;
+        background-color:#D3DEFD!important;
+        }
+        
+        .ui-iggrid-results, .ui-iggrid-pagedropdownlabels{
+        color:black;
+        }
+        
+        #CustomerInfoTableGrid_pager, #iStoreNoteTableGrid_pager,
+        #AllEntitlementTableGrid_pager, #OrderTableGrid_pager, #EntitlementTableGrid_pager, #CaseTableGrid_pager,
+        #ActivityTableGrid_pager,#iStoreNoteTableGrid_pager{ 
+        background-color:#c0e5f5!important;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px; 
+        }
+        
+        .slds-scope .slds-button{
+        line-height:0rem!important;
+        }
+        
+        .slds-button{
+        height:20px;
+        }
+        
+        .sectionClass{
+        margin-top:4px;
+        }
+         
+        .ui-iggrid-headercaption{
+        padding: 0.2em .4em!important;
+        background-color:#2F8DCB!important;
+        font-weight: 900; 
+        color: white;
+        text-align:left!important;
+        margin-left:10px;
+        font-size:12px;
+        }
+        
+        #EndCustomerHistoryTableGrid_container .ui-iggrid-footer{
+            display:none!important;
+        }
+        
+    </style>
+    <head>
+        <apex:slds /> 
+    </head>
+    <apex:form >
+        <script>
+        var minHeight = 100;
+        //var minWidth = ;
+        
+        function getAllSelectedRecords(){
+            getSelectedRecords('#AllEntitlementTableGrid');             
+        }
+        
+        function getSingleSelectedRecords(){
+            getSelectedRecords('#EntitlementTableGrid');                
+        }
+        
+        var selectedIds = '';
+        function getSelectedRecords(tableId){
+            console.log('--------tableId--------' + tableId);
+            var selectedRecords = $(tableId).igGrid('selectedRows');
+            console.log('--------selectedRecords--------' + selectedRecords);
+            
+            selectedIds = '';
+            for(var cnt = 0; cnt < selectedRecords.length ; cnt++){
+                selectedIds = selectedIds + $(tableId).data('igGrid').dataSource.dataView()[selectedRecords[cnt].index].OracleUniqueIdentifier + '|';
+            }
+            
+            if(selectedIds.length > 0)selectedIds = selectedIds.slice(0,-1);
+            validateEntitlement(selectedIds);
+        }
+        
+        function startLoad(){
+            document.getElementById("loadId").style.display = "block";
+            document.getElementById("loadTextId").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("loadId").style.display = "none";
+            document.getElementById("loadTextId").style.display = "none";
+        }
+        
+        var selectedMultipleRds = false;
+        function filterAssetOrderEntitlement(){
+            var selectedRecords = $("#AllEntitlementTableGrid").igGrid('selectedRows');
+            
+            if(selectedRecords.length == 1){
+                selectedMultipleRds = false;
+                var selectedPOSId = $("#AllEntitlementTableGrid").igGrid("findRecordByKey", selectedRecords[0].element.data().id).AssetOracleID;
+                console.log(selectedPOSId);
+                $("#OrderTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: selectedPOSId, cond: "contains"}]);
+                $("#EndCustomerHistoryTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: selectedPOSId, cond: "equals"}]);
+                $("#EntitlementTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: selectedPOSId, cond: "equals"}]);
+                $("#iStoreNoteTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: selectedPOSId , cond: "equals"}]); 
+                
+                $(".orderStyle").unbind().click();
+                
+                $(".orderStyle").bind().click(function(){
+                    openURL("/" + $(this).attr("id"));
+                });
+                
+                $(".assetStyle").unbind().click();
+                
+                $(".assetStyle").bind().click(function(){
+                    openURL("/" + $(this).attr("id"));
+                });
+                
+                $(".entitlementStyle").unbind().click();
+                
+                $(".entitlementStyle").bind().click(function(){
+                    openURL("/" + $(this).attr("id"));
+                });
+                
+                copyText();
+            }else if(!selectedMultipleRds){
+                selectedMultipleRds = true;
+                $("#OrderTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: " " , cond : "equals"}]);
+                $("#EndCustomerHistoryTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: " " , cond : "equals"}]);
+                $("#EntitlementTableGrid").igGridFiltering('filter', [{ fieldName: "AssetOracleID", expr: " " , cond : "equals"}]); 
+                $("#iStoreNoteTableGrid").igGridFiltering('filter', [{ fieldName: "AccountId", expr: "{!accountId}" , cond : "equals"}]); 
+                copyText();
+            } 
+        }
+        
+        function openURL(url){
+            console.log('-----url-----' + url); 
+            if(sforce.console.isInConsole()){
+                sforce.console.openPrimaryTab(null, url, true);
+            }else{
+                window.open(url,'_blank');    
+            }
+        }
+        
+        window.onload = function(e){ 
+            startLoad();
+            if(sforce.console.isInConsole()){
+                sforce.console.getEnclosingTabId(closeSubtab);
+                sforce.console.setTabTitle('Account Dashboard');
+            }
+            resetLoadPanel1();
+        }
+        
+        
+        var currentTabId;
+        var closeSubtab = function closeSubtab(result) {
+            currentTabId = result.id;
+        };
+        
+        function tooltip(){
+            $(".ui-iggrid-header").hover(function(){
+                // Hover over code
+                $(this).attr('title',$(this).find('.ui-iggrid-headertext').html());
+            });
+            
+        }
+        
+        function copyText(){
+            $(".ui-iggrid-tablebody tr td").hover(function(){
+                $(this).attr('title','Click to Copy');
+            }); 
+            
+            $(".ui-iggrid-tablebody tr td").click(function(){
+                var el = document.createElement('textarea');
+                el.value = $('<textarea />').html($(this).find('label').html()).text();
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            });    
+        }
+        
+        function init(){
+            copyText();   
+        }
+        
+        function setTableHeaderWidth(){
+            $('#CustomerInfoTableGrid_headers').width($('#CustomerInfoTableGrid_displayContainer').width() - 16);   
+            $('#AllEntitlementTableGrid_headers').width($('#AllEntitlementTableGrid_displayContainer').width() - 16);   
+            $('#OrderTableGrid_headers').width($('#OrderTableGrid_displayContainer').width() - 16);   
+            $('#EndCustomerHistoryTableGrid_headers').width($('#EndCustomerHistoryTableGrid_displayContainer').width() - 16);   
+            $('#EntitlementTableGrid_headers').width($('#EntitlementTableGrid_displayContainer').width() - 16);   
+            $('#iStoreNoteTableGrid_headers').width($('#iStoreNoteTableGrid_displayContainer').width() - 16);   
+            $('#CaseTableGrid_headers').width($('#CaseTableGrid_displayContainer').width() - 16);   
+            $('#ActivityTableGrid_headers').width($('#ActivityTableGrid_displayContainer').width() - 16);   
+        }
+        </script>
+        <apex:actionFunction action="{!customvalidations}" name="validateEntitlement" oncomplete="renewSubscription();" reRender="refreshPanel" >
+            <apex:param name="EntitlementIdSet" value="" assignTo="{!EntitlementIdSet}"></apex:param>
+        </apex:actionFunction>
+        <apex:outputPanel id="refreshPanel">
+            <script>
+            function renewSubscription(){ 
+                var result = '{!Validationresult}';
+                console.log('-------result-------'+result);
+                if(result.indexOf('Success') != -1){
+                    console.log('--------selectedIds--------' + selectedIds);
+                    window.open("https://store.trimble.com/OA_HTML/tnvo_ibeSalesfoceIntermediatePage.jsp?salesforceordertype=RENEW_ORDER&posid=" + selectedIds, "_blank");
+                }else{
+                    alert(result);    
+                }
+            }
+            </script>
+        </apex:outputPanel>
+        <div id="loadId" class="loadingScreen"/>
+        <div id="loadTextId" class="loadingStyle" style="display:none;">
+            <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+        </div>
+        <apex:actionFunction name="showAllRecord" action="{!showAllRecord}"/>
+        <apex:actionFunction name="resetLoadPanel1" action="{!resetLoadPanel1}" oncomplete="resetLoadPanel2();" rerender="loadPanel1"/>
+        <apex:actionFunction name="resetLoadPanel2" action="{!resetLoadPanel2}" oncomplete="resetLoadPanel3();filterAssetOrderEntitlement();" rerender="loadPanel2"/>
+        <apex:actionFunction name="resetLoadPanel3" action="{!resetLoadPanel3}" oncomplete="selectedMultipleRds = false;filterAssetOrderEntitlement();tooltip();copyText();setTableHeaderWidth();endLoad();" rerender="loadPanel3"/>
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <body id="bodyId" class="slds-scope">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <span>
+                        <center>
+                            <button class="slds-button slds-button_outline-brand" onclick="getAllSelectedRecords();return false;">Renew Subscription</button>
+                            <button class="slds-button slds-button_outline-brand" onclick="window.open('https://store.trimble.com/OA_HTML/tnvo_ibeSalesfoceIntermediatePage.jsp?salesforceordertype=NEW_ORDER&fchpartyid={!accountFCHPartyId}','_blank');return false;">New Order</button>
+                            <button class="slds-button slds-button_outline-brand" onclick="showAllRecord();return false;">{!IF(showAllRecord , 'Show Last/Next 2 Weeks Entitlements' , 'Show All Entitlements')}</button>
+                            <button class="slds-button slds-button_outline-brand" onclick="if(sforce.console.isInConsole()){sforce.console.closeTab(currentTabId);}else{returnToAccount();}return false;">Back</button>
+                        </center>
+                    </span>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+                <div id="column1" class="slds-col slds-size_2-of-3">
+                    <span>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <span>
+                                    <center>
+                                        <table style="overflow:scroll" id="CustomerInfoTableGrid">
+                                        </table>
+                                    </center>
+                                    <script> 
+                                    
+                                    $(function () {
+                                        var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string" , "hidden" : true},
+                                                              { "headerText": "Currency", "key": "Currency", "dataType": "string" , "hidden" : true},
+                                                              { "headerText": "Customer Name", "key": "Name", "dataType": "string" ,"template": "<a id='${Id}' class='accountStyle' title='Name : ${Name}' target='_blank'><label>${Name}</label></a>" },
+                                                              { "headerText": "Type", "key": "Type", "dataType": "string", "template": "<label>${Type}</label>"},
+                                                              { "headerText": "Sub Type", "key": "SubType", "dataType": "string", "template": "<label>${SubType}</label>"},
+                                                              { "headerText": "Oracle Account Number", "key": "OAC", "dataType": "string", "template": "<label>${OAC}</label>"},
+                                                              { "headerText": "Available Credit Line", "key": "ACL", "dataType": "currency","format": "number",  "template": "<label>${Currency} ${ACL}</label>"},
+                                                              { "headerText": "Overdue Payment", "key": "OD", "dataType": "number", "format": "number", "template": "<label>${Currency} ${OD}</label>"}];
+                                        
+                                        $("#CustomerInfoTableGrid").igGrid({
+                                            width: ($( '#column1' ).width() ) + "px",
+                                            height: minHeight + "px",
+                                            autoGenerateColumns: true, 
+                                            rowVirtualization: true,
+                                            virtualizationMode: "continuous",
+                                            caption:"Customer Information",
+                                            dataSource: {!Headerdetail},
+                                            primaryKey: "Id",
+                                            columns : columnSettings,
+                                        });
+                                        
+                                        $(".accountStyle").click(function(){
+                                            openURL("/" + $(this).attr("id"));
+                                        });
+                                    });
+                                    </script>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <span>
+                                    <center>
+                                        <table style="overflow:scroll" id="AllEntitlementTableGrid">
+                                        </table>
+                                    </center>
+                                    <script> 
+                                    $(function () { 
+                                        var columnSettings;
+                                        if($( document ).width()  < 1700){
+                                             columnSettings = [{ "headerText": "OracleUniqueIdentifier", "key": "OracleUniqueIdentifier", "dataType": "string" , "hidden": true},
+                                                              { "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                              { "headerText": "AssetId", "key": "AssetId", "dataType": "string" , "hidden": true},
+                                                              { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string" , "hidden" : true},
+                                                              { "headerText": "POS Id/Serial#", "key": "POSID", "dataType": "string", "width" : "80px" ,"template": "<a id='${AssetId}' class='allEntitlementStyle' title='POS Id: ${POSID}' target='_blank'><label>${POSID}</label></a>"},
+                                                              { "headerText": "Entitlement", "key": "Service", "dataType": "string" , "width" : "140px","template": "<a id='${Id}' class='allEntitlementStyle' target='_blank'><label>${Service}</label></a>"},
+                                                              { "headerText": "Status", "key": "Status", "dataType": "string" , "width" : "60px" , "template": "<label>${Status}</label>"},
+                                                              { "headerText": "Start", "key": "StartDate", "dataType": "date" ,"format" : "dd-MMM-yyyy", "width" : "70px" , "template": "<label>${StartDate}</label>"},
+                                                              { "headerText": "Duration", "key": "Duration", "dataType": "string"  , "width" : "50px", "template": "<label>${Duration}</label>"},
+                                                              { "headerText": "Expire", "key": "ExpireDate", "dataType": "date" ,"format" : "dd-MMM-yyyy", "width" : "70px" , "template": "<label>${ExpireDate}</label>" },
+                                                              { "headerText": "Days Left", "key": "DaysLeft", "dataType": "string" , "width" : "50px" , "template": "<label>${DaysLeft}</label>"},
+                                                              { "headerText": "Hours Used", "key": "HoursUsed", "dataType": "string"  , "width" : "70px", "template": "<label>${HoursUsed}</label>"},
+                                                              { "headerText": "Pricing Region", "key": "PricingRegion", "dataType": "string"  , "template": "<label>${PricingRegion}</label>"},
+                                                              { "headerText": "Geofence Region", "key": "GeofenceRegion", "dataType": "string" , "template": "<label>${GeofenceRegion}</label>"}];
+                                        }else{
+                                            columnSettings = [{ "headerText": "OracleUniqueIdentifier", "key": "OracleUniqueIdentifier", "dataType": "string" , "hidden": true},
+                                                                  { "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                  { "headerText": "AssetId", "key": "AssetId", "dataType": "string" , "hidden": true},
+                                                                  { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string" , "hidden" : true},
+                                                                  { "headerText": "POS Id/Serial#", "key": "POSID", "dataType": "string" , "width" : "140px","template": "<a id='${AssetId}' class='allEntitlementStyle' title='POS Id: ${POSID}' target='_blank'><label>${POSID}</label></a>"},
+                                                                  { "headerText": "Entitlement", "key": "Service", "dataType": "string" , "width" : "180px","template": "<a id='${Id}' class='allEntitlementStyle' target='_blank'><label>${Service}</label></a>"},
+                                                                  { "headerText": "Status", "key": "Status", "dataType": "string"  , "template": "<label>${Status}</label>"},
+                                                                  { "headerText": "Start", "key": "StartDate", "dataType": "date" ,"format" : "dd-MMM-yyyy", "template": "<label>${StartDate}</label>"},
+                                                                  { "headerText": "Duration", "key": "Duration", "dataType": "string" , "template": "<label>${Duration}</label>"},
+                                                                  { "headerText": "Expire", "key": "ExpireDate", "dataType": "date" ,"format" : "dd-MMM-yyyy" , "template": "<label>${ExpireDate}</label>" },
+                                                                  { "headerText": "Days Left", "key": "DaysLeft", "dataType": "string"  , "template": "<label>${DaysLeft}</label>"},
+                                                                  { "headerText": "Hours Used", "key": "HoursUsed", "dataType": "string"  , "template": "<label>${HoursUsed}</label>"},
+                                                                  { "headerText": "Pricing Region", "key": "PricingRegion", "dataType": "string"  , "width" : "180px" , "template": "<label>${PricingRegion}</label>"},
+                                                                  { "headerText": "Geofence Region", "key": "GeofenceRegion", "dataType": "string" , "width" : "180px" , "template": "<label>${GeofenceRegion}</label>"}];
+                                        }
+                                        var height = 250;
+                                        if(($( document ).height() - 578) > 250){
+                                            height = $( document ).height() - 578;
+                                        }
+                                        $("#AllEntitlementTableGrid").igGrid({
+                                            width: ($( '#column1' ).width() ) + "px",
+                                            height: height + "px",
+                                            autoGenerateColumns: false,
+                                            rowVirtualization: true,
+                                            virtualizationMode: "continuous",
+                                            caption:"Device List",
+                                            dataSource: {!EntitlementListFilter},
+                                            primaryKey: "Id",
+                                            columns : columnSettings,
+                                            features: [
+                                                {
+                                                    name: "Selection",
+                                                    mode: "cell",
+                                                    multipleSelection: true,
+                                                    touchDragSelect: false, // this is true by default
+                                                    multipleCellSelectOnClick: false,
+                                                    rowSelectionChanged: function (evt, ui) {
+                                                        filterAssetOrderEntitlement();
+                                                    }
+                                                },
+                                                {
+                                                    name: "RowSelectors",
+                                                    enableCheckBoxes: true,
+                                                    enableRowNumbering: false,
+                                                    enableSelectAllForPaging: false // this option is true by default
+                                                },
+                                                {
+                                                    name: "Paging", 
+                                                    pageSizeList : [10,25,50,100,200,500],
+                                                    type: "local",
+                                                    pageSize: 50,
+                                                    pageSizeDropDownLocation : "inpager",
+                                                    pagerRendered: function (evt, ui) { 
+                                                        $(".allEntitlementStyle").unbind().click();
+                                                        
+                                                        $(".allEntitlementStyle").bind().click(function(){
+                                                            openURL("/" + $(this).attr("id"));
+                                                        }); 
+                                                    },
+                                                    pageSizeChanged: function (evt, ui) { 
+                                                        $(".allEntitlementStyle").unbind().click();
+                                                        
+                                                        $(".allEntitlementStyle").bind().click(function(){
+                                                            openURL("/" + $(this).attr("id"));
+                                                        }); 
+                                                    }
+                                                },
+                                                {
+                                                    name: "Filtering",
+                                                    columnSettings: columnSettings,
+                                                    type: "local",
+                                                    mode: "advanced",
+                                                    filterDialogContainment: "window",
+                                                    dataFiltered: function (evt, ui) {   
+                                                        $("#AllEntitlementTableGrid").igGridSelection('clearSelection');
+                                                        filterAssetOrderEntitlement();
+                                                        
+                                                        $(".allEntitlementStyle").unbind().click();
+                                                        $(".allEntitlementStyle").bind().click(function(){
+                                                            openURL("/" + $(this).attr("id"));
+                                                        }); 
+                                                    }
+                                                },
+                                                {
+                                                    name: "Sorting",
+                                                    type: "local",
+                                                    columnSorted: function (evt, ui) {
+                                                        $(".allEntitlementStyle").unbind().click();
+                                                        
+                                                        $(".allEntitlementStyle").bind().click(function(){
+                                                            openURL("/" + $(this).attr("id"));
+                                                        }); 
+                                                    }
+                                                },
+                                                {
+                                                    name : 'Resizing',
+                                                },
+                                                {
+                                                    name: "Tooltips",
+                                                    visibility: "always",
+                                                    showDelay: 1000,
+                                                    hideDelay: 500,
+                                                    style: "popover"    
+                                                } 
+                                            ]
+                                        }); 
+                                    });
+                                    </script>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-gutters">
+                            <apex:outputPanel id="loadPanel1">
+                                <apex:outputPanel rendered="{!loadPanel1}">
+                                    <div class="slds-col">
+                                        <span>
+                                            <center>
+                                                <table style="overflow:scroll" id="OrderTableGrid">
+                                                </table>
+                                            </center>
+                                            <script> 
+                                            $(function () {
+                                                var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string", "hidden" : true},
+                                                                      { "headerText": "POS ID", "key": "POSID", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "Oracle Order Number", "key": "oracleOrderNumber", "dataType": "string" ,"template": "<a id='${Id}' class='orderStyle' title='Oracle Order Number : ${oracleOrderNumber}'><label>${oracleOrderNumber}</label></a>"},
+                                                                      { "headerText": "Order Type", "key": "OrderType", "dataType": "string" , "template": "<label>${OrderType}</label>"},
+                                                                      { "headerText": "Created By", "key": "CreatedBy", "dataType": "string" , "template": "<label>${CreatedBy}</label>"},
+                                                                      { "headerText": "Ship To", "key": "EndCustomer", "dataType": "string" , "template": "<label>${EndCustomer}</label>"},
+                                                                      { "headerText": "Bill To", "key": "InvoiceTo", "dataType": "string" , "template": "<label>${InvoiceTo}</label>"},
+                                                                      { "headerText": "PO Number", "key": "PONumber", "dataType": "string" , "template": "<label>${PONumber}</label>"},
+                                                                      { "headerText": "Status", "key": "Status", "dataType": "string" , "template": "<label>${Status}</label>"}, 
+                                                                      { "headerText": "Order Date", "key": "OrderDate", "dataType": "dateTime" ,"format" : "dd-MMM-yyyy HH:mm:ss", "template": "<label>${OrderDate}</label>"}];
+                                                
+                                                $("#OrderTableGrid").igGrid({
+                                                    width: ($( '#column1' ).width() ) + "px",
+                                                    height: 130 + "px",
+                                                    autoGenerateColumns: false,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",
+                                                    caption:"Past Orders for Device",
+                                                    dataSource: {!OrderList},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features: [
+                                                        {
+                                                            name: "Paging", 
+                                                            pageSizeList : [10,25,50,100,200,500],
+                                                            type: "local",
+                                                            pageSize: 50,
+                                                            pageSizeDropDownLocation : "inpager",
+                                                            pagerRendered: function (evt, ui) { 
+                                                                $(".orderStyle").unbind().click();
+                                                                
+                                                                $(".orderStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            },
+                                                            pageSizeChanged: function (evt, ui) { 
+                                                                $(".orderStyle").unbind().click();
+                                                                
+                                                                $(".orderStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".orderStyle").unbind().click();
+                                                                
+                                                                $(".orderStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".orderStyle").unbind().click();
+                                                                
+                                                                $(".orderStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        },
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500,
+                                                            style: "popover"    
+                                                        } 
+                                                    ]
+                                                });
+                                                
+                                            });
+                                            </script>
+                                        </span>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </div>
+                        <apex:outputPanel id="loadPanel2">
+                            <apex:outputPanel rendered="{!loadPanel2}">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <span>
+                                            <center>
+                                                <table style="overflow:scroll" id="EndCustomerHistoryTableGrid">
+                                                </table>
+                                            </center>
+                                            <script> 
+                                            var selectedAssetId = ' ';
+                                            $(function () {
+                                                var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string" , "hidden" : true},
+                                                                      { "headerText": "POS Id/Serial#", "key": "POSID", "dataType": "string" , "template": "<a id='${Id}' class='assetStyle' title='POS ID : ${POSID}' target='_blank'><label>${POSID}</label></a>"},
+                                                                      { "headerText": "POS Type", "key": "POSType", "dataType": "string", "template": "<label>${POSType}</label>"},
+                                                                      { "headerText": "Manufacturer", "key": "Manufacturer", "dataType": "string" , "template": "<label>${Manufacturer}</label>"},
+                                                                      { "headerText": "Model", "key": "Model", "dataType": "string", "template": "<label>${Model}</label>" },
+                                                                      { "headerText": "Ship To", "key": "EndCustomer", "dataType": "string", "template": "<label>${EndCustomer}</label>" },
+                                                                      { "headerText": "Bill To", "key": "InvoiceTo", "dataType": "string", "template": "<label>${InvoiceTo}</label>" },
+                                                                      { "headerText": "Transaction Date", "key": "TransactionDate", "dataType": "date" ,"format" : "dd-MMM-yyyy", "template": "<label>${TransactionDate}</label>"},
+                                                                      { "headerText": "Auto Renewal", "key": "AutoRenewal", "dataType": "bool","format":"checkbox"}];
+                                                $("#EndCustomerHistoryTableGrid").igGrid({
+                                                    width: ($( '#column1' ).width() ) + "px",
+                                                    height: 130 + "px",
+                                                    autoGenerateColumns: false,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",
+                                                    caption:"Current Device Ownership",
+                                                    dataSource: {!Assets},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features: [
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".assetStyle").unbind().click();
+                                                                
+                                                                $(".assetStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".assetStyle").unbind().click();
+                                                                
+                                                                $(".assetStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        },
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500 ,
+                                                            style: "popover"   
+                                                        } 
+                                                    ]
+                                                });
+                                            });
+                                            </script>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <span>
+                                            <center>
+                                                <table style="overflow:scroll" id="EntitlementTableGrid">
+                                                </table>
+                                            </center>
+                                            <script> 
+                                            $(function () {
+                                                var columnSettings;
+                                                if($( document ).width()  < 1700){
+                                                    columnSettings = [{ "headerText": "OracleUniqueIdentifier", "key": "OracleUniqueIdentifier", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "AssetId", "key": "AssetId", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string" , "hidden" : true},
+                                                                          { "headerText": "POS Id/Serial#", "key": "POSID", "dataType": "string" , "width" : "80px","template": "<a id='${AssetId}' class='entitlementStyle' title='POS Id: ${POSID}' target='_blank'><label>${POSID}</label></a>"},
+                                                                          { "headerText": "Entitlement", "key": "Service", "dataType": "string" , "width" : "140px","template": "<a id='${Id}' class='entitlementStyle' target='_blank'><label>${Service}</label></a>"},
+                                                                          { "headerText": "Status", "key": "Status", "dataType": "string" , "width" : "60px", "template": "<label>${Status}</label>"},
+                                                                          { "headerText": "Start", "key": "StartDate", "dataType": "date","format" : "dd-MMM-yyyy", "width" : "70px", "template": "<label>${StartDate}</label>"},
+                                                                          { "headerText": "Duration", "key": "Duration", "dataType": "string" , "width" : "50px", "template": "<label>${Duration}</label>"},
+                                                                          { "headerText": "Expire", "key": "ExpireDate", "dataType": "date","format" : "dd-MMM-yyyy", "width" : "70px", "template": "<label>${ExpireDate}</label>" },
+                                                                          { "headerText": "Days Left", "key": "DaysLeft", "dataType": "string" , "width" : "50px", "template": "<label>${DaysLeft}</label>"},
+                                                                          { "headerText": "Hours Used", "key": "HoursUsed", "dataType": "string" , "width" : "70px", "template": "<label>${HoursUsed}</label>"},
+                                                                          { "headerText": "Pricing Region", "key": "PricingRegion", "dataType": "string" , "template": "<label>${PricingRegion}</label>"},
+                                                                          { "headerText": "Geofence Region", "key": "GeofenceRegion", "dataType": "string" , "template": "<label>${GeofenceRegion}</label>"},
+                                                                          { "headerText": "Renewal Order#", "key": "RenewalOrderNumber", "dataType": "string" , "template": "<label>${RenewalOrderNumber}</label>"}];
+                                                }else{
+                                                    columnSettings = [{ "headerText": "OracleUniqueIdentifier", "key": "OracleUniqueIdentifier", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "AssetId", "key": "AssetId", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                          { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string" , "hidden" : true},
+                                                                          { "headerText": "POS Id/Serial#", "key": "POSID", "dataType": "string" , "width" : "140px","template": "<a id='${AssetId}' class='entitlementStyle' title='POS Id: ${POSID}' target='_blank'><label>${POSID}</label></a>"},
+                                                                          { "headerText": "Entitlement", "key": "Service", "dataType": "string" , "width" : "140px","template": "<a id='${Id}' class='entitlementStyle' target='_blank'><label>${Service}</label></a>"},
+                                                                          { "headerText": "Status", "key": "Status", "dataType": "string", "template": "<label>${Status}</label>"},
+                                                                          { "headerText": "Start", "key": "StartDate", "dataType": "date","format" : "dd-MMM-yyyy", "template": "<label>${StartDate}</label>"},
+                                                                          { "headerText": "Duration", "key": "Duration", "dataType": "string" , "template": "<label>${Duration}</label>"},
+                                                                          { "headerText": "Expire", "key": "ExpireDate", "dataType": "date","format" : "dd-MMM-yyyy", "template": "<label>${ExpireDate}</label>" },
+                                                                          { "headerText": "Days Left", "key": "DaysLeft", "dataType": "string" , "template": "<label>${DaysLeft}</label>"},
+                                                                          { "headerText": "Hours Used", "key": "HoursUsed", "dataType": "string" , "template": "<label>${HoursUsed}</label>"},
+                                                                          { "headerText": "Pricing Region", "key": "PricingRegion", "dataType": "string" , "width" : "140px", "template": "<label>${PricingRegion}</label>"},
+                                                                          { "headerText": "Geofence Region", "key": "GeofenceRegion", "dataType": "string" , "width" : "140px", "template": "<label>${GeofenceRegion}</label>"},
+                                                                          { "headerText": "Renewal Order#", "key": "RenewalOrderNumber", "dataType": "string" , "template": "<label>${RenewalOrderNumber}</label>"}];    
+                                                }
+                                                $("#EntitlementTableGrid").igGrid({
+                                                    width: ($( '#column1' ).width() ) + "px",
+                                                    height: 200 + "px",
+                                                    autoGenerateColumns: false,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",
+                                                    caption:"Subscription History on Device",
+                                                    dataSource: {!entitlementList},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features: [
+                                                        {
+                                                            name: "Paging", 
+                                                            pageSizeList : [10,25,50,100,200,500],
+                                                            type: "local",
+                                                            pageSize: 50,
+                                                            pageSizeDropDownLocation : "inpager",
+                                                            pagerRendered: function (evt, ui) { 
+                                                                $(".entitlementStyle").unbind().click();
+                                                                
+                                                                $(".entitlementStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            },
+                                                            pageSizeChanged: function (evt, ui) { 
+                                                                $(".entitlementStyle").unbind().click();
+                                                                
+                                                                $(".entitlementStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".entitlementStyle").unbind().click();
+                                                                
+                                                                $(".entitlementStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".entitlementStyle").unbind().click();
+                                                                
+                                                                $(".entitlementStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        },
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500 ,
+                                                            style: "popover"   
+                                                        } 
+                                                    ]
+                                                });
+                                                
+                                            });
+                                            </script>
+                                        </span>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </span>
+                </div>
+                <div id="column2" class="slds-col slds-size_1-of-3">
+                    <span>
+                        <apex:outputPanel id="loadPanel3">
+                            <apex:outputPanel rendered="{!loadPanel3}">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <span>
+                                            <table style="overflow:scroll" id="iStoreNoteTableGrid">
+                                            </table>
+                                            <script> 
+                                            
+                                            $(function () {
+                                                var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string"  , "hidden": true},
+                                                                      { "headerText": "AssetOracleID", "key": "AssetOracleID", "dataType": "string"  , "hidden": true},
+                                                                      { "headerText": "AccountId", "key": "AccountId", "dataType": "string"  , "hidden": true},
+                                                                      { "headerText": "Active", "key": "Active", "dataType": "bool", "width" : "60px","format":"checkbox", "hidden": true },
+                                                                      { "headerText": "Notes", "key": "Notes", "dataType": "string" ,"template": "<a id='${Id}' class='notesStyle' title='Name : ${Notes}' target='_blank'><label>${Notes}</label></a>"},
+                                                                     { "headerText": "Created Date", "key": "CreateDate", "dataType": "dateTime", "width" : "90px" ,"format" : "dd-MMM-yyyy HH:mm:ss", "template": "<label>${CreateDate}</label>"}
+                                                                     ];
+                                                var documentWidth = $( document ).width();
+                                                $("#iStoreNoteTableGrid").igGrid({
+                                                    width: ($( '#column2' ).width()) + "px",
+                                                    height: (($(  '#bodyId'  ).height() / 3) - 30) + "px",
+                                                    autoGenerateColumns: true,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",  
+                                                    caption:"iStore Notes for Account / POS ID",
+                                                    dataSource: {!iStoreNotes},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features:[
+                                                        {
+                                                            name: "Paging", 
+                                                            pageSizeList : [10,25,50,100,200,500],
+                                                            type: "local",
+                                                            pageSize: 50,
+                                                            pageSizeDropDownLocation : "inpager",
+                                                            pagerRendered: function (evt, ui) { 
+                                                                $(".notesStyle").unbind().click();
+                                                                
+                                                                $(".notesStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            },
+                                                            pageSizeChanged: function (evt, ui) { 
+                                                                $(".notesStyle").unbind().click();
+                                                                
+                                                                $(".notesStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".notesStyle").unbind().click();
+                                                                
+                                                                $(".notesStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        } ,
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500,
+                                                            style: "popover"    
+                                                        },
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".notesStyle").unbind().click();
+                                                                
+                                                                $(".notesStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },   
+                                                    ]
+                                                });
+                                            });
+                                            </script>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <span>
+                                            
+                                            <table style="overflow:scroll" id="CaseTableGrid">
+                                            </table>
+                                            <script> 
+                                            $(function () {
+                                                var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "Style", "key": "Style", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "Case Number", "key": "CaseNumber", "dataType": "string" ,"template": "<a Id='${Id}' class='caseStyle' style='${Style}' title='Case Number : ${CaseNumber}' target='_blank'><label>${CaseNumber}</label></a>"},
+                                                                      { "headerText": "Type", "key": "Type", "dataType": "string","template": "<label style='${Style}'>${Type}</label>"}, 
+                                                                      { "headerText": "Priority", "key": "Priority", "dataType": "string","template": "<label style='${Style}'>${Priority}</label>"},
+                                                                      { "headerText": "Status", "key": "Status", "dataType": "string","template": "<label style='${Style}'>${Status}</label>"},
+                                                                      { "headerText": "Owner Last Name", "key": "OwnerLastName", "dataType": "string","template": "<label style='${Style}'>${OwnerLastName}</label>"}];                            
+                                                $("#CaseTableGrid").igGrid({
+                                                    width: ($( '#column2' ).width()) + "px",
+                                                    height: ($(  '#bodyId'  ).height() / 3) + "px",
+                                                    autoGenerateColumns: false,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",
+                                                    caption:"Cases for Account",
+                                                    dataSource: {!CaseList},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features: [
+                                                        {
+                                                            name: "Paging", 
+                                                            pageSizeList : [10,25,50,100,200,500],
+                                                            type: "local",
+                                                            pageSize: 50,
+                                                            pageSizeDropDownLocation : "inpager",
+                                                            pagerRendered: function (evt, ui) { 
+                                                                $(".caseStyle").unbind().click();
+                                                                
+                                                                $(".caseStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            },
+                                                            pageSizeChanged: function (evt, ui) { 
+                                                                $(".caseStyle").unbind().click();
+                                                                
+                                                                $(".caseStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".caseStyle").unbind().click();
+                                                                
+                                                                $(".caseStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".caseStyle").unbind().click();
+                                                                
+                                                                $(".caseStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        },
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500 ,
+                                                            style: "popover"   
+                                                        }
+                                                    ]
+                                                });
+                                            });
+                                            
+                                            </script>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <span>
+                                            
+                                            <table style="overflow:scroll" id="ActivityTableGrid">
+                                            </table>
+                                            <script> 
+                                            $(function () {
+                                                var columnSettings = [{ "headerText": "Id", "key": "Id", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "Style", "key": "Style", "dataType": "string" , "hidden": true},
+                                                                      { "headerText": "Subject", "key": "Name", "dataType": "string","template": "<a id='${Id}' class='activityStyle' style='${Style}' title='Name : ${Name}' target='_blank'><label>${Name}</label></a>"},
+                                                                      {"headerText": "Due Date", "key": "ActivityDate", "dataType": "date" ,"template": "<label style='${Style}'>${ActivityDate}</label>"},
+                                                                      { "headerText": "Status", "key": "Status", "dataType": "string" ,"template": "<label style='${Style}'>${Status}</label>"},
+                                                                      { "headerText": "Type", "key": "Type", "dataType": "string","template": "<label style='${Style}'>${Type}</label>"}];
+                                                var documentWidth = $( document ).width();
+                                                $("#ActivityTableGrid").igGrid({
+                                                    width: ($( '#column2' ).width()) + "px",
+                                                    height: (($( '#bodyId' ).height() / 3)) + "px",
+                                                    autoGenerateColumns: false,
+                                                    rowVirtualization: true,
+                                                    virtualizationMode: "continuous",
+                                                    caption:"Activities for Account",
+                                                    dataSource: {!ActivityList},
+                                                    primaryKey: "Id",
+                                                    columns : columnSettings,
+                                                    features: [
+                                                        {
+                                                            name: "Paging", 
+                                                            pageSizeList : [10,25,50,100,200,500],
+                                                            type: "local",
+                                                            pageSize: 50,
+                                                            pageSizeDropDownLocation : "inpager",
+                                                            pagerRendered: function (evt, ui) { 
+                                                                $(".activityStyle").unbind().click();
+                                                                
+                                                                $(".activityStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            },
+                                                            pageSizeChanged: function (evt, ui) { 
+                                                                $(".activityStyle").unbind().click();
+                                                                
+                                                                $(".activityStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Filtering",
+                                                            columnSettings: columnSettings,
+                                                            type: "local",
+                                                            mode: "advanced",
+                                                            filterDialogContainment: "window",
+                                                            dataFiltered: function (evt, ui) {
+                                                                $(".activityStyle").unbind().click();
+                                                                
+                                                                $(".activityStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name: "Sorting",
+                                                            type: "local",
+                                                            columnSorted: function (evt, ui) {
+                                                                $(".activityStyle").unbind().click();
+                                                                
+                                                                $(".activityStyle").bind().click(function(){
+                                                                    openURL("/" + $(this).attr("id"));
+                                                                });
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'Resizing',
+                                                        },
+                                                        {
+                                                            name: "Tooltips",
+                                                            visibility: "always",
+                                                            showDelay: 1000,
+                                                            hideDelay: 500,
+                                                            style: "popover"    
+                                                        }
+                                                    ]
+                                                });
+                                                
+                                            });
+                                            </script>
+                                        </span>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </span>
+                </div>
+            </div>
+        </body>
+        <apex:actionFunction name="returnToAccount" action="{!returnToAccount}"/>
+        <apex:actionFunction name="newOrder" action="{!newOrder}"/>
+    </apex:form>
+</apex:page>

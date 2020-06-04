@@ -1,0 +1,35 @@
+<apex:page controller="AssetsWithoutEntitlements" contentType="application/vnd.ms-excel" readOnly="true">
+    <apex:pageBlock >
+        <apex:pageBlockSection >
+            <apex:pageBlockTable value="{!assetLst}" var="s">
+            
+                <apex:column headerValue="Asset Id" value="{!s.Id}"/>            
+                <apex:column headerValue="Asset: Product Name" value="{!s.Product2.Name}"/>            
+                <apex:column headerValue="Asset: Asset Name" value="{!s.Name}"/>            
+                <apex:column headerValue="Asset: Product Code" value="{!s.Product2.ProductCode}"/>            
+                <apex:column headerValue="Asset: Product Type" value="{!s.Product_Type__c}"/>            
+                <apex:column headerValue="Asset: Serial Number" value="{!s.SerialNumber}"/>            
+                <apex:column headerValue="Asset: Quantity" value="{!s.Quantity}"/>            
+                <apex:column headerValue="Asset: Status" value="{!s.Status}"/>            
+                <apex:column headerValue="Asset: Last Modified By: Full Name" value="{!s.LastModifiedBy.Name}"/>            
+                <apex:column headerValue="Asset: Last Modified Date" value="{!s.LastModifiedDate}"/>            
+                <apex:column headerValue="Asset: Created By: Full Name" value="{!s.CreatedBy.Name}"/>            
+                <apex:column headerValue="Asset: Created Date" value="{!s.CreatedDate}"/>            
+                <apex:column headerValue="Account Owner: Full Name" value="{!s.Account.Owner.Name}"/>                     
+                <apex:column headerValue="Account Owner: User Division" value="{!s.Account.Owner.Division__c}"/>            
+                <apex:column headerValue="Account Name" value="{!s.Account.Name}"/>            
+                <apex:column headerValue="Account: Legacy System ID - Pivotal" value="{!s.Account.Legacy_System_ID_GCCM__c}"/>            
+                <apex:column headerValue="Account: Legacy System ID – MSCRM (GUID)" value="{!s.Account.Legacy_System_ID_MSCRM__c}"/>            
+                <apex:column headerValue="Account: Enterprise Master ID" value="{!s.Account.Enterprise_Master_ID_del__c}"/>            
+                <apex:column headerValue="Account ID" value="{!s.AccountId}"/>            
+                <apex:column headerValue="Account: Billing Street" value="{!s.Account.BillingStreet}"/>            
+                <apex:column headerValue="Account: Billing City" value="{!s.Account.BillingCity}"/>            
+                <apex:column headerValue="Account: Billing State/Province" value="{!s.Account.BillingState}"/>
+                <apex:column headerValue="Account: Billing Zip/Postal Code" value="{!s.Account.BillingPostalCode}"/>
+                <apex:column headerValue="Account: Billing Country" value="{!s.Account.BillingCountry}"/>
+                                        
+            </apex:pageBlockTable>
+        
+        </apex:pageBlockSection>
+    </apex:pageBlock>  
+</apex:page>

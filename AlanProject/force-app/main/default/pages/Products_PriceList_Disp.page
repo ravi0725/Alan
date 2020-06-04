@@ -1,0 +1,308 @@
+<apex:page id="pgId" controller="Products_PriceList_Disp_Controller" contentType="{!loadType}" readOnly="true"  renderAs="{!displayType}" showHeader="false" sidebar="false">
+
+    <head>
+        <style>
+            .borderClass{
+                border-width:1px;
+                border-style:solid;
+            }
+            
+            #tbId tr td{
+                padding:6px;
+            }
+            
+            #mainTableId tr td{
+                padding:6px;
+            }
+            
+            .headerRowId{
+                background-color:#3EAEDC; 
+                font-weight:bold;
+                color:white;
+            }
+            
+            .headerRowId td{
+                color:white;
+            }
+            
+            .loadingScreen{
+                z-index:199;
+                width:100%;
+                height:97%;
+                background-color:black;
+                position:absolute;
+                opacity:0.4;
+                filter:alpha(40);
+                display:none;
+            }
+            
+            .loadingStyle{
+                z-index:999;
+                width:200px;
+                height:50px;
+                background-color:#3EAEDC;
+                color:white;
+                font-size:24px;
+                text-align:center;
+                border-radius:6px;
+                position:absolute;
+                left:40%;
+                top:35%;
+            }
+            
+            #prdFamilyDivId{
+                z-index:300;
+                width:800px;
+                height:250px;
+                background-color:white;
+                text-align:left;
+                border-radius:6px;
+                position:absolute;
+                left:25%;
+                top:30%;
+            }
+            
+        </style>
+    </head>
+    <apex:form id="formId">  
+        <div id="backGroundDivId" class="loadingScreen"/>
+        <apex:stylesheet value="{!$Resource.PriceListItemReportStyle}"/>      
+        <script type="text/javascript">
+            function showLink(ele){
+                ele.style.textDecoration = "underline";
+            }
+            
+            function hideLink(ele){
+                ele.style.textDecoration = "none";
+            }
+        </script>
+        <script>
+            function startLoad(){
+                document.getElementById("loadId").style.display = "block";
+                document.getElementById("loadTextId").style.display = "block";
+            }
+            
+            function endLoad(){
+                document.getElementById("loadId").style.display = "none";
+                document.getElementById("loadTextId").style.display = "none";
+            }
+        </script>
+    <apex:pageBlock id="pbId">
+        <apex:includeScript value="{!$Resource.JQuery}"/>
+        <apex:actionRegion rendered="{!isVFPage}">
+        <div id="loadId" class="loadingScreen"/>
+        <div id="prdFamilyDivId" style="display:none">
+            <div style="float:right;font-size:16px">
+            <span style="cursor:pointer" onclick="$('#backGroundDivId').hide();$('#prdFamilyDivId').hide();">
+                [x]
+            </span>
+            &nbsp;</div>
+            <br/>
+            <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product Family</b>
+            <center>
+                <c:MultiPicklistComponent leftLabel="Available Accounts"
+                    leftOptions="{!availableFamily}"
+                    rightLabel="Selected Accounts"
+                    rightOptions="{!selectedFamily}"
+                    totalselected="{!totalSelectedRecord}"
+                    totalAvail="{!totalAvailRecord}"
+                    size="10"
+                    width="350px"/>
+                <apex:commandButton action="{!toggleEvents}" value="Apply Filter" oncomplete="$('#backGroundDivId').hide();$('#prdFamilyDivId').hide();" reRender="pbId" status="statusId"/>
+            </center>
+       </div>
+        <div id="loadTextId" class="loadingStyle" style="display:none;">
+            Loading . . . 
+            <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+        </div>
+        
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        
+        </apex:actionRegion>
+        <apex:pageBlockSection rendered="{!isVFPage}" title="Product Details" columns="1" collapsible="false">
+            <apex:pageMessages id="errorMsgId"></apex:pageMessages>
+            <apex:outputPanel id="tempId">
+                <table width="100%">
+                <tr>
+                    <td width="8%">
+                        <b>Select Price List : </b>
+                    </td>
+                    <td width="10%">
+                        <apex:selectList id="view" styleclass="std" size="1" value="{!sSelectView}" >
+                            <apex:actionSupport event="onchange" action="{!filterProductFamily}" reRender="pbId" status="statusId"/>
+                            <apex:selectOptions value="{!SelectViewList}"/>
+                         </apex:selectList>
+                     </td>
+                     <td width="15%" style="vertical-align:middle">
+                        <!--<apex:commandButton value="Search" action="{!filterProductFamily}" reRender="pbId" status="statusId"/>-->
+                        <apex:commandButton id="PDF" reRender="sectionId" onClick="window.open('/apex/Products_PriceList_Disp?displayType=PDF&PriceListName={!sSelectView}&prdFamilyList={!prdFamilyList}','_blank');" Value="Generate PDF"/>
+                        <apex:commandButton id="Excel" reRender="sectionId" onClick="window.open('/apex/Products_PriceList_Disp?displayType=Excel&PriceListName={!sSelectView}&prdFamilyList={!prdFamilyList}','_blank');" Value="Generate Excel"/>                        
+                    </td>
+                    <td width="60%" style="text-align:right;vertical-align:middle">
+                        <a href="/home/home.jsp" target="_self"><b>Home</b></a>
+                    </td>
+                </tr>
+                </table>
+             </apex:outputPanel>
+        </apex:pageBlockSection>
+        <apex:outputPanel id="paginationId" rendered="{!isVFPage}">
+            <table border="0" width="100%" id="tbId" style="font-size:{!IF(isVFPage, '','12px')};" cellpadding="0" cellspacing="0">
+               <tr>
+                   <td width="80%">
+                       <apex:outputPanel rendered="{!sSelectView != null && sSelectView != ''}">
+                           <a href="#" onclick="$('#prdFamilyDivId').show();$('#backGroundDivId').show();">Add Filter>></a>  :
+                           <br/> {!prdFamilyList}
+                        </apex:outputPanel>
+                   </td>
+                   <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                       <div style="display:{!IF(setCon.ResultSize > 0, 'block', 'none')}">
+                           <div align="right" style="display:{!IF(isVFPage,'block', 'none')}">
+                                
+                                <apex:outputText rendered="{!(setCon.pageNumber * setCon.pageSize) < setCon.ResultSize}" value="{!setCon.pageNumber * setCon.pageSize} of {!setCon.ResultSize}"></apex:outputText>
+                                <apex:outputText rendered="{!(setCon.pageNumber * setCon.pageSize) >= setCon.ResultSize}" value="{!setCon.ResultSize} of {!setCon.ResultSize}"></apex:outputText>
+                                &nbsp;
+                                <apex:commandLink rendered="{!setCon.hasPrevious}" value="<<  " action="{!setCon.first}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="updateTable();endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="<<  " rendered="{!!setCon.hasPrevious}" style="color:#747E96;"/>
+                                <apex:commandLink rendered="{!setCon.hasPrevious}" value="Previous  " action="{!setCon.previous}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="updateTable();endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="Previous  " rendered="{!!setCon.hasPrevious}" style="color:#747E96;"/>
+                                <apex:outputText value="|"/>
+                                <apex:commandLink rendered="{!setCon.hasNext}" value="  Next" action="{!setCon.next}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="updateTable();endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="  Next" rendered="{!!setCon.hasNext}" style="color:#747E96;"/>
+                                <apex:commandLink rendered="{!setCon.hasNext}" value="  >>" action="{!setCon.last}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="updateTable();endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>   
+                                <apex:outputText value="  >>" rendered="{!!setCon.hasNext}" style="color:#747E96;"/>
+                                
+                            </div>  
+                        </div>
+                   </td>
+               </tr>
+           </table>
+        </apex:outputPanel>
+        <apex:outputPanel id="resultsId" rendered="{!setCon.ResultSize > 0 || !isVFPage}">
+        <div id="dataTableId" style=" position: relative; height:490px;overflow:auto">
+            <script>
+                $(document).ready(function(){
+                    var scrolldiv = $("#dataTableId").offset();
+                    var fixedDiv = $("#fixHeaderId").offset();
+                    
+                    var topPosition = $("#mainTableId").offset();
+                    $("#dataTableId").scroll(function(){
+                        var p = $("#dataTableId");
+                        $( "#fixHeaderId" ).offset({ top: topPosition.top, left: topPosition.left - p.scrollLeft()});
+                        
+                    });
+                    
+                    $("#nameId").width($("#name2Id").width());
+                    $("#typeId").width($("#type2Id").width());
+                    $("#priceId").width($("#price2Id").width());
+                    $("#familyId").width($("#family2Id").width());
+                    $("#codeId").width($("#code2Id").width());
+                    $("#versionId").width($("#version2Id").width());
+                });
+                
+                function updateTable(){
+                    var scrolldiv = $("#dataTableId").offset();
+                    var fixedDiv = $("#fixHeaderId").offset();
+                    
+                    var topPosition = $("#mainTableId").offset();
+                    $("#dataTableId").scroll(function(){
+                        var p = $("#dataTableId");
+                        $( "#fixHeaderId" ).offset({ top: topPosition.top, left: topPosition.left - p.scrollLeft()});
+                        
+                    });
+                    $("#nameId").width($("#name2Id").width());
+                    $("#typeId").width($("#type2Id").width());
+                    $("#priceId").width($("#price2Id").width());
+                    $("#familyId").width($("#family2Id").width());
+                    $("#codeId").width($("#code2Id").width());
+                    $("#versionId").width($("#version2Id").width());
+                }
+                
+                
+                
+            </script>
+                <apex:actionRegion rendered="{!isVFPage}">
+                <div id="fixHeaderId" style="position: absolute; z-index:99;">
+                    <table id="tbId" border="1" cellspacing="0" cellpadding="0" width="100%" style="font-size:{!IF(isVFPage, '','12px')}; ">           
+                       <tr class="headerRowId" style="background-color:#3EAEDC;"> <!-- style="background-color:#3EAEDC; font-weight:bold;">  -->
+                           <td  id="codeId" style="text-align:center"><b>Product Code</b> </td>
+                           <td  id="nameId" style="text-align:center"><b>Product Name</b>  </td>
+                           <td  id="typeId" style="text-align:center"><b>Charge Type</b> </td>
+                           <td id="versionId" style="text-align:center"><b>Version</b> </td>
+                           <td  id="priceId" style="text-align:center"><b>List Price</b> </td>
+                           <td  id="familyId" style="text-align:center"><b>Product Family</b> </td>
+                       </tr>
+                    </table>
+                </div>
+                </apex:actionRegion>
+                <table border="1" cellspacing="0" cellpadding="0" width="100%" id="mainTableId" style="font-size:{!IF(isVFPage, '','12px')}; background-color:{!IF(isVFPage, 'black', '')};">           
+                   <tr class="headerRowId" style="background-color:#3EAEDC;"> <!-- style="background-color:#3EAEDC; font-weight:bold;">  -->
+                       <td id="code2Id" style="text-align:center"><b>Product Code</b> </td>
+                       <td id="name2Id" style="text-align:center"><b>Product Name</b>  </td>
+                       <td id="type2Id" style="text-align:center"><b>Charge Type</b> </td>
+                       <td id="version2Id" style="text-align:center"><b>Version</b> </td>
+                       <td id="price2Id" style="text-align:center"><b>List Price</b> </td>
+                       <td id="family2Id" style="text-align:center"><b>Product Family</b> </td>
+                   </tr>
+                   <apex:repeat value="{!WrList}" var="wrapperObj">
+                       <tr style="background-color:#C1F2FB;"><!--FEF3C9-->
+                           <td class="resultparentcolFirst">&nbsp;<a href="/{!wrapperObj.priceListItemObj.Id}" target="_blank" style="text-decoration:{!IF(isVFPage,'', 'none')}">{!wrapperObj.priceListItemObj.Apttus_Config2__ProductCode__c}</a></td>
+                           <td class="resultparentcolMiddle">&nbsp;{!wrapperObj.priceListItemObj.Apttus_Config2__ProductId__r.Name}</td>
+                           <td class="resultparentcolMiddle">&nbsp;{!wrapperObj.priceListItemObj.Apttus_Config2__ChargeType__c}</td>
+                           <td class="resultparentcolMiddle" style="text-align:Center">&nbsp;1</td>
+                           <td class="resultparentcolMiddle" style="text-align:right">&nbsp;
+                               {!wrapperObj.priceListItemObj.CurrencyISOCode}
+                               <apex:outputText value="{0, number, ###,###,##0.00}">
+                                    <apex:param value="{!wrapperObj.priceListItemObj.Apttus_Config2__ListPrice__c}"/>
+                                </apex:outputText> 
+                           </td>
+                           <td class="resultparentcolLast">&nbsp;{!wrapperObj.priceListItemObj.Apttus_Config2__ProductFamily__c}</td>
+                       </tr>
+                       <apex:variable value="{!1.0}" var="versionCnt"/>
+                       <apex:repeat value="{!wrapperObj.maintenancePriceListItem}" var="priceListItemObj">
+                           <tr style="background-color:#FFFFD7;"><!--FEF3C9-->
+                               <td class="resultchildcolFirst">>>&nbsp;<a href="/{!priceListItemObj.Id}" target="_blank" style="text-decoration:{!IF(isVFPage,'', 'none')}">{!priceListItemObj.Apttus_Config2__ProductCode__c}</a></td>
+                               <td class="resultchildcolMiddle">&nbsp;{!wrapperObj.priceListItemObj.Apttus_Config2__ProductId__r.Name}</td>
+                               <td class="resultchildcolMiddle">&nbsp;{!priceListItemObj.Apttus_Config2__ChargeType__c}</td>
+                               <td class="resultchildcolMiddle" style="text-align:Center">&nbsp;{!versionCnt}</td>
+                               <apex:variable var="versionCnt" value="{!versionCnt + 0.1}"/>
+                               <td class="resultchildcolMiddle" style="text-align:right">&nbsp;
+                                   {!priceListItemObj.CurrencyISOCode}
+                                   <apex:outputText value="{0, number, ###,###,##0.00}">
+                                        <apex:param value="{!priceListItemObj.Apttus_Config2__ListPrice__c}"/>
+                                    </apex:outputText>                              
+                               </td>
+                               <td class="resultchildcolLast">&nbsp;{!priceListItemObj.Apttus_Config2__ProductFamily__c}</td>
+                           </tr>
+                       </apex:repeat>
+                   </apex:repeat>
+                   
+               </table>
+            </div>
+            </apex:outputPanel>
+            <apex:outputPanel id="pagination2Id" rendered="{!isVFPage}">
+            <table border="0" width="100%" id="tbId" style="font-size:{!IF(isVFPage, '','12px')};">
+               <tr>
+                   <td colspan="5">
+                       <div style="display:{!IF(setCon.ResultSize > 0, 'block', 'none')}">
+                           <div align="right" style="display:{!IF(isVFPage,'block', 'none')}">
+                                <apex:outputText rendered="{!(setCon.pageNumber * setCon.pageSize) < setCon.ResultSize}" value="{!setCon.pageNumber * setCon.pageSize} of {!setCon.ResultSize}"></apex:outputText>
+                                <apex:outputText rendered="{!(setCon.pageNumber * setCon.pageSize) >= setCon.ResultSize}" value="{!setCon.ResultSize} of {!setCon.ResultSize}"></apex:outputText>
+                                &nbsp;
+                                <apex:commandLink rendered="{!setCon.hasPrevious}" value="<<  " action="{!setCon.first}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="<<  " rendered="{!!setCon.hasPrevious}" style="color:#747E96;"/>
+                                <apex:commandLink rendered="{!setCon.hasPrevious}" value="Previous  " action="{!setCon.previous}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="Previous  " rendered="{!!setCon.hasPrevious}" style="color:#747E96;"/>
+                                <apex:outputText value="|"/>
+                                <apex:commandLink rendered="{!setCon.hasNext}" value="  Next" action="{!setCon.next}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>
+                                <apex:outputText value="  Next" rendered="{!!setCon.hasNext}" style="color:#747E96;"/>
+                                <apex:commandLink rendered="{!setCon.hasNext}" value="  >>" action="{!setCon.last}" style="color:#015BA7; text-decoration:none;" reRender="resultsId, printId, paginationId, pagination2Id" onclick="startLoad();" oncomplete="endLoad();" onmouseover="showLink(this);" onmouseout="hideLink(this);"/>   
+                                <apex:outputText value="  >>" rendered="{!!setCon.hasNext}" style="color:#747E96;"/>
+                            </div>  
+                        </div>
+                   </td>
+               </tr>
+           </table>
+        </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

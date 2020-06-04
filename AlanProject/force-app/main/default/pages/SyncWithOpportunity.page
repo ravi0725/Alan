@@ -1,0 +1,63 @@
+<!-- 
+**
+* Company     : Trimble Software Technology Pvt Ltd.,
+* Description : 
+ * History     : 
+ * [18.SEP.2014] Prince Leo    - Code Created.
+* -->
+<apex:page standardController="Apttus_Proposal__Proposal__c" sidebar="true" showHeader="true" extensions="SyncWithOpportunityExt" >
+   
+    <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+    </style>
+
+    <script>
+    
+        function init() {
+            startProcess();
+            ///UpdateOppty();
+        }
+        window.onload = init; 
+
+        function startProcess(){
+            document.getElementById('filter').style.display = 'block'; 
+        }
+        function endProcess(){
+            document.getElementById('filter').style.display = 'none'; 
+        }
+        
+        function callDelayMethod(){  
+            setTimeout(UpdateOppty,2000);           
+        }
+        
+        function OpenProposalPage(msg){ 
+        callDelayMethod();
+            if(msg != ''){
+                alert(msg);
+            } 
+            window.open('/{!ProposalID}','_self');
+        }
+    </script>
+
+    <apex:form >
+  <iframe src="/{!ProposalID}" height="0" width="0" id="optySyncFrame" onload="callDelayMethod()"/>  
+        <apex:actionFunction name="UpdateOppty" action="{!UpdateOppty}" oncomplete="OpenProposalPage('{!errorMsg}');endProcess();"/>
+        <apex:detail />
+        <div id="filter">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" id="loadingImge" style="position:fixed;top:50%;left:50%;z-index:10;"/>
+            <div style="position:fixed;top:51%;left:53%;">
+               <b> Sync With Opportunity ....</b>
+            </div>
+        </div>
+  </apex:form>
+  </apex:Page>

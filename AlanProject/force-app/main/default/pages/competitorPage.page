@@ -1,0 +1,49 @@
+<apex:page standardController="Competitor__c" recordSetVar="comp" extensions="CompetitorpageController" showheader="true" sidebar="true">
+<script>
+     function populateCompanyProduct(){         
+        var compid=document.getElementById('j_id0:j_id3:j_id8:j_id37:j_id39_lkid').value;
+       // alert(compid);
+        populateProducts(compid);
+     }
+     
+     function populateFamily(){
+        var pId = document.getElementById('j_id0:j_id3:j_id8:j_id37:j_id40:optFamily').value;
+        populateProductFamily(pId);
+     }
+</script>
+<apex:sectionHeader title="New Competitors" subtitle="Competitors Edit" />
+<apex:form >  
+  <apex:actionfunction name="populateProducts" action="{!populateproduct}" rerender="optFamily" status="closer" immediate="true">
+      <apex:param name="Company" assignTo="{!companyid}" value="" />
+  </apex:actionfunction>
+  <apex:actionfunction name="populateProductFamily" action="{!populateProductFamily}" rerender="pFamily, msg">
+      <apex:param name="pId" assignTo="{!productId}" value="" />
+  </apex:actionfunction>
+  <apex:pageBlock title="Competitors Edit" mode="edit">
+     <apex:pageMessages id="msg"/>
+     <apex:pageBlockButtons location="both">
+        <apex:commandButton value="{!$Label.Save}" action="{!newCompetitor}"/>
+        <apex:commandButton value="{!$Label.Cancel}" action="{!cancel}"/>
+     </apex:pageBlockButtons>   
+     <apex:pageBlockSection collapsible="false" columns="1" title="{!$Label.Information}">                 
+        <apex:inputField value="{!comp.Opportunity__c}" required="true" />
+        <apex:inputField value="{!comp.CompetitorName__c}" onchange="populateCompanyProduct();"/>
+        <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Competitor__c.Fields.Competitor_Product__c.label}"/>                      
+           <apex:outputPanel >
+           <div class="requiredInput"><div class="requiredBlock"></div>
+            <apex:selectList size="1" value="{!productIds}" id="optFamily" onchange="populateFamily();">
+              <apex:selectOptions value="{!productoption}"/>
+            </apex:selectList>               
+           </div>
+           </apex:outputPanel>             
+        </apex:pageBlockSectionItem>        
+        <apex:inputField value="{!comp.Competitor_Type__c}" />
+        <!--<apex:outputField value="{!comp.Competitor_Product__c}" id="pFamily"/>-->
+        <apex:inputTextarea value="{!comp.Strengths__c}" style="margin: 2px; width: 194px; height: 89px;"/>
+        <apex:inputTextarea value="{!comp.Weaknesses__c}" style="margin: 2px; width: 194px; height: 89px;"/>
+        <apex:inputTextarea value="{!comp.Comments__c}" style="margin: 2px; width: 194px; height: 89px;"/>
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+</apex:form>  
+</apex:page>

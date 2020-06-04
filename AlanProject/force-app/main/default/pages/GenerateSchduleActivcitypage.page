@@ -1,0 +1,83 @@
+<apex:page id="pagetest" controller="GeneratescheduleactivityController" renderAs="{!pdf1}">
+   <apex:pageMessages />     
+   <apex:form >
+   <apex:actionFunction name="callToMethod" action="{!generateAttachment}" reRender="pagetest" />
+    
+   <apex:outputPanel rendered="{!eventList.size <= 0}">
+       <a href="/{!quoteId}">{!$Label.Click_here_to_return}</a>
+   </apex:outputPanel>
+   <apex:outputPanel rendered="{!eventList.size > 0}">
+   <div id="mainDiv">              
+       <span style="float:left;">
+           <img src="{!$Resource.PlancalLogo}" height="75" width="720" />
+       </span> <br/><br/><br/><br/><br/><br/><br></br><br></br>
+       <span style="font-size:150%;"><b>{!languageMap.Schedule_Title__c}</b></span>            
+       <br/> <br/> <br/> 
+        
+        <table width="95%">
+           <thead>
+              <tr>
+                 <th>{!languageMap.Subject__c}</th>                                   
+                 <th>{!languageMap.Date__c}</th> 
+                 <th>{!languageMap.Service_Rep__c}</th> 
+                 <th>{!languageMap.Service_Location__c}</th>
+              </tr>  
+           </thead> 
+           <tbody> 
+              <apex:repeat id="results" value="{!eventList}" var="event" > 
+                 <tr> 
+                   <td>{!event.Subject}</td> 
+                   <td>
+                       <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                          <apex:param value="{!event.StartDateTime}" /> 
+                       </apex:outputText>
+                   </td>
+                   <td>{!event.Owner.Name}</td>
+                   <td>{!event.Service_Location__c}</td>               
+                 </tr>
+              </apex:repeat>      
+           </tbody> 
+        </table> 
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+         <apex:outputLabel value="{!languageMap.Additional_Detail__c}: " style="font-weight:bold;"/><br/><br/>
+         <apex:outputText value="{!additionaldesc}" escape="false" />
+        <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>    
+        <table>
+          <tr>
+            <td>____________________________________________</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>            
+          </tr>
+          <tr>
+            <td><i>{!languageMap.Customer_Signature__c}</i></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>            
+          </tr>
+        </table>           
+      
+   </div> 
+   </apex:outputPanel>        
+   </apex:form>    
+   <script>
+      window.onload = function() {
+          //alert('DOM Loaded');
+          callActionMethod();
+          
+      }
+      
+      function callActionMethod(){
+         if({!eventList.size > 0}){        
+           callToMethod();
+         } 
+      } 
+   </script>
+</apex:page>

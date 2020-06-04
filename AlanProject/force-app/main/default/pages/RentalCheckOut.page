@@ -1,0 +1,13 @@
+<apex:page standardController="Opportunity" extensions="RentalCheckOutController" tabStyle="Opportunity" sidebar="false">
+    <apex:form >
+        <apex:pageBlock rendered="{!OR(NOT(ISNULL(proposal.Service_Start_Date__c)) , NOT(ISNULL(proposal.Service_End_Date__c))) }">
+            <apex:pageblockSection columns="1"  title="Service Contract Information">
+                <apex:outputField value="{!proposal.Service_Start_Date__c}"/>
+                <apex:outputField value="{!proposal.Service_End_Date__c}"/>
+            </apex:pageblockSection>
+        </apex:pageBlock>
+    </apex:form>
+    <flow:interview buttonLocation="bottom" interview="{!rentalCheckOut}"  name="Check_Out_Loaner_Rental" finishLocation="/{!Opportunity.id}">
+        <apex:param name="OpportunityID" value="{!Opportunity.id}"/>
+    </flow:interview>
+</apex:page>

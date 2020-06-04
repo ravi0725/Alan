@@ -1,0 +1,203 @@
+<!-- 
+**
+ * Company     : Trimble Software Technology Pvt Ltd.,
+ * Description : 
+ * History     : 
+ * [10.MAR.2014] Prince Leo - Code Created.
+ * -->
+<apex:page id="pgId" Controller="UpgradeInCartClass" title="Upgrade Asset Form " tabstyle="Account" showHeader="false" cache="false" standardStylesheets="true" sidebar="false">
+    <apex:stylesheet value="{!$Resource.Apttus_Config2__ConfigStyles}" />
+   <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCommon.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCatalog.css')}" />
+    <style type="text/css">
+      .aptLoadingOverlay {
+        background-color: rgba(255, 255, 255, 0.9);
+        display:none;      
+        background-repeat: no-repeat;
+        background-position:center center;
+      }
+    
+      html {height:100%}
+    
+      #idApprovalDialog {
+        margin:0;
+        height:100%;
+        overflow:hidden
+      }
+        
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+    </style>
+    <script type='text/javascript'>
+       /* window.onload = function() {            
+            var inputCheckBox = document.getElementsByTagName('input');                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf('qtyUpgradeinputId')!=-1){                                  
+                    inputCheckBox[i].value = 1;
+                }
+            }
+        };*/
+        
+        function selectCheckboxes(inpt,receivedInptID)
+        {
+            var inputCheckBox = document.getElementsByTagName('input');                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                  
+                    inputCheckBox[i].checked = inpt.checked;
+                }
+            }
+        }
+    
+        function startLoad(){
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("loadFilter").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("loadFilter").style.display = "none";
+        }
+        
+    </script>
+   
+    <apex:includeScript value="{!$Resource.JQuery}"/>
+    <apex:includescript value="{!URLFOR($Resource.FixedPageBlockTableHeader,'jquery.fixheadertable.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.FixedPageBlockTableHeader,'base.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.FixedPageBlockTableHeader,'jquery-ui-1.8.4.custom.css')}" />
+    <apex:form id="formId">
+        <div width="100%" id="filter" style="display:none;"/>
+        <div id="loadFilter" style="display:none;">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+            Loading . . . 
+        </div>
+        <apex:pageBlock id="pbId">
+            <apex:outputPanel >
+                <apex:PageMessages id="errorMsgId"></apex:PageMessages>
+            </apex:outputPanel>
+            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                <li class="aptSpinnerBtn">
+                    <a onClick="startLoad();cancel();" class="aptListButton">Go To Pricing</a>
+                </li>
+            </ul>
+            <apex:outputPanel id="resultId">
+                <script>
+                    $(document).ready(function() {
+                        setPageBlockTable();
+                    });
+                    
+                    function setPageBlockTable(){
+                        var windowWidth = window.innerWidth - 80;
+                        var minWidth = 100;
+                        var extraSpace = windowWidth > 1200 ? parseInt((windowWidth - 1200) / 12) + 1 : 0;
+                        $('.fixme').fixheadertable({
+                             height  : 600,
+                             width : windowWidth + 2,
+                             minWidthAuto : false,
+                             colratio : [minWidth + extraSpace,minWidth + extraSpace,minWidth + extraSpace,minWidth + (extraSpace * 6),minWidth,minWidth,minWidth,minWidth,minWidth,minWidth,minWidth,minWidth + extraSpace],
+                             whiteSpace  : 'normal'
+                        });
+
+                    }
+                </script>  
+             <H1> Upgrade Asset Form </h1>
+                <apex:pageBlockTable value="{!AssWrapList}" var="assWrap" id="table" styleClass="fixme" style="overflow-x:hidden;">
+                    <apex:column headerValue="Action" style="text-align:center" headerClass="Action">
+                        <ul style="text-align:center; margin-top:10px; margin-bottom:10px;display:{!IF(AND(!assWrap.UpdateButton,assWrap.cat.Asset_Oracle_ID__c != null,assWrap.cat.Asset_Oracle_ID__c != ''), 'block' , 'none')}" id="aptTopButtons">
+                            <li class="aptSpinnerBtn">
+                                <a onClick="startLoad();gotoPricing('{!assWrap.cat.Id}');"  class="aptListButton ">Upgrade Asset</a>
+                            </li>
+                        </ul>
+                        <div style="width:100%" align="center">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <apex:image style="display:{!IF(assWrap.UpdateButton , 'block' , 'none')};" width="32px" height="32px" url="{!$Resource.SelectedCheckImage}"/>
+                                    </td>
+                                    <td>
+                                        <apex:image onclick="startLoad(); removeAssets('{!assWrap.cat.Id}');" style="cursor:pointer;display:{!IF(assWrap.UpdateButton , 'block' , 'none')};" width="24px" height="24px" url="{!$Resource.CloseButton}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </apex:column>
+                    <apex:column value="{!assWrap.cat.Asset_Oracle_ID__c}" style="text-align:center;"/>
+                    <apex:column value="{!assWrap.cat.Product2.ProductCode}" style="text-align:center;"/>
+                    <apex:column headervalue="Product Name" style="text-align:center;">
+                      <apex:outputField value="{!assWrap.cat.Product2.Name}"/>
+                    </apex:column>
+                     <apex:column headervalue="Serial Number" style="text-align:center;">
+                         {!assWrap.cat.SerialNumber}
+                    </apex:column>
+                    <apex:column headerValue="Asset Qty" style="text-align:center;">
+                        <apex:outputField value="{!assWrap.cat.Quantity_Disp__c}" />
+                    </apex:column>
+                   <apex:column value="{!assWrap.cat.Available_Quantity__c}"  style="text-align:center;"/>
+                    <apex:column headerValue="Qty (To Upgrade)" >
+                        <div style="width:100%;" align="center">
+                            <apex:inputtext id="qtyUpgradeinputId" style="width:50px;display:{!IF(assWrap.UpdateButton , 'none' , 'block')}; text-align:right;;" value="{!assWrap.cat.Quantity_To_be_Upgraded__c}" />
+                            <apex:outputText id="qtyUpgradeId" style="width:50px; display:{!IF(assWrap.UpdateButton , 'block' , 'none')};; text-align:center;" value="{!assWrap.cat.Quantity_To_be_Upgraded__c}"/>
+                        </div>
+                    </apex:column>
+                    
+                    <apex:column value="{!assWrap.cat.Price}"  style="text-align:center;"/>
+                    
+                    <apex:column value="{!assWrap.cat.Status}" style="text-align:center;"/>
+                    
+                    <apex:column headerValue="Price/Qty (Credit)" >
+                        <div style="width:100%;" align="center">
+                            <apex:inputField id="updatedPriceInputId" style="width:50px;display:{!IF(assWrap.UpdateButton , 'none' , 'block')}; text-align:right;" value="{!assWrap.cat.Updated_Price__c}"/>
+                            <apex:outputText id="updatedPriceId" style="width:50px; display:{!IF(assWrap.UpdateButton , 'block' , 'none')}; text-align:right;" value="{!assWrap.cat.Updated_Price__c}"/>
+                        </div> 
+                    </apex:column>
+                    
+                    <apex:column headerValue="Reason Code" >
+                        <div style="width:100%;" align="center">
+                            <apex:inputField id="reasonCodeInputId" style="display:{!IF(assWrap.UpdateButton , 'none' , 'block')};" value="{!assWrap.cat.Reason_Code__c}"/>
+                            <apex:outputText style="display:{!IF(assWrap.UpdateButton , 'block' , 'none')};" id="reasonCodeId" value="{!assWrap.cat.Reason_Code__c}"/>
+                        </div>
+                    </apex:column>
+                    
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                <li class="aptSpinnerBtn">
+                    <a onClick="startLoad();cancel();" class="aptListButton">Go To Pricing</a>
+                </li>
+            </ul>
+        </apex:pageBlock>
+        <apex:actionFunction action="{!cancel}" name="cancel" onComplete="endLoad();"/>
+         
+        <apex:actionFunction action="{!gotoPricing}" name="gotoPricing" onComplete="endLoad();setPageBlockTable();" reRender="resultId,errorMsgId">
+            <apex:param assignTo="{!selectedAssetId}" name="AssetId" value=""/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction action="{!removeAsset}" name="removeAssets" onComplete="endLoad();" reRender="resultId,errorMsgId">
+            <apex:param assignTo="{!selectedAssetId}" name="AssetId" value=""/>
+        </apex:actionFunction>
+    </apex:form>
+</apex:page>

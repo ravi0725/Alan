@@ -1,0 +1,42 @@
+<apex:page standardcontroller="Account" extensions="AccountViewEnhancementSummaryCtrl" setup="false" showchat="false" showheader="false" sidebar="false">
+    <apex:form >
+        <apex:pageblock title="Account View Annual Revenue Summary" id="pb">
+            <apex:pageblockbuttons id="pbmainbuttons">
+                <input type="button" id="toClose" class="cusBtn cusBtnSave" onclick="window.top.close();" value="Close" />
+            </apex:pageblockbuttons>
+            <apex:pageblocktable value="{!EnhancementList}" var="el">
+                <apex:column >
+                    <apex:facet name="header"> Product Sub-Group </apex:facet>
+                    <b>{!el.prodGroup}</b>
+                </apex:column>
+                <apex:column value="{!el.type}">
+                    <apex:facet name="header"> Type </apex:facet>
+                </apex:column>
+                <apex:column >
+                    <b>{!el.prodGroupAmount} </b>
+                    <apex:facet name="header"> Entitlement </apex:facet>
+                    <apex:facet name="footer">
+                        <apex:outputtext value="Total" />
+                    </apex:facet>
+                </apex:column>
+                <!---<apex:column value="{!el.corporatePriceDouble}" >
+                    <apex:facet name="header" >  Corporate Amount  - {!runningUser.CurrencyIsoCode }</apex:facet>
+                </apex:column> --->
+                <apex:column >
+                    <apex:facet name="header">  Yearly Amount </apex:facet>
+                    <!--<apex:outputField value="{!el.objDummyAccount.AnnualRevenue}" />-->
+                    <apex:outputText value="{!el.AccountCurrencyPrice_Display}" />
+                    <apex:facet name="footer">
+                        <apex:outputtext value="{!totalConvertedAmount}" />
+                    </apex:facet>
+                </apex:column>
+                <!--
+                <apex:column>
+                    <apex:facet name="header"> # of Seats </apex:facet>
+                    <b>{!el.noOfSeats}</b>
+                </apex:column>
+                -->
+            </apex:pageblocktable>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

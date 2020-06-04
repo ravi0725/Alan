@@ -1,0 +1,90 @@
+<apex:page id="pagetest" controller="GenerateProposalAttachmentController" renderAs="{!pdf1}">
+   <apex:pageMessages />  
+   <apex:form >
+       <apex:actionFunction name="callToMethod" action="{!generateAttachment}" reRender="pagetest"/>              
+       <span>
+           <img src="{!$Resource.PlancalLogo}" height="82" width="720"/>
+       </span> <br/><br/><br/><br/><br/><br/>
+       <span style="font-size:200%;"><b>{!languageMap.Hotline_Title__c}</b></span>            
+       <br/> <br/> <br/> 
+       <table width="100%">
+          <tr>
+             <td width="60%"><b>{!languageMap.Date__c}:</b>               
+                 <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                   <apex:param value="{!event.StartDateTime}" /> 
+                 </apex:outputText>
+             </td>       
+             <td width="40%"><b>{!languageMap.Service_Rep__c}:</b> {!userName} </td> 
+          </tr>
+          <tr> 
+             <td width="60%"><b>{!languageMap.Account__c}:</b> {!accountName}</td>
+             <td width="40%"><b>{!languageMap.Contact__c}:</b> {!leadName}</td> 
+          </tr>
+          <tr>
+             <td width="60%"><b>{!languageMap.Account_Id__c}:</b> {!accountNumber}</td>
+             <td width="40%"><b>{!languageMap.Case_Id__c}:</b> {!caseNumber}</td>
+          </tr>  
+       </table>
+       <br/> <br/> <br/> <br/>
+         
+       <apex:pageBlock title="" mode="maindetail">
+           <table style="font-weight:bold;">
+               <tr>
+                  <td width="40%"><span style="font-size:170%">{!languageMap.Estimate_Of_Services__c}</span></td>
+                  <td width="30%">{!languageMap.Estimated_Hours__c}</td>
+                  <td width="10%">{!languageMap.Hourly_Cost__c}</td> 
+               </tr>
+           </table>_______________________________________________________________________________________________________  
+           <!--<hr style="width:100%;"/>-->
+           <table width="100%">
+               <tr>
+                  <td colspan="3"><span style="font-size:130%">{!languageMap.Table_Title__c}</span></td>
+               </tr>
+               <tr>
+                  <td colspan="3">&nbsp;</td>
+               </tr>
+               <tr>
+                  <td width="52%">{!event.Activity_Estimate__c}</td>
+                  <td width="38%">{!event.Estimated_Hours__c}</td>
+                  <td width="10%">{!event.Hourly_Cost__c}</td> 
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td colspan="2" width="90"><b>{!languageMap.Total_Estimated_Cost__c}</b></td>
+                  <td width="10%">{!event.Total_Estimated_Cost2__c}</td>
+               </tr>          
+           </table>
+           <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+           <br/>
+           ______________________________________________________<br/>
+           <i>{!languageMap.Customer_Signature__c}</i>
+       </apex:pageBlock>
+   </apex:form>    
+    <script>
+      window.onload = function() {
+          //alert('DOM Loaded');
+          callActionMethod();
+      }
+      
+      function callActionMethod(){
+          callToMethod();
+      } 
+   </script>
+</apex:page>

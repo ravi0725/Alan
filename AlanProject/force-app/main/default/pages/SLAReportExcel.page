@@ -1,0 +1,19 @@
+<apex:page controller="SLAReportController" contentType="application/vnd.ms-excel#SalesForceExport.xls" standardStylesheets="false" tabStyle="Case">       
+    <apex:pageBlock rendered="{!displayReport}">
+        <apex:pageBlockSection title="SLA Report for: {!AccountName}">
+            <apex:pageBlockTable title="SLA Report" var="cs" value="{!slalst}">
+                <apex:column value="{!cs.Priority}"/>
+                <apex:column headerValue="Legacy Manhattan Case Number" value="{!cs.Manhattan_US_Case_Number__c }"/>
+                <apex:column headerValue="Trimble Case Number" value="{!cs.casenumber}"/>
+                <apex:column headerValue="Awaiting Client Response" value="{!cs.Awaiting_Client_Response__c}"/>
+                <apex:column headerValue="Client Monitoring" value="{!cs.Client_Monitoring__c}"/>
+                <apex:column headerValue="Fixed Pending Client Confirmation" value="{!cs.Fixed_Pending_Client_Confirmation__c}"/>
+                <apex:column headerValue="On Hold" value="{!cs.On_Hold__c}"/>
+                <apex:column headerValue="Patch Delivered to Client" value="{!cs.Patch_Delivered_to_Client__c}"/>
+                <apex:column headerValue="SA Research In Progress" value="{!cs.SA_Research_In_Progress__c}"/>
+                <apex:column headerValue="With Engineering" value="{!cs.With_Engineering__c}"/>
+                <apex:column headerValue="With Hosting Services" value="{!cs.With_Hosting_Services__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>        
+    </apex:pageBlock>
+</apex:page>

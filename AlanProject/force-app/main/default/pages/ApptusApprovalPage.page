@@ -1,0 +1,13 @@
+<apex:page standardController="Apttus_Approval__Approval_Request__c">
+<script>
+ 
+  window.onload=function()       
+    {        
+      document.getElementsByName('attachFile')[0].style.display="none";
+      document.getElementsByName('newNote')[0].style.display="none";
+      //document.getElementsByName('attachFile')[0].style.display="none";
+    };
+</script>
+  <!--<apex:detail relatedList="false"/>-->
+  <apex:relatedList list="CombinedAttachments"  subject="{!$CurrentPage.parameters.id}" />
+</apex:page>

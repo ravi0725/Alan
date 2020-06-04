@@ -1,0 +1,213 @@
+<apex:page controller="QuoteProductApprovalController" sidebar="false" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Approval__RaphaelJSLibrary21, 'raphael-min.js')} " />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Approval__JQueryUILibrary, 'js/jquery-1.6.2.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Approval__JQueryUILibrary, 'js/jquery-ui-1.8.16.custom.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Approval__JQueryUILibrary, 'css/ui-lightness/jquery-ui-1.8.16.custom.css')}" />
+    <script>
+        function cancel(){
+            cancelApp();
+        }
+    </script>
+    <style>
+       .aptProductListHeader h2 {
+          padding-left: 1em;
+          font-weight: normal;
+       }
+
+        .aptMainBlockHeader {
+            background: -moz-linear-gradient(top, rgba(30, 87, 153, 1) 0%,
+                rgba(125, 185, 232, 0) 100% );
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(30,
+                87, 153, 1) ), color-stop(100%, rgba(125, 185, 232, 0) ) );
+            background: -webkit-linear-gradient(top, rgba(30, 87, 153, 1) 0%,
+                rgba(125, 185, 232, 0) 100% );
+            background: -o-linear-gradient(top, rgba(30, 87, 153, 1) 0%,
+                rgba(125, 185, 232, 0) 100% );
+            background: -ms-linear-gradient(top, rgba(30, 87, 153, 1) 0%,
+                rgba(125, 185, 232, 0) 100% );
+            background: linear-gradient(to bottom, rgba(30, 87, 153, 1) 0%,
+                rgba(125, 185, 232, 0) 100% );
+            filter: progid :   DXImageTransform.Microsoft.gradient (    
+                startColorstr = 
+                         '#1e5799', endColorstr =   '#007db9e8', GradientType =   0 );
+            border-radius: 3px;
+            height: 60px;
+            color: white;
+            padding-top: 7px;
+            font-size: 15px;
+        }
+        
+        .aptListButton {
+            -moz-box-shadow: 0px 1px 0px 0px #ffffff;
+            -webkit-box-shadow: 0px 1px 0px 0px #ffffff;
+            box-shadow: 0px 1px 0px 0px #ffffff;
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #71b2f6
+                ), color-stop(1, #236fbd) );
+            background: -moz-linear-gradient(center top, #71b2f6 5%, #236fbd 100%);
+            filter: progid :   DXImageTransform.Microsoft.gradient (   startColorstr
+                = 
+                         '#71b2f6', endColorstr =   '#236fbd' );
+            background-color: #71b2f6;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            display: inline-block;
+            color: #ffffff !important;
+            font-family: arial;
+            font-size: 12px;
+            font-weight: normal;
+            padding: 5px 24px;
+            text-decoration: none;
+            margin-right: 5px;
+            width:90px;
+        }
+        
+        .aptRoundedDiv {
+            padding-bottom: 5px;
+            background-color: white;
+            border: 1px solid #DDD;
+            margin-top: 5px;
+            -webkit-border-radius: 3px; /* Safari 3-4, iOS 1-3.2, Android â‰¤1.6 */
+            border-radius: 3px;
+            /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
+            /* useful if you don't want a bg color from leaking outside the border: */
+            /* -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; */
+            /*-webkit-box-shadow: 0px 0px 4px 0px #000;  Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+            /*box-shadow: 0px 0px 4px 0px #000; /* Opera 10.5, IE9+, Firefox 4+, Chrome 6+, iOS 5 */
+            /* IE Stuff */
+            zoom: 1;
+            width: 100%;
+            filter: progid :   DXImageTransform.Microsoft.Shadow (   color =  
+                #000000, direction =   0, strength =   2 ), progid : 
+                         DXImageTransform.Microsoft.Shadow (   color =   #000000,
+                direction =   45, strength =   2 ), progid :  
+                DXImageTransform.Microsoft.Shadow (   color = 
+                         #000000, direction =   90, strength =   2 ), progid : 
+                         DXImageTransform.Microsoft.Shadow (   color =   #000000,
+                direction =   135, strength =   2 ), progid :  
+                DXImageTransform.Microsoft.Shadow (   color = 
+                         #000000, direction =   180, strength =   2 ), progid : 
+                         DXImageTransform.Microsoft.Shadow (   color =   #000000,
+                direction =   225, strength =   2 ), progid :  
+                DXImageTransform.Microsoft.Shadow (   color = 
+                         #000000, direction =   270, strength =   2 ), progid : 
+                         DXImageTransform.Microsoft.Shadow (   color =   #000000,
+                direction =   315, strength =   2 );
+        }
+        
+        .aptListButton:hover {
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #89bff8
+                ), color-stop(1, #4a88c9) );
+            background: -moz-linear-gradient(center top, #89bff8 5%, #4a88c9 100%);
+            filter: progid :   DXImageTransform.Microsoft.gradient (   startColorstr
+                = 
+                         '#89bff8', endColorstr =   '#4a88c9' );
+            background-color: #89bff8;
+            text-decoration: none;
+            color: #ffffff;
+        }
+        
+        div.aptProductListHeader {
+            cursor: pointer;
+            width: 100%;
+            padding: 6px 0px;
+            font-size: 1em;
+            line-height: 1.5em;
+            color: #6f6f6f;
+            -webkit-border-top-left-radius: 2px;
+            -webkit-border-top-right-radius: 2px;
+            -moz-border-radius-topleft: 2px;
+            -moz-border-radius-topright: 2px;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            background: url('{!$Resource.Apttus_Config2__CPQNewSprites}') repeat-x;
+            background-position: 0px 0px;
+        
+            /* background: -moz-linear-gradient(top,  #022649 30%, #04050c 99%);
+                            background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#022649), color-stop(99%,#04050c));
+                            background: -webkit-linear-gradient(top,  #022649 30%,#04050c 99%);
+                            background: -o-linear-gradient(top,  #022649 30%,#04050c 99%);
+                            background: -ms-linear-gradient(top,  #022649 30%,#04050c 99%);
+                            background: linear-gradient(to bottom,  #022649 30%,#04050c 99%);
+                            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#022649', endColorstr='#04050c',GradientType=0 ); */
+        }
+        
+        .clearfix {
+            clear: both;
+        }
+        
+        .buttonsBlock {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .tableLineItems {
+            width: 100%;
+            padding-left: 10px;
+        }
+        
+        .bPageBlock {
+            background-color: transparent !important;
+            border-radius: 0px 0px 0px 0px !important;
+            border: 0px !important;
+        }
+        
+        .generateWaitDialog .ui-dialog-titlebar-close {
+            display: none;
+        }
+    </style>
+    <apex:form >
+        <apex:actionFunction name="cancelApp" action="{!cancelApproval}" rerender="errorPage"/>                                
+        <div class="aptMainBlockHeader">
+            <h2 style="margin-left: 1em;">{!$Label.Apttus_CQApprov__RequiredApprovals}</h2>
+        </div>        
+        <apex:pageMessages id="errorPage" />
+        <apex:pageBlock >
+        <span width="80%" id="j_id0:j_id6:idSObjectApprovals:j_id58:j_id70:j_id97:j_id98:0:idContextApprovalsPanel" style="margin-right:10px; margin-top:10px;">
+           <div>
+             <h2 style="margin-left: 1em;">Product Configuration Approvals</h2>
+           </div><br/>
+           <span id="j_id0:j_id6:idSObjectApprovals:j_id58:j_id70:j_id97:j_id98:0:j_id100:0:j_id101" style="margin-right:10px; margin-top:10px;">
+             <div class="aptProductListHeader">
+               <h4 style="margin-left: 1em;">Cart Approvals Status : {!configStatus}</h4>
+             </div>
+             
+               <apex:pageblockButtons location="bottom">
+                  <input class="aptListButton" value="Return to Quote" style="cursor: pointer;" onclick="window.history.back()"/>
+                  <apex:outputPanel rendered="{!cancelFlag}"> 
+                    <input class="aptListButton" value="Cancel Approvals" onclick="cancel()" style="width:100px;cursor: pointer;"/>
+                  </apex:outputPanel>   
+               </apex:pageblockButtons>
+             <apex:pageBlockTable title="Cart Approvals Status: {!configStatus}" value="{!approvalRequestList}" var="approvalRequest">
+               <apex:column value="{!approvalRequest.Apttus_Approval__StepSequence__c}" headerValue="Sequence"/>
+               <apex:column value="{!approvalRequest.Apttus_Approval__Step_Name__c}" headerValue="Step Name"/>
+               <apex:column value="{!approvalRequest.Apttus_Approval__Assigned_To_Name__c}" headerValue="Assigned To"/>
+               <apex:column value="{!approvalRequest.Apttus_Approval__Approval_Status__c}" headerValue="Approval Status"/>        
+             </apex:pageBlockTable>                 
+           </span>
+         </span>
+         <span width="80%" id="j_id0:j_id6:idSObjectApprovals:j_id58:j_id70:j_id97:j_id98:0:idContextApprovalsPanel" style="margin-right:10px; margin-top:10px;">
+         <div id="ja_id0:j_id6:idSObjectApprovals:j_id58:j_id70:j_id97:j_id132" class="aptRoundedDiv">
+           <div class="aptGroupHeader">
+              <h2 style="margin-left: 1em;">Comments</h2>
+           </div>
+           <div id="j_id0:j_id6:idSObjectApprovals:j_id58:j_id70:j_id97:j_id134" class="requiredBlock"></div>
+           <apex:inputTextArea value="{!productConfig.Apttus_Config2__Comments__c}" rows="7" cols="85"/>          
+        </div>
+        </span>                  
+         </apex:pageBlock>                 
+           
+        <!--<apex:outputPanel id="idApprovalsPanel">
+                <Apttus_Approval:SObjectApprovals id="idSObjectApprovals"
+                    contextInfoParam="{!contextInfo}" 
+                    contextHeaderId="{!ctxHeaderId}"
+                    viewOnlyMode="{!isReadOnlyMode}"
+                    columnFieldSetName="{!fieldSetName}" 
+                    requestedAction="{!action}"
+                    exitButtonLabel="{!returnLabel}" />
+            </apex:outputPanel> -->
+
+     <!--<apex:actionFunction name="returnToCaller" action="{!doReturn}" /> -->
+     
+    </apex:form>
+</apex:page>

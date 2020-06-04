@@ -1,0 +1,47 @@
+<apex:page standardcontroller="Deal_Registration__c" extensions="DealRegProductLineController" showHeader="false" sidebar="false">
+<apex:form >
+  <script>
+      function callNewWindow(){
+         if("{!dealRegStatus}" == "Pending Review" || "{!dealRegStatus}" == "Approved"){
+            alert("You cannot add Deal Registration Line Items, as this record is in approval process or already approved.");
+         }else{
+             window.open("/apex/DealRegLineItems_PartnerUser?id={!dealRegId}","_parent",false);
+         }     
+      }
+      
+      function checkApprovalStatus(){
+         if("{!dealRegStatus}" == "Pending Review" || "{!dealRegStatus}" == "Approved"){
+             alert("You cannot update Deal Registration Line Items, as this record is in approval process or already approved.");
+             return false;
+         }
+         return true;
+      }
+  </script> 
+  <apex:pageBlock >
+    <apex:pageBlockButtons location="top">
+       <input type="button" class="btn" value="New" onclick="callNewWindow()"/> 
+    </apex:pageBlockButtons>  
+    <apex:pageBlockTable style="font-family: Arial, Helvetica, sans-serif; font-size: 90%; text-align:center; font-weight: normal;" value="{!dealRegLineList}" id="dealregProductLineTable" var="deal" rendered="{!AND(dealRegLineList!=null, dealRegLineList.size > 0)}">
+        <apex:column headerValue="Action">
+           <apex:outputLink value="/{!deal.Id}" target="_top">Edit</apex:outputLink>
+        </apex:column>
+        <apex:column headerValue="Deal Registration Line Name" style="color: #1d5693;">
+           <apex:outputLink value="/{!deal.Id}" target="_top">{!deal.Name}</apex:outputLink>
+        </apex:column>
+        <apex:column headerValue="Product Name" value="{!deal.Product__r.Name}" style="color: #333333;"/>
+        <apex:column headerValue="Quantity" value="{!deal.Quantity__c}" style="color: #333333;"/> 
+        <apex:column headerValue="List Price-Unit Price" value="{!deal.Unit_Price__c}" style="color: #333333;"/>
+        <apex:column headerValue="List Price-Ext Price" value="{!deal.Total_Price__c}" style="color: #333333;"/> 
+        <apex:column headerValue="Std Dealer Net Price-Unit Price" value="{!deal.Standard_Dealer_Unit_Price__c}" style="color: #333333;"/>
+        <apex:column headerValue="Std Dealer Net Price-Std Disc" value="{!deal.Standard_Dealer_Discount__c}" style="color: #333333;"/>
+        <apex:column headerValue="Std Dealer Net Price-Ext Price" value="{!deal.Standard_Dealer_Extended_Price__c}" style="color: #333333;"/>
+        <apex:column headerValue="Dealer Adj Net Price-Unit Price" value="{!deal.Sale_Price_Per_Unit__c}" style="color: #333333;"/>
+        <apex:column headerValue="Dealer Adj Net Price-Adj Disc" value="{!deal.Discount__c}" style="color: #333333;"/>
+        <apex:column headerValue="Dealer Adj Net Price-Adj Ext Price" value="{!deal.Dealer_Adjusted_Extended_Price__c}" style="color: #333333;"/>
+        <apex:column headerValue="Cust Adj Price-Unit Price" value="{!deal.Customer_Unit_Price__c}" style="color: #333333;"/>
+        <apex:column headerValue="Cust Adj Price-Ext Price" value="{!deal.Customer_Adjusted_Extended_Price__c}" style="color: #333333;"/>        
+    </apex:pageBlockTable> 
+    <apex:outputLabel value="No records found" rendered="{!OR(dealRegLineList == null, AND(dealRegLineList != null, dealRegLineList.size <= 0))}" />
+  </apex:pageBlock> 
+</apex:form>
+</apex:page>

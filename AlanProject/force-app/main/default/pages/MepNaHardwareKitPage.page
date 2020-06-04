@@ -1,0 +1,193 @@
+<!-- 
+**
+* Company     : Trimble Software Technology Pvt Ltd.,
+* Description : 
+* History     : 
+* [10.MAR.2014] Prince Leo - Code Created.
+* [10.MAR.2014] Suresh Babu Murugan - Code Modified : Adding Guided selling with 3rd Wizard
+* -->
+<apex:page id="pgId" Controller="MepNaHardwareKit" title="Upgrade Asset Form " tabstyle="Account" showHeader="false" cache="false" standardStylesheets="true" sidebar="false">
+    <apex:stylesheet value="{!$Resource.Apttus_Config2__ConfigStyles}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCommon.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCatalog.css')}" />
+    <style>
+        .ct{
+            text-align:left;
+        }
+        </style>
+
+        <style type="text/css">
+            .aptLoadingOverlay {
+            background-color: rgba(255, 255, 255, 0.9);
+            display:none;      
+            background-repeat: no-repeat;
+            background-position:center center;
+        }
+
+        html {height:100%}
+
+        #idApprovalDialog {
+            margin:0;
+            height:100%;
+            overflow:hidden
+        }
+
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+
+    </style>
+
+    <script type='text/javascript'>
+    function startLoad(){
+    document.getElementById("filter").style.display = "block";
+    document.getElementById("loadFilter").style.display = "block";
+    }
+
+    function endLoad(){
+    document.getElementById("filter").style.display = "none";
+    document.getElementById("loadFilter").style.display = "none";
+    }
+    </script>
+    <apex:form id="formId">
+        <div width="100%" id="filter" style="display:none;"/>
+        <div id="loadFilter" style="display:none;">
+        <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+            Loading . . . 
+        </div>
+        <apex:pageBlock id="pbId">
+            <apex:pageMessages id="errorMsg"></apex:pageMessages>
+            
+                <apex:outputPanel id="wizardONE" rendered="{!disableWizardONE}">
+                    <apex:pageBlockTable value="{!ProdRecList}" var="assWrap" id="table1" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left;" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="25%" style="text-align:left;" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                        <apex:column width="25%" rendered="{!disableWizardONE}">
+                            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                                <li class="aptSpinnerBtn">
+                                    <a onClick="startLoad(); gotoPricing1('{!assWrap.ProductCode}');"  class="aptListButton">Add to Cart</a>
+                                </li>
+                            </ul>
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+            
+                <apex:outputPanel id="wizardONE_READONLY" rendered="{!readOnlyWizardONE}">
+                    <apex:pageBlockTable value="{!ProdRecList}" var="assWrap" id="table1_1" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID,'16px','12px')}" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID,'bold','normal')};  font-size:{!IF(assWrap.ProductCode == SelectedProdID,'16px','12px')}" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+
+                <apex:outputPanel id="wizardTWO" rendered="{!disableWizardTWO}">
+                    <apex:pageBlockTable value="{!ProdRecList2}" var="assWrap" id="table2" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID1,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID1,'16px','12px')}" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="25%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID1,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID1,'16px','12px')}" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                        <apex:column width="25%">
+                            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                                <li class="aptSpinnerBtn">
+                                    <a onClick="startLoad(); gotoPricing2('{!assWrap.ProductCode}');"  class="aptListButton">Add to Cart</a>
+                                </li>
+                            </ul>
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+
+                <apex:outputPanel id="wizardTWO_READONLY" rendered="{!readOnlyWizardTWO}">
+                    <apex:pageBlockTable value="{!ProdRecList2}" var="assWrap" id="table2_1" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID1,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID1,'16px','12px')}" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID1,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID1,'16px','12px')}" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+
+                <apex:outputPanel id="wizardTHREE" rendered="{!disableWizardTHREE}">
+                    <apex:pageBlockTable value="{!ProdRecList3}" var="assWrap" id="table3" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID2,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID2,'16px','12px')}" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="25%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID2,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID2,'16px','12px')}" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                        <apex:column width="25%">
+                            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                                <li class="aptSpinnerBtn">
+                                    <a onClick="startLoad(); gotoPricing3('{!assWrap.ProductCode}');"  class="aptListButton">Add to Cart</a>
+                                </li>
+                            </ul>
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="wizardTHREE_READONLY" rendered="{!readOnlyWizardTHREE}">
+                    <apex:pageBlockTable value="{!ProdRecList3}" var="assWrap" id="table3_1" styleClass="fixme" style="overflow-x:hidden;" width="100%">
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID2,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID2,'16px','12px')}" headerValue="Product Name" headerClass="ct">
+                            {!assWrap.Name}
+                        </apex:column>
+                        <apex:column width="50%" style="text-align:left; font-weight:{!IF(assWrap.ProductCode == SelectedProdID2,'bold','normal')}; font-size:{!IF(assWrap.ProductCode == SelectedProdID2,'16px','12px')}" headerValue="Product Code" headerClass="ct">
+                            {!assWrap.ProductCode}
+                        </apex:column>
+                    </apex:pageblockTable>
+                </apex:outputPanel>
+
+                <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                    <li class="aptSpinnerBtn">
+                        <a onClick="startLoad(); gotocart();"  class="aptListButton">Go To Pricing</a>
+                    </li>
+                </ul>
+
+        </apex:pageblock>
+        <apex:actionFunction action="{!AddselectedProduct}" name="gotoPricing1" onComplete="endLoad();" reRender="pbId" >
+            <apex:param assignTo="{!SelectedProdID}" name="SelectedProdID" value=""/>
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!AddselectedProductWizard2}" name="gotoPricing2" onComplete="endLoad();" reRender="pbId" >
+            <apex:param assignTo="{!SelectedProdID1}" name="SelectedProdID1" value=""/>
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!AddselectedProductWizard3}" name="gotoPricing3" onComplete="endLoad();" reRender="pbId" >
+            <apex:param assignTo="{!SelectedProdID2}" name="SelectedProdID2" value=""/>
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!GotoCart}" name="gotocart" onComplete="endLoad();" reRender="wizardONE" >
+
+        </apex:actionFunction>
+    </apex:form>       
+</apex:page>

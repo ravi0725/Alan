@@ -1,0 +1,5 @@
+<apex:page standardController="Case" tabStyle="Case" >
+    <flow:interview name="Check_Out_Loaner_Rental" finishLocation="/{!Case.id}">
+        <apex:param name="CaseID" value="{!Case.id}"/>
+    </flow:interview>
+</apex:page>

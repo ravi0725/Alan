@@ -1,0 +1,5 @@
+<design:component label="Ask the community">
+    <design:attribute name="HeaderLabel" label="Header Label"/>
+    <design:attribute name="TopicId" label="Topic Id" />
+    <design:attribute name="AskCommunityLabel" label="Ask Community Label" />
+</design:component>

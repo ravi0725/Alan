@@ -1,0 +1,245 @@
+<apex:page standardController="Case" extensions="SearchIssueController" showChat="false" showHeader="false" sidebar="false">
+    <style>
+        #filter{
+        position: fixed;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        z-index:10;
+        opacity:0.6;
+        filter: alpha(opacity=50);
+        }
+
+        #loadFilter{
+        width:120px;
+        position:fixed;
+        top:40%;
+        left:45%;
+        z-index:199;
+        font-weight:bold;
+        font-size:14px;
+        text-align:center;
+        background-color:#E0E3E5;
+        border-radius:6px;
+        padding:10px;
+        }
+    </style>
+    <script>
+
+    function startLoad(){
+        document.getElementById("filter").style.display = "block";
+        document.getElementById("loadFilter").style.display = "block";
+    }
+
+    function endLoad(){
+        document.getElementById("filter").style.display = "none";
+        document.getElementById("loadFilter").style.display = "none";
+    }
+
+    </script>
+
+    <script type="text/javascript">
+
+    var openSuccess = function openSuccess(result) {
+        //Report whether opening the new tab was successful
+        if (result.success == true) {
+            //alert('Primary tab successfully opened');
+        } else {
+            //alert('Primary tab cannot be opened');
+        }
+    };
+
+    </script>
+    <apex:outputPanel rendered="{!division == 'GCCM' || division == 'RE&WS'}">
+        <div width="100%" id="filter" style="display:none;"/>
+        <div id="loadFilter" style="display:none;">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+            Loading . . .
+        </div>
+        <apex:form >
+            <apex:actionFunction name="reFreshSearchResult" reRender="panelId" status="statusId"/>
+            <apex:includeScript value="/support/console/29.0/integration.js"/>
+            <script src="{!URLFOR($Resource.FixPageBlockTableHeader,'jquery.min.js')}"></script>
+            <script src="{!URLFOR($Resource.FixPageBlockTableHeader,'jquery.fixheadertable.js')}"></script>
+            <apex:stylesheet value="{!URLFOR($Resource.FixPageBlockTableHeader,'base.css')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.FixPageBlockTableHeader,'jquery-ui-1.8.4.custom.css')}" />
+            <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+            <apex:outputPanel id="panelId">
+                <apex:pageMessages id="errorMsgId"></apex:pageMessages>
+                <apex:outputPanel rendered="{!ISNULL(cs.Defect__c)}">
+                    <b><apex:outputLabel value="    Product   : "/></b>
+                    <apex:selectList size="1" value="{!selectedProduct}">
+                        <apex:selectOptions value="{!prodList}"></apex:selectOptions>
+                    </apex:selectList>
+                    <!--<apex:inputField rendered="true" label="Product" value="{!Issue.Product__c}"/>&nbsp;&nbsp;&nbsp;-->
+                    <b><apex:outputLabel value="Type   : "/></b>
+                    <apex:inputField label="Type" value="{!Issue.Type}"/>
+                    <b><apex:outputLabel value="Search Text   : "/></b>
+                    <apex:inputText label="Search Text" style="width:250px" value="{!searchString}"/>
+                    <apex:commandButton value="Search" reRender="panelId" action="{!SearchIssue}" status="statusId"/>
+                    <apex:commandButton value="Create TFS/JIRA Issue" rendered="{!$Permission.Create_TFS_Issue_Permission}" reRender="errorMsgId" onclick="sforce.console.openPrimaryTab(null,'{!newIssueURL}',true,'New Issue',openSuccess,'');"/>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!AND(resultFlag,ISNULL(cs.Defect__c))}" id="tablePanelId">
+                    <table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                        <tr><td height="3px;" colspan="2"/></tr>
+                        <tr>
+                            <td width="75%">
+
+                            </td>
+                            <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="15%">
+                                <div>
+                                    <div align="right">
+                                        <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                        <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                        &nbsp;
+                                        <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                        <apex:outputText value="|"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+
+                                    </div>
+                                </div>
+                            </td>
+                            <td width="5%">
+
+                            </td>
+                        </tr>
+                        <tr><td height="3px;" colspan="2"/></tr>
+                    </table>
+
+                    <script>
+                    window.onresize = OnResizeTable;
+                    function OnResizeTable () {
+                        if({!ISNULL(cs.Defect__c)})
+                            reFreshSearchResult();
+                    }
+
+                    $(document).ready(function() {
+                        var foundInBuild = 90;
+                        var subject = 215;
+                        var description = 400;
+                        var tableWidth = 960;
+                        var windowWidth = window.innerWidth - 30;
+                        if(windowWidth > 960){
+                            tableWidth = windowWidth;
+                            var availableWidth = windowWidth - 960;
+                            foundInBuild = 90 + (availableWidth / 5);
+                            subject = 215 + ((availableWidth / 5) * 2);
+                            description = 400 + ((availableWidth / 5) * 2);
+                        }
+                        //alert(foundInBuild + '---' + subject + '-----' + description);
+                        $('.fixme').fixheadertable({
+                            whiteSpace  : 'normal',
+                            minWidthAuto : false,
+                            height : 400,
+                            colratio : [75,80,80,foundInBuild,subject,description],
+                            width:tableWidth,
+                        });
+                    });
+                    </script>
+                    <apex:dataTable styleClass="fixme" value="{!csList}" var="csObj" id="dtTableId">
+                        <apex:column style="vertical-align:top;">
+                            <apex:commandLink rendered="{!!ISNULL(csObj.Id)}" reRender="panelId" action="{!AttachIssueToCase}" value="Attach to Case" status="statusId">
+                                <apex:param value="{!csObj.Id}" assignTo="{!selectedIssueSFDCId}" name="selectedIssueSFDCId"/>
+                                <apex:param value="{!csObj.TFS_Id__c}" assignTo="{!selectedIssueTFSId}" name="selectedIssueTFSId"/>
+                            </apex:commandLink>
+                            <apex:outputText rendered="{!AND(ISNULL(csObj.Id), $Permission.Create_TFS_Issue_Permission)}" value=" | " />
+                            <apex:commandLink rendered="{!AND(ISNULL(csObj.Id), $Permission.Create_TFS_Issue_Permission)}"  reRender="panelId" action="{!createIssueFromTFS}" value="Create TFS Issue" status="statusId">
+                                <apex:param value="{!csObj.TFS_Id__c}" assignTo="{!selectedIssueTFSId}" name="selectedIssueTFSId"/>
+                            </apex:commandLink>
+                            <apex:outputText rendered="{!IF(AND(NOT( ISBLANK( csObj.Id ) ), NOT( ISBLANK( csObj.TFS_Id__c ) ), NOT( CONTAINS( JIRAProjectKeyMapped, LEFT(csObj.TFS_Id__c, 2) ) ), $Permission.Create_TFS_Issue_Permission,OR(CONTAINS(csObj.Product__c, 'Prolog'), CONTAINS(csObj.Product__c, 'Proliance'), CONTAINS(csObj.Product__c, 'Message Bus'))), TRUE, FALSE)}" value=" | " />
+                            <apex:commandLink rendered="{!IF(AND(NOT( ISBLANK( csObj.Id ) ), NOT( ISBLANK( csObj.TFS_Id__c ) ), NOT( CONTAINS( JIRAProjectKeyMapped, LEFT(csObj.TFS_Id__c, 2) ) ), $Permission.Create_TFS_Issue_Permission,OR(CONTAINS(csObj.Product__c, 'Prolog'), CONTAINS(csObj.Product__c, 'Proliance'), CONTAINS(csObj.Product__c, 'Message Bus'))), TRUE, FALSE)}" reRender="panelId" status="statusId" action="{!pushIssueToJIRA}" value="Move to JIRA">
+                                <apex:param value="{!csObj.Id}" assignTo="{!selectedIssueSFDCId}" name="selectedIssueSFDCId"/>
+                            </apex:commandLink>
+                        </apex:column>
+                        <apex:column headerValue="TFS/JIRA ID" style="vertical-align:top;">
+                            <apex:commandLink rendered="{!!ISNULL(csObj.Id)}" reRender="panelId"  onClick="sforce.console.openPrimaryTab(null,'/{!csObj.Id}',true,'Issue - {!csObj.CaseNumber}',openSuccess,'');">
+                                <apex:outputField value="{!csObj.TFS_Id__c}"></apex:outputField>
+                            </apex:commandLink>
+                            <apex:outputLabel rendered="{!ISNULL(csObj.Id)}">&nbsp;{!csObj.TFS_Id__c}</apex:outputLabel>
+                        </apex:column>
+                        <apex:column headerValue="State" style="vertical-align:top;">
+                            <apex:outputField value="{!csObj.TFS_Status__c}"></apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Found In Build" style="vertical-align:top;">
+                            <apex:outputField value="{!csObj.Found_In_Build__c}"></apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Subject" style="vertical-align:top;">
+                            <apex:outputField value="{!csObj.Subject}"></apex:outputField>
+                        </apex:column>
+                        <apex:column style="verticle-align:top" headerValue="Description" >
+                            <apex:outputField value="{!csObj.Description}"></apex:outputField>
+                        </apex:column>
+                    </apex:dataTable>
+
+                    <!--<table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                        <tr><td height="5px;" colspan="2"/></tr>
+                        <tr>
+                            <td width="75%">
+
+                            </td>
+                            <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                                <div>
+                                    <div align="right">
+                                        <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                        <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                        &nbsp;
+                                        <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                        <apex:outputText value="|"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                        <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="panelId" onclick="startLoad();" oncomplete="endLoad();" />
+                                        <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    </div>
+                                </div>
+                            </td>
+                            <td width="5%">
+
+                            </td>
+                        </tr>
+                    </table>-->
+                </apex:outputPanel>
+
+                <apex:outputPanel rendered="{!NOT(ISNULL(cs.Defect__c))}">
+                    <apex:pageBlock mode="maindetail">
+                        <apex:pageBlockSection columns="2" rendered="{!!ISNULL(cs.Defect__c)}">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="TFS/JIRA ID"></apex:outputLabel>
+                                <apex:commandLink reRender="errorMsgId" onclick="sforce.console.openPrimaryTab(null,'/{!Issue.Id}',true,'Issue - {!Issue.CaseNumber}',openSuccess,'');">
+                                    <apex:outputField value="{!Issue.TFS_Id__c}"/>
+                                </apex:commandLink>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Issue Number"></apex:outputLabel>
+                                <apex:commandLink reRender="errorMsgId" onclick="sforce.console.openPrimaryTab(null,'/{!Issue.Id}',true,'Issue - {!Issue.CaseNumber}',openSuccess,'');">
+                                    <apex:outputField value="{!Issue.CaseNumber}"/>
+                                </apex:commandLink>
+                            </apex:pageBlockSectionItem>
+                        <!--    <apex:outputField value="{!Issue.TFS_Status__c}"/> 
+                            <apex:outputField value="{!Issue.TFS_Close_Date__c}"/>  -->
+                            <apex:outputField value="{!Issue.Product__c}"/>
+                            <apex:outputField value="{!Issue.Features__c}"/>
+                       <!--     <apex:outputField value="{!Issue.Fixed_in_Build__c}"/> 
+                            <apex:outputField value="{!Issue.Confirmed_in_Build__c}"/>  -->
+                            <apex:outputField value="{!Issue.Subject}"/>
+                            <apex:outputField value="{!Issue.Description}"/>
+                        </apex:pageBlockSection>
+                        <apex:pageBlockButtons rendered="{!!ISNULL(cs.Defect__c)}">
+                            <apex:commandButton value="Change" reRender="panelId"  action="{!changeIssue}" status="statusId"/>
+                        </apex:pageBlockButtons>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:form>
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,56 @@
+<apex:page controller="ConsoleCTISingleMatchCls">
+    <apex:includeScript value="/soap/ajax/36.0/connection.js"/>
+    <apex:includeScript value="/support/console/36.0/integration.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-1.10.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.css')}"/>
+    
+    <script type="text/javascript">
+    if (sforce.console.isInConsole()) {
+        var callback1 = function (result) {
+            if (result.ids && result.ids.length > 0) {
+                sforce.console.cti.getCallAttachedData(result.ids[0], callback2, {getCallType:true});
+            }
+        };
+        
+        var callback2 = function (result) {
+            if(result.data !== undefined){
+                getRemoteRecordId(result.data);
+            }
+        };
+        //Note that we are using the CTI submodule here
+        sforce.console.cti.getCallObjectIds(callback1);
+    }
+    else {
+        alert('Sorry! This Page ONLY worked on Service Console.');
+    }
+    
+    function getRemoteRecordId(jsonCallData) {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ConsoleCTISingleMatchCls.returnAccountId}',
+            jsonCallData, 
+            function(result, event){
+                if (event.status) {
+                    // Get DOM IDs for HTML and Visualforce elements like this
+                    // Open Records in Same Tab
+                    var phNumber = JSON.parse(result);
+                    
+                    // Open Visualforce page tab in console
+                    openConsoleTab(phNumber);
+                }else {
+                    if(event.message.indexOf('returnAccountId') == -1)alert(event.message);
+                }
+            }, 
+            {escape: true}
+        );
+    }
+    
+    function openConsoleTab(pNumber){
+        var VFPageURL = '/apex/ConsoleCTIMultipleMatch?id='+pNumber;
+        
+        sforce.console.getEnclosingPrimaryTabId(function VFTabId(result) {
+            sforce.console.openPrimaryTab(result.id, VFPageURL, true, "Incoming - "+pNumber, sforce.console.refreshPrimaryTabById(result.id, true));
+        });
+    }
+    </script>
+</apex:page>

@@ -1,0 +1,17 @@
+<apex:page docType="html-5.0" controller="CommunitiesDirectionController" showHeader="false" sidebar="false" standardStylesheets="false" action="{!login}">
+    <script language="javascript">
+
+        function handleError()
+        {
+            alert('{!strErrorMessage}');
+            window.location = '{!strLoginPageLink }';
+            
+        }
+
+     </script>
+
+    <apex:form >
+        <body onload="handleError()">
+        </body>
+    </apex:form>
+</apex:page>

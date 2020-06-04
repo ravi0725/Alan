@@ -1,0 +1,63 @@
+<!-- 
+**
+* Company     : Trimble Inc.,
+* Description : This page used to add multiple contacts to Plancal - OnsiteTechSupport events.
+* History     : 
+* [12.MAR.2018] Suresh Babu Murugan - Code Created.
+* -->
+<apex:page standardController="Event" extensions="AddContactsOnSiteTechEventCls" tabStyle="Account" id="pageId" action="{!Search}">
+    <apex:form id="formId">
+        <apex:pageMessages id="errors"/>
+        <apex:pageBlock id="pgBlockId" title="Customer Search Page" rendered="{!NOT(isExceptionOccured)}">
+            <table>
+                <tr>
+                    <td><b>Customer Name</b></td>
+                    <td><apex:outputText value="{!AccountName}" /></td>
+                </tr>
+            </table>
+            <br/>
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!Search}" value="Search"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <apex:pageBlock id="pgBlockExpId" title="" rendered="{!isExceptionOccured}">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        <apex:pageBlock title="Related Contact records" id="contSect" rendered="{!displayContacts}">
+            <!--Contact Section-->
+            <apex:pageBlockTable value="{!ContList}" var="con" id="table" width="150%">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:inputCheckbox onclick="selectCheckboxes(this,'checkedone')"/>
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!con.checked}" id="checkedone"/>
+                </apex:column>
+                <apex:column value="{!Con.cat.Name}"/>
+                <apex:column value="{!Con.cat.Country_Code__c}"/>
+                <apex:column value="{!Con.cat.phone}"/>
+                <apex:column value="{!Con.cat.Email}"/>
+            </apex:pageBlockTable> 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!SelectedContact}" value="Save"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <script type="text/javascript">
+    function selectCheckboxes(inpt,receivedInptID){
+        var inputCheckBox = document.getElementsByTagName("input");                  
+        for(var i=0; i<inputCheckBox.length; i++){          
+            if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+                inputCheckBox[i].checked = inpt.checked;
+            }
+        }
+    }
+    </script>
+</apex:page>

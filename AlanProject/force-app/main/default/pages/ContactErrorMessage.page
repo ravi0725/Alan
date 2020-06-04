@@ -1,0 +1,6 @@
+<apex:page standardController="Contact" standardStylesheets="false" lightningStylesheets="false">
+    <div style="float:left; margin-right:5px;"><apex:image value="/img/msg_icons/warning24.png" rendered="{!AND(!Contact.Unique_Contact_Relationship__c, Contact.SystemValidatedDuplicateContact__c)}"/></div>
+    <span style="color: red;">
+        {!IF(AND(!Contact.Unique_Contact_Relationship__c, Contact.SystemValidatedDuplicateContact__c), $Label.TAP_Duplicate_Contact_Error,'' )}
+    </span>
+</apex:page>

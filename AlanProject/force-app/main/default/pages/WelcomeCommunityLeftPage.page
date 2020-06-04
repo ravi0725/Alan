@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false">
+  <style> body {background-color:transparent} </style> 
+  {!$Label.Welcome_Message_MEP_Portal}<br/><br/>
+  {!$Label.Recent_Press_Releases} <br/><br/>
+  {!$Label.Contact_MEP_Support}    
+</apex:page>

@@ -1,0 +1,18 @@
+<apex:page showheader="false" sidebar="false">
+
+<img id="liveagent_button_online_5735A000000ki9y" alt="Online" style="text-align:center;max-width:400px; display: none; border: 0px none; cursor: pointer" onclick="liveagent.startChat('5735A000000ki9y') " src="http://expandly.com/wp-content/uploads/2020/01/Online-Estimation-1.png " />
+<img id="liveagent_button_offline_5735A000000ki9y" alt="Offline" style="text-align:center; max-width:400px;display: none; border: 0px none; " src="http://expandly.com/wp-content/uploads/2020/01/offine-Estimation.png " />
+<script type="text/javascript">
+if (!window._laq) { window._laq = []; }
+window._laq.push(function(){liveagent.showWhenOnline('5735A000000ki9y', document.getElementById('liveagent_button_online_5735A000000ki9y'));
+liveagent.showWhenOffline('5735A000000ki9y', document.getElementById('liveagent_button_offline_5735A000000ki9y'));
+});</script>
+
+
+<script type='text/javascript' src='https://c.la1-c2-ord.salesforceliveagent.com/content/g/js/47.0/deployment.js'></script>
+<script type='text/javascript'>
+liveagent.init('https://d.la1-c2-ord.salesforceliveagent.com/chat', '572310000006rkf', '00Di0000000YVBC');
+</script>
+ 
+  
+</apex:page>

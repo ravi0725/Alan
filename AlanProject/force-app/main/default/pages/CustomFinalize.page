@@ -1,0 +1,179 @@
+<apex:page controller="CustomFinalizeController" sidebar="false" showChat="false" showHeader="false" action="{!callFinalize}">
+
+  <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 180px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 400px;
+            margin-left: -150px;
+            top:200px;
+        }
+        
+        .loadingScreen{
+                z-index:199;
+                width:100%;
+                height:97%;
+                background-color:black;
+                position:absolute;
+                opacity:0.4;
+                filter:alpha(40);
+                display:none;
+            }
+            
+            .loadingStyle{
+                z-index:999;
+                width:200px;
+                height:50px;
+                background-color:#3EAEDC;
+                color:white;
+                font-size:20px;
+                text-align:center;
+                border-radius:6px;
+                position:absolute;
+                left:40%;
+                top:35%;
+            }
+
+            .aptListButton:hover {
+                background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89bff8), color-stop(1, #4a88c9) );
+                background: -moz-linear-gradient( center top, #89bff8 5%, #4a88c9 100% );
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#89bff8', endColorstr='#4a88c9');
+                background-color: #89bff8;
+                text-decoration: none;
+                color: #ffffff;
+            }
+            
+            .aptListButton {
+            -moz-box-shadow: 0px 1px 0px 0px #ffffff;
+            -webkit-box-shadow: 0px 1px 0px 0px #ffffff;
+            box-shadow: 0px 1px 0px 0px #ffffff;
+            background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #71b2f6), color-stop(1, #236fbd) );
+            background: -moz-linear-gradient( center top, #71b2f6 5%, #236fbd 100% );
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#71b2f6', endColorstr='#236fbd');
+            background-color: #71b2f6;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            display: inline-block;
+            color: #ffffff !important;
+            font-family: arial;
+            font-size: 12px;
+            font-weight: normal;
+            padding: 5px 24px;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+
+    </style>
+    <script>
+        AdvancePriceFlag = '{!AdvancedPricingflag}';
+        BillToChangedFlag = '{!BilltoChangedflag}';
+    </script>
+    <apex:form >   
+           <apex:outputPanel id="Item_Split" rendered="{!errorPopup}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                
+                    <apex:pageBlockButtons location="bottom">
+                         <apex:commandLink value="Reprice" styleClass="aptListButton" action="{!validateAdvancePriceFlag}"/>
+                         <apex:commandLink value="Back" styleClass="aptListButton" action="{!backtocart}"/>
+                    </apex:pageBlockButtons>
+                
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                              <div id="pbField" style="text-align:center">
+                               <apex:outputText value="There was some error during Pricing. Please click Reprice button and then click Finalize button." />
+                              </div>    
+                        </apex:outputPanel>
+                     </apex:pageblockSection>
+                 </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>
+         <apex:outputPanel id="Finalize_Error" rendered="{!FinalizeError}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                 <apex:commandButton value="Ok" action="{!backtocart}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                              <div id="pbField" style="text-align:center">
+                               <apex:outputText value="Cannot Finalize Quote, Approval Request Initiated. Please Submit for Approval." />
+                              </div>    
+                        </apex:outputPanel>
+                     </apex:pageblockSection>
+                 </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>
+        
+         <apex:outputPanel id="Contraint_Rule_Error" rendered="{!ConstraintRuleError}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                 <apex:commandButton value="Ok" action="{!backtocart}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                              <div id="pbField" style="text-align:center">
+                               <apex:outputText value="Cannot Finalize Quote with errors on Constraint Rule." />
+                              </div>    
+                        </apex:outputPanel>
+                     </apex:pageblockSection>
+                 </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>
+                 
+      </apex:form>   
+</apex:page>

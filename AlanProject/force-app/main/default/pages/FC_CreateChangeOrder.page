@@ -1,0 +1,13 @@
+<apex:page standardController="Apttus__APTS_Agreement__c" extensions="FC_CreateChangeOrderController" action="{!beginChangeOrderProcess}">
+
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Name}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus__Account__r.Name}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus__Account__c}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus__Related_Opportunity__c}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus__Related_Opportunity__r.CurrencyIsoCode}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus_QPComply__RelatedProposalId__r.Apttus_Proposal__Opportunity__c}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus_QPComply__RelatedProposalId__r.Apttus_Proposal__Opportunity__r.CurrencyIsoCode}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus_QPComply__RelatedProposalId__r.Apttus_QPConfig__PriceListId__c}"/>
+    <apex:outputText rendered="false" value="{!Apttus__APTS_Agreement__c.Apttus_QPComply__RelatedProposalId__r.Apttus_Proposal__Primary_Contact__c}"/>
+    
+</apex:page>

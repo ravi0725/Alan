@@ -1,0 +1,197 @@
+<apex:page sidebar="false" showChat="false" standardController="Import_Data__c" extensions="ImportDataController" showHeader="false" id="pgId">
+    <style>
+        .tooltip {
+        width: 20px;
+        float: right;
+        display:inline;
+        }
+        
+        div.tooltip span {
+            display: none;
+            font-weight:normal;
+            text-align:left;
+            padding: 3px 5px;
+            margin-left: 8px;
+            width: 250px;
+        }
+        
+        div.tooltip:hover span {
+            display: inline;
+            position: absolute;
+            border: 1px solid #cccccc;
+            background: #FFC;
+            color: #000000;
+            z-index:10000;
+        }
+        
+        .loadingScreen{
+            z-index:199;
+            width:100%;
+            height:97%;
+            background-color:black;
+            position:absolute;
+            opacity:0.4;
+            filter:alpha(40);
+            display:none;
+        }
+        
+        .loadingStyle{
+            z-index:999;
+            width:200px;
+            height:50px;
+            background-color:#3EAEDC;
+            color:white;
+            font-size:24px;
+            text-align:center;
+            border-radius:6px;
+            position:absolute;
+            left:40%;
+            top:35%;
+        }
+    </style>
+    <script>
+        function validateFile(fileName){
+            if(fileName == ''){
+                alert('Please select the file to upload');
+            }
+        }
+        
+        function PopIt() { 
+            if({!runBatchEnable})
+                return "Processing bar will not be displayed if page is refreshed"; 
+        }
+        
+        function UnPopIt()  { /* nothing to return */}
+        
+        $(document).ready(function() {
+            window.onbeforeunload = PopIt;
+            $("a").click(function(){ window.onbeforeunload = UnPopIt; });
+        });
+    
+        (function($){
+            $(document).ready(function() {
+                // Connect to the CometD endpoint
+                $.cometd.init({
+                    url: window.location.protocol+'//'+window.location.hostname+'/cometd/25.0/',
+                    requestHeaders: { Authorization: 'OAuth {!$Api.Session_ID}'},
+                    appendMessageTypeToURL : false
+                });
+                    
+                // Subscribe to a topic. JSON-encoded update will be returned
+                $.cometd.subscribe('/topic/ImportDataStatusCheck', function(message) {
+                    var id = '{!Import_Data__c.Id}';
+                    var dataId = JSON.stringify(message.data.sobject.Id).replace('"','').replace('"','');
+                    if(id.indexOf(dataId) != -1){
+                        var TotalJobItems = parseInt(JSON.stringify(message.data.sobject.Total_Items__c));
+                        var JobItemsProcessed = parseInt(JSON.stringify(message.data.sobject.Items_Processed__c));
+                        progressBar(((JobItemsProcessed * 100) / TotalJobItems),JobItemsProcessed, $('#progressBar'));
+                        var str = JSON.stringify(message.data.sobject.Status__c).replace('"','');
+                        $('#StatusId').html(str.replace('"','') + ' ( Total : ' + TotalJobItems + ' )');
+                        if(str.indexOf('Completed') != -1 || str.indexOf('Failed') != -1){
+                            $('#resultId').css({"display":"block"});
+                            $('#loadId').css({"display":"none"});
+                            $('#DMLOperationCellId').html(message.data.sobject.DML_Operation_Result__c);
+                            $('#CalloutCellId').html(message.data.sobject.Callout_Result__c);
+                        }else if(str.indexOf('Web Service Callout initializing') != -1){
+                            $('#resultId').css({"display":"block"});
+                            $('#DMLOperationCellId').html(message.data.sobject.DML_Operation_Result__c);
+                            $('#CalloutCellId').html(message.data.sobject.Callout_Result__c);
+                        }else{
+                            $('#loadId').css({"display":"block"});
+                        }
+                    }
+                });
+
+            });
+       
+        })(jQuery)
+        
+        function progressBar(percent, processedRds, $element) {
+            var progressBarWidth = percent * $element.width() / 100;
+            $element.find('div').animate({ width: progressBarWidth }, 500).html(processedRds);
+        }
+    </script>
+    <apex:form id="formId">
+    <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/cometd.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/jquery-1.5.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/json2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/jquery.cometd.js')}"/>
+    <apex:includeScript value="/support/console/29.0/integration.js"/>
+    
+        <apex:pageBlock >
+            <apex:pageMessages id="msgId"></apex:pageMessages>
+            <div align="center">
+                <apex:selectList label="Select File" required="true" id="selectFileId" value="{!attachmentId}" multiselect="false" size="1">
+                    <apex:selectOptions value="{!FileList}"></apex:selectOptions>
+                </apex:selectList>
+                <apex:commandButton action="{!validateHeader}" reRender="processID,resultId,msgId" value="Start Processing Data" id="import" style="width:auto;"/>       
+            </div> 
+            
+            <apex:pageblocksection id="processID"> 
+                <style>
+                    .round-pink {
+                        border-radius: 10px;
+                        height:20px;
+                        background: #e6e5e2;    
+                        box-shadow: 0 -1px 1px #c0bfbc inset;
+                    }
+                    
+                    .round-pink div {
+                        border-radius: 9px;
+                        box-shadow: 0 2px 2px #333; 
+                        background-color: #ff00f0;
+                        background: -webkit-linear-gradient(top, #ff00f0, #a3039a);
+                        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ff00f0), to(#a3039a)); 
+                        background: -moz-linear-gradient(top, #ff00f0, #a3039a); 
+                        background: -ms-linear-gradient(top, #ff00f0, #a3039a); 
+                        background: -o-linear-gradient(top, #ff00f0, #a3039a);  
+                    }
+                </style>
+            </apex:pageblocksection>
+            <br/>
+            <div id="progressBarDivId" align="center" width="100%">
+                <table  width="1200px" align="center">
+                    <tr>
+                        <td width="605px">
+                            <div id="progressBar" style="width:600px;height:20px" class="round-pink">
+                                <div style="float:left;padding-top:3px;vertical-align:middle;height:18px;text-align:center;color:white;font-weight:bold">
+                                </div>
+                            </div>
+                        </td>
+                        <td >
+                        <apex:outputpanel id="resultId">
+                            <table>
+                                <tr>
+                                    <td >
+                                        <img id="loadId" style="display:none; height:20px; width:20px;" src="{!$Resource.Apttus_Approval__Image_LoadingPage}"/>   <!--{!$Resource.DSE__loading}-->
+                                    </td>
+                                    <td >  
+                                        <b id="StatusId"></b>
+                                    </td>
+                                </tr>
+                            </table>
+                        </apex:outputpanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <br/>
+                            <table id="resultId" style="border-width:1px; border-style:solid;display:none;" cellspacing="0" cellpadding="0" width="50%">
+                                <tr >
+                                    <td style="padding:6px;border-width:1px;" width="25%"><b> DML Operation Result </b></td>
+                                    <td style="padding:6px;border-width:1px;" width="25%"><b> Callout Operation Result </b></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px;border-width:1px;" id="DMLOperationCellId"></td>
+                                    <td style="padding:6px;border-width:1px;" >
+                                        <output id="CalloutCellId" type="textarea"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:pageBlock>  
+    </apex:form>   
+</apex:page>

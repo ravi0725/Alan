@@ -1,0 +1,31 @@
+<!--/************************************************************************************
+* Name          :    AccountProductAuthorization
+* Description   :    
+* Author        :    Ashfaq
+
+Modification Log
+----------------
+Date             Developer                Comments
+------------------------------------------------------------------------------------------
+9/5/2013                   Ashfaq                  Created
+*/ -->
+<apex:page standardcontroller="Account_Product_Authorization__c" recordSetVar="accounts" extensions="AccountProductAuthorizationController">
+<apex:form > 
+    <apex:pageMessages id="msg"/>  
+    <apex:pageBlock title="Account Product Authorizations"> 
+       <apex:pageBlockButtons location="top">
+           <apex:commandButton action="{!save}" value="Save"/>
+           <apex:commandButton action="{!saveMore}" value="Save & More"/>
+           <apex:commandButton action="{!cancel}" value="Cancel"/>
+       </apex:pageBlockButtons>
+       <apex:pageBlockTable value="{!authorizationList}" var="auth" id="theTable">
+           <apex:column headerValue="User">
+              <apex:inputField value="{!auth.User__c}" />
+           </apex:column>
+           <apex:column headerValue="Product Authorization">
+              <apex:inputField value="{!auth.Product_Authorization__c}" />
+           </apex:column>
+       </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:form>  
+</apex:page>

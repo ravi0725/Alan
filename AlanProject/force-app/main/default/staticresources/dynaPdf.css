@@ -1,0 +1,26 @@
+@page {
+	padding-top: 60px;
+	margin-bottom: 4cm;
+	size: 210mm 297mm;
+	@top-center {
+		content: element(header);
+	}
+	@bottom-left {
+		content: element(footer);
+	}
+}
+div.header {
+	padding: 10px;
+	position: running(header);
+}
+div.footer {
+	display: block;
+	padding: 10px;
+	position: running(footer);
+}
+.pagenumber:before {
+	content: counter(page);
+}
+.pagecount:before {
+	content: counter(pages);
+}

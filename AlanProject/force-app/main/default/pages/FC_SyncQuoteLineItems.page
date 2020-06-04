@@ -1,0 +1,33 @@
+<apex:page title="Sync Quote to Agreement" docType="html-5.0" standardController="Apttus_Proposal__Proposal__c" extensions="FC_SyncQuoteLineItemsController">
+    <apex:form >
+    <apex:pageMessages escape="false"/>
+    <apex:pageBlock rendered="{!validAgreements.size > 0}">
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton action="{!syncLineItems}" value="Sync Line Items"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Choose an agreement (only valid agreements will be shown)" collapsible="false" columns="1">
+            <apex:pageBlockTable value="{!validAgreements}" var="a">
+                <apex:column >
+                    <apex:actionsupport action="{!selectAgreement}" event="onclick" rerender=" ">
+                    <input type="radio" name="selectradio"/>
+                    <apex:param name="agreementId" value="{!a.Id}"/>
+                    </apex:actionsupport>
+                </apex:column>
+                <apex:column value="{!a.Apttus__FF_Agreement_Number__c}"/>
+                <apex:column value="{!a.Name}"/>
+                <apex:column headerValue="Record Type">
+                    <apex:outputField value="{!a.RecordType.Name}"/>
+                </apex:column>
+                <apex:column value="{!a.Apttus__Status_Category__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+        <apex:outputText style="font-color: red" value="Warning: Clicking the button will overwrite any existing line items."/>
+    </apex:pageBlock>
+    
+    <apex:pageBlock >
+        <apex:pageBlockSection >
+            <apex:outputLink value="/{!Apttus_Proposal__Proposal__c.Id}">&lt;&lt; Return to proposal</apex:outputLink>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

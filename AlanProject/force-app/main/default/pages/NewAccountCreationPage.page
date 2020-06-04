@@ -1,0 +1,439 @@
+<apex:page standardController="Account"  extensions="AccountCreationController" >
+    <apex:form id="formid">
+    <apex:pageMessages />
+    <apex:includeScript value="/support/console/43.0/integration.js"/>
+    <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+        
+        .AccountRow{
+            background-color: #E0E0E0;
+            border-radius:6px;
+        }
+        
+        .AccountInfo{
+            color:white;
+            background-color:#3EAEDC;
+            padding:2px;
+            border-radius:2px;
+        }
+        
+        .tableClass{
+            border-style:solid;
+            border-color:#E0E3E5;
+            border-width:1px;
+            padding:3px;
+        }
+        
+        .headClass{
+            background-color:#F2F3F3;
+            border-style:solid;
+            border-color:#E0E3E5;
+            border-width:1px;
+            text-align:center;
+            padding:3px;
+        }
+        
+        .trRows{
+            background-color:white;
+            padding:3px;
+            vertical-align:bottom;
+            border-style:solid;
+            border-color:#E0E3E5;
+            border-width:1px;
+            border-top:none;
+            border-right:none;
+            border-left:none;
+        }
+        
+    </style>
+    <script>
+        function changeValue(input, textid) {
+            document.getElementById(textid).value = input.value;
+            //alert('id===='+document.getElementById(textid).value);
+            
+        }
+        
+        function startLoad(){
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("loadFilter").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("loadFilter").style.display = "none";
+        }
+        
+        function openURL(url){
+            console.log('----console----' + sforce.console.isInConsole());
+            if(sforce.console.isInConsole()){
+                sforce.console.openPrimaryTab(null, url, true);
+            }else if({! $User.UIThemeDisplayed == 'Theme4d'}){
+                navigateToUrl(url,null,'new');    
+            }else{
+                //window.open(url,'_blank');
+            }
+        }
+        
+        window.onload = function(e){ 
+            if(sforce.console.isInConsole())
+                sforce.console.setTabTitle('Search Account');
+        }
+    </script>
+    <div width="100%" id="filter" style="display:none;"/>
+    <div id="loadFilter" style="display:none;">
+        <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+        Loading . . . 
+    </div>
+    <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <apex:actionFunction action="{!callLinkAccWebService}" status="statusId" name="callLinkAccWebService"/>
+         <apex:pageblock title="{!$Label.Search_For_Account}" id="PBid">        
+            <apex:pageblockbuttons location="bottom">
+                <apex:commandbutton status="statusId" value="{!$Label.Search_For_Account}"
+                    action="{!SearchSFDCData}" />
+                <apex:commandbutton status="statusId" value="{!$Label.Search_Account_from_MDM}" action="{!SearchMDMData}"
+                    rendered="{!displaysearchbutton}" />
+                    
+                <!--<apex:commandbutton value="{!$Label.Create_Account_from_MDM}" 
+                    action="{!createAccountWithUserSelected}" 
+                    rendered="{!IF(wrapperlist!=null && wrapperlist.size>0,true,false)}" /> -->
+                    
+                <apex:commandButton status="statusId" action="{!createNewaccount}"
+                        value="{!$Label.Create_New_Account}"
+                        onclick="if(!sforce.console.isInConsole())openURL('/001/e?retURL=%2F001%2Fo');" 
+                        rendered="{!MDMSearchDone}"/>   
+                <apex:commandButton status="statusId" action="{!Cancel}" value="{!$Label.Cancel_Button_Value}" />     
+                    
+            </apex:pageblockbuttons>
+            <apex:pageblocksection title="{!$Label.Account_Information}" collapsible="false" columns="2">
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel value="{!$Label.Account_Name}" for="accid" />
+                        <apex:inputtext value="{!AccName}" id="accid" tabindex="1"/>
+                    </apex:pageblockSectionItem>
+                    
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel value="{!$Label.Phone}" for="accPhId" />
+                        <apex:inputtext value="{!AccPhone}" id="accPhId" tabindex="3"/>
+                    </apex:pageblockSectionItem>
+                    
+                    <apex:pageblocksectionitem >
+                        <apex:outputLabel for="acc17country" value="{!$Label.Country_for_VF}"></apex:outputLabel>
+                        <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block" rendered="{!NOT(OR(Profile =='TAP - Support Manager',Profile =='TAP - Support Rep',Profile =='TAP - Sales Rep'))}" />
+                        <apex:inputtext value="{!country}" id="acc17country" tabindex="2"/>
+                        </apex:outputPanel>
+                    </apex:pageblocksectionitem>
+                    
+            </apex:pageblocksection>    
+            
+             <apex:pageblocksection title="{!$Label.Account_Address_Information}"  collapsible="false"  columns="1">
+
+                    <apex:pageblocksectionItem helpText="{!$ObjectType.Lead.Fields.Address1__c.inlineHelpText}">
+                        <apex:outputlabel value="{!$Label.Street_Address}" for="Addressid"/>
+                        <apex:inputtextarea value="{!straddress}" id="Addressid" cols="30" rows="3" tabindex="4"/>                    
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionitem >
+                        <apex:outputLabel for="strCityid" value="{!$Label.City_for_VF}"></apex:outputLabel>
+                        <apex:inputtext value="{!city}" id="strCityid" tabindex="5"/>
+                    </apex:pageblocksectionitem>
+                    
+                    <apex:pageblocksectionitem >
+                        <apex:outputLabel for="strStateid" value="{!$Label.State_Province}"></apex:outputLabel>
+                        <apex:inputtext value="{!State}" id="strStateid" tabindex="6"/>
+                    </apex:pageblocksectionitem>
+            
+                    <apex:pageblocksectionitem >
+                        <apex:outputLabel for="strCountyid" value="County"></apex:outputLabel>
+                        <apex:inputtext value="{!County}" id="strCountyid" tabindex="6"/>
+                    </apex:pageblocksectionitem>
+            
+                    <apex:pageblocksectionitem >
+                        <apex:outputLabel for="strpostalcodeid" value="{!$Label.Postal_Code}"></apex:outputLabel>                   
+                        <apex:inputtext value="{!Postalcode}" id="strpostalcodeid" tabindex="7"/>                   
+                    </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+        </apex:pageblock>
+        
+        <apex:outputPanel id="errorId">
+            <apex:pageMessages ></apex:pageMessages>
+            <center>
+                <apex:commandButton status="statusId" rendered="{!enableDuplicateValidationSkipButton}" reRender="statusId,errorId" oncomplete="if({!NOT(errorFlag)})callLinkAccWebService();" value="Ignore Duplicate Validation" action="{!createAccountWithUserSelected}">
+                    <apex:param value="true" assignTo="{!duplicateValidationSkipFlag}" name="duplicateValidationSkipFlag"/>
+                </apex:commandButton>
+            </center>
+        </apex:outputPanel>
+        <apex:outputpanel rendered="{!DIsplayResults}" id="Opid">
+            <apex:pageBlock id="Resultsid">
+                <table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                   <tr>
+                       <td width="80%">
+                           
+                       </td>
+                       <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                           <div>
+                               <div align="right">
+                                   <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                    <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                    &nbsp;
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:outputText value="|"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />   
+                                    <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    
+                                </div>  
+                            </div>
+                       </td>
+                   </tr>
+               </table>
+                <apex:repeat value="{!wrapperlist}" var="wrapperObj">
+                    <table width="100%" class="AccountRow">
+                        <tr>
+                            <td style="padding:2px;">
+                                <table cellpadding="0" cellspacing="0" style="padding:2px;">
+                                    <tr>
+                                        <td>
+                                            <b><apex:outputLabel value="Account Name"/></b>
+                                            :&nbsp;<a style="cursor:pointer;text-decoration:underline;" onclick="openURL('/{!wrapperObj.accObj.Id}');" target="_blank">{!wrapperObj.accObj.Name}</a>
+                                            <!--<a href="/{!wrapperObj.accObj.Id}" target="_blank">{!wrapperObj.accObj.Name}</a></b>-->
+                                        </td>
+                                        <td width="30px">&nbsp;</td>
+                                        <td>
+                                            <b>Enterprise Account Number : </b>{!wrapperObj.accObj.Enterprise_Party_Number__c}
+                                        </td> 
+                                        <td width="30px">&nbsp;</td> 
+                                         <td>
+                                            <b>Oracle Account Number : </b>{!wrapperObj.accObj.EBS_Account_Number__c}
+                                        </td> 
+                                        <td>&nbsp;</td>                                        
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table width="100%">
+                                    <tr>
+                                        <td>
+                                            <apex:pageBlockTable value="{!wrapperObj.AddressList}" var="address" columnsWidth="8%,14%,3%,19%,10%,5%,9%,9%,9%,9%,5%">
+                                                <apex:column >
+                                                    <a  style="cursor:pointer;text-decoration:underline;" onclick="openURL('/{!address.Id}');" target="_blank">View</a>&nbsp;&nbsp;
+                                                    <apex:commandLink status="statusId" rendered="{!NOT(address.Sell_To__c)}" reRender="loadFilter" value="Create" action="{!createSellToAccount}">
+                                                        <apex:param value="{!wrapperObj.accObj.Id}" assignTo="{!selSFDCAccId}" name="selSFDCAccId"/>
+                                                        <apex:param value="{!wrapperObj.accObj.Enterprise_Party_Number__c}" assignTo="{!SelAccEnterPriseMasterId}" name="SelAccEnterPriseMasterId"/>
+                                                        <apex:param value="{!address.Id}" assignTo="{!selSFDCAddId}" name="selSFDCAddId"/>
+                                                        <apex:param value="{!address.Enterprise_Address_Number__c}" assignTo="{!SelAddEnterPriseMasterId}" name="SelAddEnterPriseMasterId"/>
+                                                        <apex:param value="{!address.FCH_Party_Site_ID__c}" assignTo="{!selectedAddress}" name="selectedAddress"/>
+                                                    </apex:commandLink>
+                                                </apex:column>
+                                                <apex:column value="{!address.Name}" headerValue="{!$ObjectType['Address__c'].fields.Name.Label}"/>
+                                                <apex:column value="{!address.Sell_To__c}" headerValue="{!$ObjectType['Address__c'].fields.Sell_To__c.Label}"/>
+                                                <apex:column headerValue="Street">
+                                                    {!IF(AND(address.Address_line1__c != null,address.Address_line2__c != null,address.Address_line3__c != null,address.Address_line4__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c + ', ' + address.Address_line3__c + ', ' + address.Address_line4__c , 
+                                                        IF(AND(address.Address_line1__c != null,address.Address_line2__c != null,address.Address_line3__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c + ', ' + address.Address_line3__c , 
+                                                            IF(AND(address.Address_line1__c != null,address.Address_line2__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c ,
+                                                                IF(AND(address.Address_line1__c != null)  , address.Address_line1__c , ''))))} 
+                                                </apex:column> 
+                                                <apex:column value="{!address.City__c}" headerValue="{!$ObjectType['Address__c'].fields.City__c.Label}"/>
+                                                <apex:column value="{!address.State__c}" headerValue="{!$ObjectType['Address__c'].fields.State__c.Label}"/>   
+                                                <apex:column value="{!address.County__c}" headerValue="{!$ObjectType['Address__c'].fields.County__c.Label}"/> 
+                                                <apex:column value="{!address.Zip__c}" headerValue="{!$ObjectType['Address__c'].fields.Zip__c.Label}"/>
+                                                <apex:column value="{!address.Country__c}" headerValue="{!$ObjectType['Address__c'].fields.Country__c.Label}"/>
+                                                <apex:column value="{!address.Enterprise_Address_Number__c}" headerValue="{!$ObjectType['Address__c'].fields.Enterprise_Address_Number__c.Label}"/>
+                                                <apex:column value="{!address.FCH_Party_Site_ID__c}" headerValue="{!$ObjectType['Address__c'].fields.FCH_Party_Site_ID__c.Label}"/>
+                                                <apex:column value="{!address.POS_Flag__c}" headerValue="{!$ObjectType['Address__c'].fields.POS_Flag__c.Label}"/>
+                                            </apex:pageBlockTable>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                </apex:repeat>
+                <table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                   <tr>
+                       <td width="80%">
+                           
+                       </td>
+                       <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                           <div>
+                               <div align="right">
+                                   <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                    <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                    &nbsp;
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:outputText value="|"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="Opid" onclick="startLoad();" oncomplete="endLoad();" />   
+                                    <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                </div>  
+                            </div>
+                       </td>
+                   </tr>
+               </table>
+            </apex:pageBlock>
+        </apex:outputpanel>
+
+        <apex:outputpanel rendered="{!DisplayMDMResults}" id="MDMopid">
+            <apex:pageBlock id="mdmresultid">
+                <table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                   <tr>
+                       <td width="80%">
+                           
+                       </td>
+                       <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                           <div>
+                               <div align="right">
+                                    <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                    <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                    &nbsp;
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:outputText value="|"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />   
+                                    <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    
+                                </div>  
+                            </div>
+                       </td>
+                   </tr>
+               </table>
+                <apex:repeat value="{!wrapperlist}" var="wrapperObj">
+                    <table width="100%" class="AccountRow">
+                    <tr>
+                        <td style="padding:2px;" align="left" width="100%">
+                            <div style="padding:2px;" align="left">
+                                <table cellpadding="0" cellspacing="0" align="left">
+                                <tr>
+                                    <td>
+                                        <b><apex:outputLabel value="Account Name"/></b>
+                                        :&nbsp;{!wrapperObj.accObj.Name}
+                                        <!--<a href="/{!wrapperObj.accObj.Id}" target="_blank">{!wrapperObj.accObj.Name}</a></b>-->
+                                    </td>
+                                    <td width="30px">&nbsp;</td>
+                                    <td>
+                                        <b>Enterprise Account Number -- : </b>{!wrapperObj.accObj.Enterprise_Party_Number__c}
+                                    </td> 
+                                    <td>&nbsp;</td>                                       
+                                </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100%">
+                            <table width="100%" cellpadding="0" cellspacing="0" class="tableClass">
+                                <tr>
+                                    <td>
+                                        <apex:pageBlockTable value="{!wrapperObj.AddressList}" var="address" columnsWidth="12%,12%,17%,8%,5%,8%,10%,8%,10%,10%">
+                                            <apex:column >
+                                                <a  onclick="openURL('/{!address.Id}');" target="_blank" style="cursor:pointer;text-decoration:underline;display:{!IF(address.Id != null && address.Id != '' , 'block' , 'none')}">View</a>
+                                                <apex:commandLink status="statusId" reRender="statusId,errorId" rendered="{!NOT(address.Id != null && address.Id != '')}" oncomplete="if({!AND(NOT(errorFlag) , NOT(duplicateValidationSkipFlag))})callLinkAccWebService();" value="Create" action="{!createAccountWithUserSelected}">
+                                                    <apex:param value="{!wrapperObj.accObj.Enterprise_Party_Number__c}" assignTo="{!SelAccEnterPriseMasterId}" name="SelAccEnterPriseMasterId"/>
+                                                    <apex:param value="{!wrapperObj.accObj.FCH_Party_ID__c}" assignTo="{!SelAccFCHId}" name="SelAccFCHId"/>
+                                                    <apex:param value="{!address.Enterprise_Address_Number__c}" assignTo="{!SelAddEnterPriseMasterId}" name="SelAddEnterPriseMasterId"/>
+                                                    <apex:param value="{!address.FCH_Party_Site_ID__c}" assignTo="{!SelAddFCHId}" name="SelAddFCHId"/>
+                                                </apex:commandLink>
+                                                <!--<apex:commandLink status="statusId" rendered="{!NOT(address.Id != null && address.Id != '')}" value="Create New Account" action="{!createNewAcccount}">
+                                                    <apex:param value="{!address.Enterprise_Address_Number__c}" assignTo="{!SelAddEnterPriseMasterId}" name="SelAddEnterPriseMasterId"/>
+                                                    <apex:param value="{!address.FCH_Party_Site_ID__c}" assignTo="{!selectedAddress}" name="selectedAddress"/>
+                                                </apex:commandLink>-->
+                                            </apex:column>
+                                            <!--<apex:column value="{!wrapperObj.accObj.Id}"/>
+                                            <apex:column value="{!address.Id}"/>-->
+                                            <apex:column value="{!address.Name}" headerValue="{!$ObjectType['Address__c'].fields.Name.Label}"/>
+                                                <apex:column headerValue="Street">
+                                                    {!IF(AND(address.Address_line1__c != null,address.Address_line2__c != null,address.Address_line3__c != null,address.Address_line4__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c + ', ' + address.Address_line3__c + ', ' + address.Address_line4__c , 
+                                                        IF(AND(address.Address_line1__c != null,address.Address_line2__c != null,address.Address_line3__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c + ', ' + address.Address_line3__c , 
+                                                            IF(AND(address.Address_line1__c != null,address.Address_line2__c != null)  , address.Address_line1__c + ', ' + address.Address_line2__c ,
+                                                                IF(AND(address.Address_line1__c != null)  , address.Address_line1__c , ''))))} 
+                                                </apex:column>
+                                                <apex:column value="{!address.City__c}" headerValue="{!$ObjectType['Address__c'].fields.City__c.Label}"/>
+                                                <apex:column value="{!address.State__c}" headerValue="{!$ObjectType['Address__c'].fields.State__c.Label}"/>   
+                                                <apex:column value="{!address.County__c}" headerValue="{!$ObjectType['Address__c'].fields.County__c.Label}"/> 
+                                                <apex:column value="{!address.Zip__c}" headerValue="{!$ObjectType['Address__c'].fields.Zip__c.Label}"/>
+                                                <apex:column value="{!address.Country__c}" headerValue="{!$ObjectType['Address__c'].fields.Country__c.Label}"/>
+                                                <apex:column value="{!address.Enterprise_Address_Number__c}" headerValue="{!$ObjectType['Address__c'].fields.Enterprise_Address_Number__c.Label}"/>
+                                                <apex:column value="{!address.FCH_Party_Site_ID__c}" headerValue="{!$ObjectType['Address__c'].fields.FCH_Party_Site_ID__c.Label}"/>
+                                        </apex:pageBlockTable>
+                                    </td>
+                                </tr>
+                            </table>
+                           
+                        </td>
+                    </tr>
+                    </table>
+                    <br/>
+                </apex:repeat>
+                <table border="0" width="100%" id="tbId" cellpadding="0" cellspacing="0">
+                   <tr>
+                       <td width="80%">
+                           
+                       </td>
+                       <td nowrap="true" style="vertical-align:bottom;" colspan="5" width="20%">
+                           <div>
+                               <div align="right">
+                                   <apex:outputText rendered="{!((currentPage * perPageRecords) < totalRecords)}" value="{!currentPage * perPageRecords} of {!totalRecords}"></apex:outputText>
+                                    <apex:outputText rendered="{!((currentPage * perPageRecords) >= totalRecords)}" value="{!totalRecords} of {!totalRecords}"></apex:outputText>
+                                    &nbsp;
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="<<  " action="{!first}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="<<  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage > 1}" value="Previous  " action="{!previous}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="Previous  " rendered="{!!(currentPage > 1)}" style="color:#747E96;"/>
+                                    <apex:outputText value="|"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  Next" action="{!next}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />
+                                    <apex:outputText value="  Next" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                    <apex:commandLink status="statusId" rendered="{!currentPage < totalPage}" value="  >>" action="{!last}" style="color:#015BA7; text-decoration:none;" reRender="MDMopid" onclick="startLoad();" oncomplete="endLoad();" />   
+                                    <apex:outputText value="  >>" rendered="{!!(currentPage < totalPage)}" style="color:#747E96;"/>
+                                </div>  
+                            </div>
+                       </td>
+                   </tr>
+               </table>
+            </apex:pageBlock>
+        </apex:outputpanel> 
+
+        <apex:outputpanel rendered="{!NoResultsDisplay}">
+            <font color="red">{!$Label.Alert_Text}</font>
+        </apex:outputpanel>
+    </apex:form>
+
+
+</apex:page>

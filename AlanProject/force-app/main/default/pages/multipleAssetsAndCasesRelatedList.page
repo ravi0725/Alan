@@ -1,0 +1,26 @@
+<apex:page standardController="Case" extensions="MultipleAssetsRelatedListController" showHeader="false" sidebar="false" >
+
+<apex:form >
+  <apex:pageBlock mode="main" id="pb"> 
+      <apex:pageMessages />
+      <apex:pageBlockButtons location="top">
+         <apex:outputLink value="/apex/multipleAssetsAndCasesPage?id={!caseId}" styleClass="btn" style="text-decoration:none;" target="_top">
+            {!$Label.New_Assets}
+         </apex:outputLink> 
+      </apex:pageBlockButtons>   
+      <apex:pageBlockTable value="{!RelatedCompetitorAsset}" id="CompAssetTable" var="compAsset" rendered="{!AND(RelatedCompetitorAsset!=null, RelatedCompetitorAsset.size > 0)}">
+        <apex:column headerValue="{!$Label.Action}" width="5%">
+          <apex:outputLink target="_parent" value="/apex/DetailMutlipleAssetsAndCasesPage?id={!compAsset.Id}">
+            {!$Label.Edit}
+          </apex:outputLink>&nbsp;|&nbsp;<apex:outputLink target="_parent" onclick="return confirm('{!$Label.Are_you_sure}');" value="{!URLFOR($Action.Multiple_Assets_Case_Junction__c.Delete, compAsset.Id, [retURL='/'&compAsset.Case__c])}">{!$Label.Delete}</apex:outputLink>        
+        </apex:column>
+        <apex:column headerValue="{!$Label.Asset}">
+           <apex:outputLink value="/{!compAsset.Asset__c}" target="_parent">
+              {!compAsset.Asset__r.Name}
+           </apex:outputLink>
+        </apex:column>              
+     </apex:pageBlockTable>           
+     <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!OR(RelatedCompetitorAsset == null, AND(RelatedCompetitorAsset != null, RelatedCompetitorAsset.size <= 0))}" />
+  </apex:pageBlock>  
+</apex:form>
+</apex:page>

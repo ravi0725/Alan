@@ -1,0 +1,36 @@
+<apex:page standardController="Opportunity" extensions="competitorReleatedlistController" showHeader="false" sidebar="false" >
+<apex:form >
+  <apex:pageBlock mode="main" id="pb"> 
+      <apex:pageMessages />
+      <apex:pageBlockButtons location="top">
+         <apex:outputLink value="/apex/competitorPage?id={!oppId}" styleClass="btn" style="text-decoration:none;" target="_top">
+            New Competitors
+         </apex:outputLink>
+      </apex:pageBlockButtons>   
+      <apex:pageBlockTable value="{!RelatedCompetitor}" id="CompAssetTable" var="comp" rendered="{!AND(RelatedCompetitor!=null, RelatedCompetitor.size > 0)}">
+        <apex:column headerValue="{!$Label.Action}">
+        <apex:outputLink value="/apex/EditCompetitorPage?id={!comp.Id}" target="_parent">
+            {!$Label.Edit}
+        </apex:outputLink>&nbsp;|&nbsp;<apex:outputLink target="_parent" onclick="return confirm('{!$Label.Are_you_sure}');" value="{!URLFOR($Action.Competitor__c.Delete, comp
+        .Id, [retURL='/'&comp.Opportunity__c])}">{!$Label.DeleteLink}</apex:outputLink>        
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Competitor__c.Fields.CompetitorName__c.label}">
+           <apex:outputLink value="/{!comp.CompetitorName__c}" target="_parent">
+              {!comp.CompetitorName__r.Name}
+           </apex:outputLink>
+        </apex:column>        
+        <apex:column headerValue="{!$ObjectType.Competitor__c.Fields.Competitor_Product__c.label}">
+          <apex:outputLink value="/{!comp.Competitor_Product__c}" target="_parent">
+            <apex:outputText value="{!comp.Competitor_Product__r.Name}"/>
+          </apex:outputLink>           
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Competitor__c.Fields.Strengths__c.label}" value="{!comp.Strengths__c}"/> 
+        <!--<apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product_Version__c.label}" value="{!compAsset.Product_Version__c}"/>-->
+        <apex:column headerValue="{!$ObjectType.Competitor__c.Fields.Weaknesses__c.label}" value="{!comp.Weaknesses__c}"/>
+        <apex:column headerValue="{!$ObjectType.Competitor__c.Fields.Comments__c.label}" value="{!comp.Comments__c}"/>
+                
+     </apex:pageBlockTable>           
+     <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!OR(RelatedCompetitor== null, AND(RelatedCompetitor != null, RelatedCompetitor.size <= 0))}" />
+  </apex:pageBlock>  
+</apex:form>
+</apex:page>

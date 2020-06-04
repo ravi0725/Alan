@@ -1,0 +1,6 @@
+<apex:page standardController="Case" standardStylesheets="false" lightningStylesheets="false">
+    <div style="float:left; margin-right:5px;"><apex:image value="/img/msg_icons/warning24.png" rendered="{!Case.Entitlement.Name = 'Trimble TAP Generic Entitlement'}"/></div>
+    <span style="color: red;">
+        {!IF(Case.Entitlement.Name = 'Trimble TAP Generic Entitlement', $Label.Entitlement_Warning ,'' )}
+    </span>
+</apex:page>

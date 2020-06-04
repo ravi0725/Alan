@@ -1,0 +1,42 @@
+<apex:page standardController="Product_competitor__c" recordSetVar="comp" extensions="CompetitoroproductpageController" showheader="true" sidebar="true">
+<apex:sectionHeader title="Competitor Product Edit" subtitle="New Competitor Product" />
+<apex:form >  
+  <apex:pageBlock title="Competitor Product Edit" mode="edit">
+     <apex:pageMessages id="msg"/>
+     <apex:pageBlockButtons location="both">
+        <apex:commandButton value="{!$Label.Save}" action="{!newCompetitor}"/>
+        <apex:commandButton value="{!$Label.Cancel}" action="{!cancel}"/>
+     </apex:pageBlockButtons>   
+     <apex:pageBlockSection collapsible="false" columns="2" title="{!$Label.Information}">                 
+        <apex:inputField value="{!prodcomp.Name}" required="true" />
+        <!--<apex:outputfield value="{!prodcomp.Ownerid}" />-->
+        <apex:pageBlockSectionItem >
+         <apex:outputLabel value="Owner"/> 
+        <apex:outputText value="{!username }" />
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+         <apex:outputLabel value="{!$ObjectType.Product_competitor__c.Fields.Product_Family__c.label}"/> 
+        <apex:inputField value="{!prodcomp.Product_Family__c}" />
+        </apex:pageBlockSectionItem>
+        <!--<apex:outputField value="{!comp.Competitor_Product__c}" id="pFamily"/>-->
+        <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Competitor_Owned_Assets__c.Fields.CurrencyIsoCode.label}"/>                      
+           <apex:outputPanel >
+             <div class="requiredInput">
+               <div class="requiredBlock"/>
+               <apex:selectList size="1" value="{!prodcomp.CurrencyIsoCode}">
+                 <apex:selectOptions value="{!Currencyoptions}"/>
+               </apex:selectList>               
+             </div>
+           </apex:outputPanel>             
+        </apex:pageBlockSectionItem>
+        <apex:pageblockSectionItem >
+        <!--<apex:inputField value="{!prodcomp.CurrencyIsoCode}"/>-->
+        <apex:outputLabel value="{!$ObjectType.Product_competitor__c.Fields.Competitor_Account__c.label}" /> 
+        <apex:outputText value="{!acctname}" />
+        </apex:pageblockSectionItem>
+        <!--<apex:outputField value="{!prodcomp.Competitor_Account__c}" />-->
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+</apex:form>  
+</apex:page>

@@ -1,0 +1,28 @@
+<apex:component controller="Templatetable" access="global">
+     <apex:attribute name="proposalIdassigned" type="Id" description="Id of the proposal" assignTo="{!proposalId}"/>
+    
+     <table border = "1" cellspacing = "0">
+       
+        <tr>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Step_Name}</font></td>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Approval_Status}</font></td> 
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Date}</font></td>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Assigned_To}</font></td>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Depends_On}</font></td>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Actual_Approver}</font></td>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Approver_Comment}</font></td>               
+        </tr>
+        <apex:repeat value="{!approvalReqList}" var="apprreq">
+        <tr>
+            <td>{!apprreq.Apttus_Approval__Step_Name__c}</td>
+            <td>{!apprreq.Apttus_Approval__Approval_Status__c}</td> 
+            <td>{!apprreq.Apttus_Approval__Date__c }</td> 
+            <td>{!apprreq.Apttus_Approval__Assigned_To_Name__c}</td> 
+            <td>{!apprreq.Apttus_Approval__DependsOn__c}</td> 
+            <td>{!apprreq.Apttus_Approval__ActualApproverName__c}</td> 
+            <td>{!apprreq.Apttus_Approval__Approver_Comments__c}</td>      
+            </tr>
+        </apex:repeat>       
+              
+    </table>
+</apex:component>

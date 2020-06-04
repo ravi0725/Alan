@@ -1,0 +1,102 @@
+<apex:page controller="ConfigPushTopicController">
+    <apex:form >
+          <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+    </style>
+        <script type="text/javascript">
+        
+            function startLoad(){
+                document.getElementById("filter").style.display = "block";
+                document.getElementById("loadFilter").style.display = "block";
+            }
+            
+            function endLoad(){
+                document.getElementById("filter").style.display = "none";
+                document.getElementById("loadFilter").style.display = "none";
+            }
+        </script>
+        <div width="100%" id="filter" style="display:none;"/>
+        <div id="loadFilter" style="display:none;">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+            Loading . . . 
+        </div>
+        <apex:messages />
+        <apex:outputPanel id="panelId">
+            <apex:pageBlock id="pbId">
+                <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+                <apex:pageBlockButtons >
+                    <apex:commandButton status="statusId" value="Add Push Topic" action="{!addPushTopics}" rerender="pbtId"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockTable value="{!notifications}" var="key" id="pbtId">
+                    <apex:column width="200px">
+                        <apex:commandButton status="statusId" rendered="{!NOT(ISNULL(key))}" value="Update" action="{!savePushTopic}" reRender="pbtId">
+                            <apex:param assignTo="{!pushTopicID}" value="{!key}" name="pushTopicID"/>
+                        </apex:commandButton>
+                        <apex:commandButton status="statusId" rendered="{!NOT(ISNULL(key))}" value="Delete" action="{!deletePushTopic}" reRender="pbtId">
+                            <apex:param assignTo="{!pushTopicID}" value="{!key}" name="pushTopicID"/>
+                        </apex:commandButton>
+                        <apex:commandButton status="statusId" rendered="{!ISNULL(key)}" value="Create" action="{!createPushTopic}" reRender="pbtId">
+                        </apex:commandButton>
+                    </apex:column>
+                    <apex:column headerValue="Name">
+                        <apex:inputField value="{!notifications[key].Name}"/>
+                    </apex:column>
+                    <apex:column headerValue="Description">
+                        <apex:inputField value="{!notifications[key].Description}"/>
+                    </apex:column>
+                    <apex:column headerValue="Query">
+                        <apex:inputField value="{!notifications[key].Query}"/>
+                    </apex:column>
+                    <apex:column headerValue="isActive">
+                        <apex:inputField value="{!notifications[key].isActive}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForFields">
+                        <apex:inputField value="{!notifications[key].NotifyForFields}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForOperations">
+                        <apex:inputField value="{!notifications[key].NotifyForOperations}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForOperationCreate">
+                        <apex:inputField value="{!notifications[key].NotifyForOperationCreate}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForOperationUpdate">
+                        <apex:inputField value="{!notifications[key].NotifyForOperationUpdate}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForOperationDelete">
+                        <apex:inputField value="{!notifications[key].NotifyForOperationDelete}"/>
+                    </apex:column>
+                    <apex:column headerValue="NotifyForOperationUndelete">
+                        <apex:inputField value="{!notifications[key].NotifyForOperationUndelete}"/>
+                    </apex:column>
+                    <apex:column headerValue="ApiVersion">
+                        <apex:inputField value="{!notifications[key].ApiVersion}"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

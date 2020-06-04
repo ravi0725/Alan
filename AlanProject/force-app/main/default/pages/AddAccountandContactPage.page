@@ -1,0 +1,78 @@
+<!-- 
+**
+* Company     : Trimble Software Technology Pvt Ltd.,
+* Description : 
+* History     : 
+* [10.MAR.2014] Prince Leo - Code Created.
+* -->
+<apex:page Standardcontroller="Event" extensions="AddAccountandContactController" tabstyle="Account" action="{!Search}">
+    <apex:form >
+        <apex:pageBlock title="Customer Search Page" id="AccountHide">
+            <!--Search Section-->
+            <table>
+                <tr>
+                    <td><b>Customer Name</b></td>
+                    <td><apex:inputText value="{!SearchText}" /></td>
+                </tr>
+            </table>
+            <br></br>
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!Search}" value="Search"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        <apex:pageBlock title="Matching Customer Records" id="AccSection" rendered="{!DisplayAccount}">   
+            <!--Account Section-->
+            <apex:pageBlockTable value="{!SearchResult}" var="Acc" id="table" width="150%">
+                <apex:column >
+                    <apex:commandLink action="{!SearchContact}" value="{!Acc.Name}">
+                        <apex:param name="selectedCategoryId" value="{!Acc.id}"/>
+                    </apex:commandLink> 
+                </apex:column>
+                <apex:column value="{!Acc.Name}"/>
+                <apex:column value="{!Acc.BillingStreet}"/>
+                <apex:column value="{!Acc.BillingState}"/>
+                <apex:column value="{!Acc.BillingCountry}"/>
+                <apex:column value="{!Acc.BillingCity}"/>
+            </apex:pageBlockTable> 
+        </apex:pageBlock>
+        
+        <apex:pageBlock title="Related Contact records" id="contSect" rendered="{!DisplayContact}">
+            <!--Contact Section-->
+            <apex:PageMessages ></apex:PageMessages>  
+            <apex:pageBlockTable value="{!ContList}" var="con" id="table" width="150%">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:inputCheckbox onclick="selectCheckboxes(this,'checkedone')"/>
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!con.checked}" id="checkedone"/>
+                </apex:column>
+                <apex:column value="{!Con.cat.Name}"/>
+                <apex:column value="{!Con.cat.Country_Code__c}"/>
+                <apex:column value="{!Con.cat.phone}"/>
+                <apex:column value="{!Con.cat.Email}"/>
+            </apex:pageBlockTable> 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!SelectedContact}" value="Save"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <script type="text/javascript">
+        function selectCheckboxes(inpt,receivedInptID)
+        {
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+                    inputCheckBox[i].checked = inpt.checked;
+                }
+            }
+        }
+    </Script>
+</apex:page>

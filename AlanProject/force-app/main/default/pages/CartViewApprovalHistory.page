@@ -1,0 +1,25 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c" tabstyle="Apttus_Proposal__Proposal__c" extensions="CartViewApprovalHistoryController">
+<apex:form >  
+  <apex:pageBlock id="pb" title="Approval History"> 
+    <apex:pageBlockTable value="{!historyList}" id="historyTable" var="approvalRequest" rendered="{!AND(historyList!=null, historyList.size > 0)}">
+        <apex:column value="{!approvalRequest.Apttus_Approval__StepSequence__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__StepSequence__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Step_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Step_Name__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Assigned_To_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Assigned_To_Name__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Approval_Status__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Approval_Status__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Approver_Comments__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Approver_Comments__c.label}"/>        
+    </apex:pageBlockTable>  
+    <apex:outputPanel id="opt1" rendered="{!remainder != 0}">
+       <apex:commandLink action="{!loadMoreHistory}" rerender="pb">             
+          {!$Label.Show} {!remainder} {!$Label.more} >>
+          <apex:param assignTo="{!loadMore}" value="true" /> 
+       </apex:commandLink>
+    </apex:outputPanel>      
+    <apex:outputPanel id="opt2" rendered="{!AND(historyList != null, historyList.size > 0, remainder != 0)}">
+            | <apex:outputLink target="_blank" style="cursor:pointer;text-decoration:underline;" value="/apex/QuoteApprovalHistoryList?id={!quoteId}">
+                {!$Label.Go_to_list} ({!totalSize}) >>
+              </apex:outputLink>
+    </apex:outputPanel>         
+    <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!AND(historyList != null, historyList.size <= 0)}" />
+  </apex:pageBlock>  
+</apex:form>    
+</apex:page>

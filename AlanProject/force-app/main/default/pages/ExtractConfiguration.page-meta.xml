@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>33.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>{!IF(CONTAINS(objectType.Type,&apos;__c&apos;),$ObjectType[objectType.Type].fields[RIGHT(fldPermission.Field,LEN(fldPermission.Field) - FIND(&apos;.&apos;, fldPermission.Field))].label,&apos;&apos;)}</description>
+    <label>ExtractConfiguration</label>
+</ApexPage>

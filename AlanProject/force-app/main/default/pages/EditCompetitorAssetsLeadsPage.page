@@ -1,0 +1,62 @@
+<apex:page controller="CompetitiorAssetLeadClass" showheader="true" sidebar="true" tabstyle="Competitor_Owned_Assets__c" action="{!editCompAsset}">
+<script>
+     function populateCompanyProduct(){
+        var compid=document.getElementById('j_id0:j_id2:j_id8:j_id37:j_id38_lkid').value;
+        populateProducts(compid);
+     }
+     
+     function populateFamily(){
+        var pId = document.getElementById('j_id0:j_id2:j_id8:j_id37:j_id40:optFamily').value;
+        populateProductFamily(pId);
+     }
+</script>
+<apex:form >  
+  <apex:actionfunction name="populateProducts" action="{!populateproduct}" rerender="optFamily" status="closer" immediate="true">
+      <apex:param name="Company" assignTo="{!companyid}" value="" />
+  </apex:actionfunction>
+  <apex:actionfunction name="populateProductFamily" action="{!populateProductFamily}" rerender="pFamily, msg" immediate="true">
+      <apex:param name="pId" assignTo="{!productId}" value="" />
+  </apex:actionfunction>
+  <apex:sectionHeader title="{!$Label.Comp_Assets_Edit}" subtitle="{!assets.Name}" />
+  <apex:pageBlock title="{!$Label.Comp_Assets_Edit}" mode="edit">
+     <apex:pageMessages id="msg"/>
+     <apex:pageBlockButtons location="both">
+        <apex:commandButton value="{!$Label.Save}" action="{!updateAssets}"/>
+        <apex:commandButton value="{!$Label.Cancel}" action="{!cancel}" immediate="true"/>
+     </apex:pageBlockButtons>   
+     <apex:pageBlockSection collapsible="false" columns="2" title="{!$Label.Comp_Assets_Edit}">               
+         <apex:inputField value="{!assets.Competitor_Company__c}" required="true" onchange="populateCompanyProduct();"/>
+         <apex:inputField value="{!assets.Number_of_Licenses__c}" />
+         <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product__c.label}"/>                      
+           <apex:outputPanel >
+           <div class="requiredInput"><div class="requiredBlock"></div>
+            <apex:selectList size="1" value="{!productIds}" id="optFamily" onchange="populateFamily();">
+              <apex:selectOptions value="{!productoption}"/>
+            </apex:selectList>               
+           </div>
+           </apex:outputPanel>             
+         </apex:pageBlockSectionItem>         
+         <apex:inputField value="{!assets.Yearly_Subscription_Cost__c}" />
+         <apex:outputField value="{!assets.Product_Family__c}" id="pFamily"/>
+         <apex:pageBlockSectionItem >
+           <apex:outputLabel value="{!$ObjectType.Competitor_Owned_Assets__c.Fields.CurrencyIsoCode.label}"/>                      
+           <apex:outputPanel >
+             <div class="requiredInput">
+               <div class="requiredBlock"/>
+               <apex:selectList size="1" value="{!assets.CurrencyIsoCode}">
+                 <apex:selectOptions value="{!Currencyoptions}"/>
+               </apex:selectList>               
+             </div>
+           </apex:outputPanel>             
+         </apex:pageBlockSectionItem>
+         <apex:inputField value="{!assets.Product_Version__c}" />
+         <apex:outputField value="{!assetJunction.Lead__c}" />
+         <apex:inputField value="{!assets.Install_Date__c}" />
+         <apex:outputField value="{!assetJunction.Account__c}" />
+         <apex:inputField value="{!assets.Expiration_Date__c}"/>
+     </apex:pageBlockSection>
+ 
+  </apex:pageBlock>
+</apex:form>  
+</apex:page>

@@ -1,0 +1,163 @@
+<apex:page controller="AdvancePricingclass" sidebar="false" showChat="false" showHeader="false">
+  <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 180px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 400px;
+            margin-left: -150px;
+            top:200px;
+        }
+        
+        .loadingScreen{
+                z-index:199;
+                width:100%;
+                height:97%;
+                background-color:black;
+                position:absolute;
+                opacity:0.4;
+                filter:alpha(40);
+                display:none;
+            }
+            
+            .loadingStyle{
+                z-index:999;
+                width:200px;
+                height:50px;
+                background-color:#3EAEDC;
+                color:white;
+                font-size:20px;
+                text-align:center;
+                border-radius:6px;
+                position:absolute;
+                left:40%;
+                top:35%;
+            }
+
+    </style>
+    <script>
+        window.onload = function(){ 
+            startLoad();
+        };
+        function startLoad(){
+            document.getElementById("loadId").style.display = "block";
+            document.getElementById("loadTextId").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("loadId").style.display = "none";
+            document.getElementById("loadTextId").style.display = "none";
+        }
+    </script>
+    <apex:outputPanel id="scriptId">
+        <script>
+            window.onload = function(){ 
+                startLoad();
+                //Temp();
+                setTimeout(function(){ Temp(); }, 30000);
+            };
+            
+                      
+            function close(){
+               // alert({!errorPopup});
+               if(!{!errorPopup})
+                window.open('{!retURL}','_self');
+                    endLoad();
+            };
+        </script>
+    </apex:outputPanel>
+    <div id="loadId" class="loadingScreen"/>
+    <div id="loadTextId" class="loadingStyle" style="display:none;">
+        Advanced Pricing . . . 
+        <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+    </div>
+    <apex:form > 
+         <apex:actionFunction action="{!Temp}" name="Temp" rerender="scriptId,errorPanelId" oncomplete="close();"/> 
+  <iframe src="/apex/Apttus_Config2__Pricing?configRequestId={!tempcpqidclonepage}&id={!Configclonepage}&flow=Default" height="0" width="0" id="optySyncFrame" /> 
+       <apex:outputPanel id="errorPanelId">
+       <apex:outputPanel id="Item_Split" rendered="{!ItemNotSplited}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+                
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:outputPanel id="buttons_tax"> 
+                            <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                                 <apex:commandButton value="Ok" action="{!cancelPage}" />
+                            </div>                    
+                        </apex:outputPanel>
+                    </apex:pageBlockButtons>
+                
+                    <apex:pageblockSection columns="1" collapsible="false">
+                        <apex:outputPanel >
+                              <div id="pbField" style="text-align:center">
+                               <apex:outputText value="Line Item Not Splited. Please Complete Split and then Reprice." />
+                              </div>    
+                        </apex:outputPanel>
+                     </apex:pageblockSection>
+                 </apex:pageBlock>
+            </apex:outputPanel>      
+        </apex:outputPanel>
+  <!--<apex:actionFunction action="{!doUpdatePrice}" name="doUpdatePrice" oncomplete="close({!hasPendingItems});"/>-->
+     <apex:outputPanel id="submitPopup2" rendered="{!errorPopUp}">
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+        <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+            <apex:pageBlock >
+                <apex:pageBlockButtons location="bottom">
+                    <apex:outputPanel id="buttons_tax"> 
+                        <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">                        
+                             <apex:commandButton value="{!$Label.Back}" action="{!cancelPage}" />
+                        </div>                    
+                    </apex:outputPanel>
+                </apex:pageBlockButtons>
+                
+                <apex:pageblockSection columns="1" collapsible="false">
+                    <apex:outputPanel >
+                          <div id="pbField" style="text-align:center">
+                           <apex:outputText value="Advance Pricing Callout Failed : {!errorMsg}" />
+                          </div>    
+                    </apex:outputPanel>
+                    
+                 </apex:pageblockSection>
+             </apex:pageBlock>
+        </apex:outputPanel>      
+      </apex:outputPanel>  
+      </apex:outputPanel>
+      </apex:form>   
+</apex:page>

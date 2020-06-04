@@ -1,0 +1,19 @@
+<apex:page standardController="TTraining_Students__c" renderAs="pdf" applyBodyTag="false">
+    <head>
+        <style> 
+            body { font-family: 'Arial Unicode MS'; }
+            .companyName { font: bold 30px; color: green; }  
+        </style>
+    </head>
+    <body>
+        <center>
+        <h1>Certificate of Completion</h1>
+        <h2>Trimble Navigation Limited</h2>
+        <apex:panelGrid columns="1" width="100%">
+            <apex:outputText value="{!TTraining_Students__c.Contact_Name__c}" styleClass="companyName"/>
+            <apex:outputText value="{!TTraining_Students__c.Events__c}" styleClass="companyName"/>
+            <apex:outputText value="{!NOW()}"></apex:outputText>
+        </apex:panelGrid>
+        </center>
+    </body>
+</apex:page>

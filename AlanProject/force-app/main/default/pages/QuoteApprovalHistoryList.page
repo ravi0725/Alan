@@ -1,0 +1,14 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c" tabstyle="Apttus_Proposal__Proposal__c" extensions="CartViewApprovalHistoryController">
+  <apex:form >
+  <apex:pageBlock id="pb" title="Approval History"> 
+    <apex:pageBlockTable value="{!approvalHistoryList}" id="historyTable" var="approvalRequest" rendered="{!AND(approvalHistoryList!=null, approvalHistoryList.size > 0)}">
+        <apex:column value="{!approvalRequest.Apttus_Approval__StepSequence__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__StepSequence__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Step_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Step_Name__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Assigned_To_Name__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Assigned_To_Name__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Approval_Status__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Approval_Status__c.label}"/>
+        <apex:column value="{!approvalRequest.Apttus_Approval__Approver_Comments__c}" headerValue="{!$ObjectType.Apttus_Approval__Approval_Request_History__c.Fields.Apttus_Approval__Approver_Comments__c.label}"/>        
+    </apex:pageBlockTable>           
+    <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!AND(approvalHistoryList != null, approvalHistoryList.size <= 0)}" />
+  </apex:pageBlock>  
+</apex:form>
+</apex:page>

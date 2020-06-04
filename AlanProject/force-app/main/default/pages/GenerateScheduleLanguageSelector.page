@@ -1,0 +1,112 @@
+<apex:page id="pagetest" controller="GeneratescheduleactivityController" showHeader="false" sidebar="false">
+   <script>
+    function validateForm(){
+            var d = document.getElementById('pbField').childNodes[0].value;
+            // alert(d);
+            if(d == '000000000000000' || d == ''){
+                document.getElementById('errorMessage').innerHTML = '{!$Label.Please_select_Language_to_continue}';
+                return false;           
+            }else{
+                 
+                  callNext();
+                return true;            
+            }
+        }   
+   </script>
+       
+   <apex:form >
+       <apex:pageMessages rendered="{!eventList.size <= 0}"/> 
+         <apex:actionFunction name="callNext" action="{!next}" status="closer"/>
+          <apex:outputPanel rendered="{!eventList.size <= 0}">
+            <a href="/{!quoteId}">{!$Label.Click_here_to_return}</a>
+          </apex:outputPanel>
+          <apex:outputPanel id="expQuotePopup" rendered="{!eventList.size >0}">
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/>
+            <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                <apex:pageBlock mode="edit"  >
+               
+                <div id="errorMessage" style="color:red;"></div>
+                <apex:pageBlockButtons >
+                    <apex:outputPanel id="buttons">                         
+                    <input type="button" style="btn" class="btn" value="{!$Label.Next}" onclick="return validateForm();" />
+                    <apex:commandButton value="{!$Label.Cancel}" action="{!cancel}" />
+                    <apex:actionStatus startText="({!$Label.Generating})" stopText="" onStop="window.close();" id="closer"/>                    
+                    </apex:outputPanel>
+                </apex:pageBlockButtons>
+                
+                <apex:pageblockSection columns="2" collapsible="false">
+                    <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="{!$Label.Document_Language}" />
+                      <apex:outputPanel >
+                      <div id="pbField">
+                        <apex:inputField value="{!event.Language__c}" />
+                      </div>    
+                      </apex:outputPanel>
+                      </apex:pageBlockSectionItem>
+                </apex:pageblockSection>
+                
+            </apex:pageBlock>
+            </apex:outputPanel>
+        </apex:outputPanel>      
+   </apex:form>    
+   <script>
+      window.onload = function() {
+          //alert('DOM Loaded');
+          callActionMethod();
+          
+      }
+      
+      function callActionMethod(){
+         if({!eventList.size > 0}){        
+           callToMethod();
+         } 
+      } 
+   </script>
+   <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 250px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -150px;
+            top:200px;
+        }
+
+    </style>
+</apex:page>

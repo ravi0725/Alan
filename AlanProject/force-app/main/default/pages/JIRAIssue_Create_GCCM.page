@@ -1,0 +1,15 @@
+<!--
+	Page : JIRAIssue_Create_GCCM
+	Desc : This page is used to create JIRA issue from GCCM Case records
+_____________________________________________________________________________________________________
+Modificaion Log:
+===========================================================================
+Developer				Date			Description
+===========================================================================
+Suresh Babu Murugan		30/Nov/2018		Created
+_____________________________________________________________________________________________________
+-->
+<apex:page standardController="Case" extensions="JCFS.GenericObjectController,JIRAIssue_Create_GCCMCtrl" showHeader="false" sidebar="false">
+	<JCFS:JiraIssuesComponent son="{!son}" soid="{!soid}" tz="{!tz}" rendered="{! isHavePermissionToCreateJIRAIssue }"></JCFS:JiraIssuesComponent>
+	<apex:outputText value="This Issue is not related to ProjectSight (or) Prolog (or) Proliance, hence this section is disabled..." rendered="{!! isHavePermissionToCreateJIRAIssue }" />
+</apex:page>

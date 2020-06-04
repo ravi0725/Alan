@@ -1,0 +1,84 @@
+<!-- 
+**
+ * Company     : Trimble Software Technology Pvt Ltd.,
+ * Description : Appers as a Popup Page on the Plancal Calendar
+ * History     : 
+ * [09.MAY.2013] Prince Leo    - Code Created.
+ * -->
+<apex:page standardController="Event" sidebar="false" showHeader="false" extensions="CalendarPopupExt">
+<style type="text/css">
+  table, tr, td {border: 1px solid black; }
+  tr.noBorder td {border: 0; }
+</style>
+    <apex:form id="Pageform">
+    <apex:messages />
+        <apex:pageBlock >
+           <table border="1" width="100%">
+           <tr>
+           <td><b>{!$Label.Calendar_Popup_Title}</b></td>
+           <td>{!ev.Subject} </td>
+           <td><b>{!$Label.Calendar_Popup_Event_Start_Date}</b> </td>
+           <td>{!startString} </td>
+           <td><b>{!$Label.Calendar_Popup_Event_End_Date}</b>  </td>
+           <td>{!endString} </td>
+           </tr>
+           <tr>
+           <td><b>Primary Contact</b></td>
+           <td>{!ev.Who.Name} </td>
+            <td><b>Primary Account</b></td>
+           <td>{!ev.What.Name} </td>
+           <td><b>Mobile Phone</b></td>
+           <td>{!ev.Mobile_Phone__c} </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><b>Account Address</b></td>
+                <td colspan="5">
+                    <apex:outputPanel rendered="{!acc != null}">
+                    {!acc.BillingStreet},
+                      {!acc.BillingState},
+                      {!acc.BillingCity},
+                      {!acc.Billingpostalcode},
+                      {!acc.BillingCountry}
+                      </apex:outputPanel>
+                </td>
+            </tr>
+          </table>
+          <br></br>
+          <table border="1" width="100%">
+            <apex:repeat value="{!listCustomer}" var="a">
+           <tr>
+           <td><b>{!$Label.Calendar_Popup_Account_Name}</b>  </td>
+           <td>{!a.Account__r.Name}</td>
+           <td><b>{!$Label.Calendar_Popup_Enterprise_ID}</b> </td>
+           <td>{!a.Account__r.Enterprise_Party_Number__c}</td>
+           <td><b>{!$Label.Calendar_Popup_Address}</b> </td>
+           <td>{!a.Account__r.BillingStreet},
+              {!a.Account__r.BillingState},
+              {!a.Account__r.BillingCity},
+              {!a.Account__r.Billingpostalcode},
+              {!a.Account__r.BillingCountry}.
+              </td>
+              </tr>
+           <apex:repeat value="{!con}" var="co">
+           <apex:outputPanel rendered="{!co.Account.Name==a.Account__r.Name}">
+          <tr>
+           <td><b>{!$Label.Calendar_Popup_Contact_Name}</b> </td>
+           <td>{!co.Name}</td>
+           <td><b>{!$Label.Calendar_Popup_Contact_Mobile_No}</b> </td>
+           <td>{!co.MobilePhone}</td>
+           <td><b>{!$Label.Calendar_Popup_Contact_Phone_No}</b> </td>
+           <td>{!co.Phone}</td>
+           </tr>
+           </apex:outputPanel>
+           </apex:repeat> 
+           <tr class="noBorder"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+           <tr class="noBorder"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+           <tr class="noBorder"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+           </apex:repeat>
+           </table>
+        </apex:pageBlock>
+      
+    </apex:form>
+</apex:page>

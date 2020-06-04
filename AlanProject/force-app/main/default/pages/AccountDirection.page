@@ -1,0 +1,4 @@
+<apex:page StandardController="Account" extensions="AccountDirectionExtentions" action="{!AccountDirectionSet}">
+
+{!profileName}
+</apex:page>

@@ -1,0 +1,501 @@
+<!--
+/*
+* Author:         Ankur
+* Last Update:    Aug 8, 2017
+* Version:        1.0
+* Description:    Agreement PDF
+*
+* History:      
+
+Aug 8, 2017 Version - 1.0 - Kumar: Agreement PDF
+*/
+-->
+<apex:page renderAs="PDF" applyHtmlTag="false"  standardStylesheets="false" applyBodyTag="false" standardController="Case"  extensions="AgreementPDFController" showChat="false" showHeader="false" sidebar="false">
+    <head>
+        <title>Agreement</title>
+        <style>
+           .last_child_div{ page-break-before: always;} 
+            th{
+            text-align:center;
+            border-style:solid;
+            border-width:1px;
+            border-color:black; 
+            padding:2px;
+            background-color:#bed3f4;
+            }
+            
+            .underline{
+            border-style:solid;
+            border-width:1px;
+            border-color:black;
+            border-top:none;
+            border-left:none;
+            border-right:none;
+            width:100%;
+            word-break: break-all;
+            }
+            
+            body{
+            width:760px;
+            }
+            
+            table{
+            width:100%;
+            }
+            section{
+            padding:2px;
+            }
+            
+            #CaseInfoId td ,#CaseInfoId th , #signatureTableId td,#signatureTableId th{
+            padding:5px;
+            } 
+            
+            #LoanerHistoryTableId td,#LoanerHistoryTableId  th{
+            border-style:solid;
+            border-width:1px;
+            border-color:black;
+            padding:5px;
+            }
+        </style>
+        <style type="text/css" media="print">
+            @page {
+                margin-top: 0mm;
+                margin-left: 5mm;
+                margin-right: 5mm;
+                margin-bottom: 15mm;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-left {
+                    content: element(footer);
+                }
+            }
+            
+            div.footer {
+                width:100%;
+                display: block;
+                padding: 5px;
+                position: running(footer);
+            }
+             
+        </style>
+    </head>
+    <div class="header">
+        
+    </div>
+    <div class="footer">
+        <div style="width:50%;float:left;font-size:10px;">
+            TRIMBLE NAVIGATION LIMITED MEP<br/>
+            LOANER AGREEMENT - General Terms and Conditions<br/>
+            201106
+        </div>
+        <div style="text-align:right;width:50%;float:right">
+            <apex:image value="{!$Resource.Trimble_Logo}" height="30px" width="100px"/>
+        </div>
+    </div>
+    <div class="content" >
+        <body>
+            <apex:form >
+                <section>
+                    <div style="position:absolute;left:40%;padding:5px;border-radius:5px;text-align:left;background-color:yellow;width:160px">
+                        Trimble Inc.—Loaners<br/>
+                        10427 Cogdill Rd  #700<br/>
+                        Knoxville, TN  37932<br/>
+                        (800) 234-3758<br/>
+                    </div>
+                </section>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <center>
+                    <h2 style="padding:0px;-webkit-margin-before: 0px;-webkit-margin-after: 0px;">
+                        Equipment Loaner Agreement
+                    </h2>
+                    <h4 style="padding:0px;-webkit-margin-before: 0px;-webkit-margin-after: 0px;">
+                        SIGNATURE PAGE
+                    </h4>
+                </center>
+                <section>
+                    <table id="CaseInfoId" cellPadding="0" cellspacing="0">
+                        <tr>
+                            <th colspan="3">
+                                Exact Legal Name, Address and Contact Information of Customer
+                            </th>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Customer Name
+                            </td>
+                            <td width="10px">
+                                :
+                            </td>
+                            <td>
+                                <div class="underline">&nbsp;{!cs.Account.Name}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Address
+                            </td>
+                            <td width="10px">
+                                :
+                            </td>
+                            <td >
+                                <div class="underline">&nbsp;{!cs.Selected_Shipping_Address__c}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Person to Contact
+                            </td>
+                            <td width="10px">
+                                :
+                            </td>
+                            <td>
+                                <div class="underline">&nbsp;{!cs.Contact.Name}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Telephone
+                            </td>
+                            <td width="10px">
+                                :
+                            </td>
+                            <td>
+                                <div class="underline">&nbsp;{!cs.Contact.Phone}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Email address
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                <div class="underline">&nbsp;{!cs.Contact.Email}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="150px">
+                                Support Case Number
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                <div class="underline">&nbsp;{!cs.CaseNumber}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </section> 
+                <br/>
+                <section>
+                    <table id="LoanerHistoryTableId" cellPadding="0" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Model
+                                </th>
+                                <th>
+                                    Loaner Name
+                                </th>
+                                <th>
+                                    Part#
+                                </th>
+                                <th>
+                                    Serial#
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!LoanerList}" var="loaner">
+                                <tr>
+                                    <td>
+                                        {!loaner.Model__c}
+                                    </td>
+                                    <td>
+                                        {!loaner.Loaner_Rentals__r.Name}
+                                    </td>
+                                    <td>
+                                        <center>{!loaner.Alltrak_ID__c}</center>
+                                    </td>
+                                    <td>
+                                        {!loaner.Serial_Number__c}
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <span style="background-color:yellow;padding:3px;">** Prisms, batteries, or other accessories not included unless explicitly stated and agreed upon **</span>
+                </section>
+                <br/>
+                <br/>
+                <section style="text-align:justify;">
+                    This Equipment Loaner Agreement ("Agreement") consists of this Signature Page, the attached Equipment Loaner Agreement - General Terms and Conditions, and the Attachments indicated above. This Agreement becomes legally binding upon signature by authorized representatives of the parties, below.
+                </section>
+                <br/>
+                <br/>
+                <section >
+                    <table id="signatureTableId" cellPadding="0" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th width="50%" colspan="2">
+                                    Accepted by TRIMBLE INC.
+                                </th>
+                                <th width="50%" colspan="2">
+                                    Accepted by CUSTOMER
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="150px;">
+                                    Date Accepted:&nbsp;
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                                <td width="150px;">
+                                    Date Accepted:&nbsp;
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="150px;">
+                                    By:&nbsp;   
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                                <td width="150px;">
+                                    By:&nbsp;
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="150px;">
+                                    Title:&nbsp;    
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                                <td width="150px;">
+                                    Title:&nbsp;
+                                </td>
+                                <td width="200px;">
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <div class="last_child_div">
+                    <center>
+                        <h2>
+                            Trimble Inc.
+                        </h2>
+                        <h4>
+                            <I>Equipment Loaner Agreement - General Terms and Conditions</I>
+                        </h4>
+                    </center>
+                    <table>
+                        <tr>
+                            <td style="width:50%;" align="top">
+                                <h4>1.  LOANER</h4>
+                                <p>
+                                    Customer hereby borrows from Trimble Inc. (“Trimble”), and Trimble hereby loans to Customer, the personal property described on the Signature Page (the “Equipment”), subject to the terms and conditions of this Agreement. Customer confirms that the Equipment will be used for commercial purposes and not for personal, family or household purposes.  Loaner charges are waived for authorized warranty service work.  For non-warranty service work, damage repair or calibration, loaner charges will apply. The Trimble Repair Center will determine if the repair work is authorized warranty service work. 
+                                </p>
+                                <h4>2.  DELIVERY AND ACCEPTANCE</h4>
+                                <p>
+                                    Customer agrees to accept the Equipment upon delivery from Trimble if conforming to the above description and if in good repair at the time of delivery.  IT SHALL BE CONCLUSIVELY PRESUMED THAT THE EQUIPMENT WAS CONFORMING, IN GOOD REPAIR AND ACCEPTED BY THE CUSTOMER AND ALL TERMS AND CONDITIONS OF THIS AGREEMENT SHALL BE IN FULL FORCE AND EFFECT, UNLESS CUSTOMER, WITHIN TWO DAYS AFTER DELIVERY OF THE EQUIPMENT, GIVES WRITTEN NOTICE TO TRIMBLE OF DEFECTS IN THE EQUIPMENT OR OF OTHER PROPER OBJECTION TO THAT EQUIPMENT,
+                                </p>
+                                <h4>3.  LOANER PERIOD</h4>
+                                <p>
+                                    The initial Equipment “Loaner period” under this Agreement is equivalent to a) the transport periods while the customer’s equipment travels to and from the service depot, plus b) the period while the customer’s equipment is at the service depot, plus c) five business days. This loaner period will automatically terminate at the end of this period and a (“Rental Period”) will begin unless the loaner period is extended for an additional period by mutual written agreement of the parties (“Continuation Term”).
+                                </p>
+                                <h4>4.  RETURN OF EQUIPMENT</h4>
+                                <p>
+                                    Upon the expiration or earlier termination of the ‘Loaner Period’ the Customer shall immediately deliver the Equipment to Trimble at a location designated by
+                                </p>
+                            </td>
+                            <td style="width:10px;">
+                                &nbsp;
+                            </td>
+                            <td style="width:50%;" align="top">
+                                <p>
+                                    Trimble within the continental United States. At the time of delivery, such Equipment shall be in the same condition as when delivered to the Customer, ordinary wear and tear excepted. All costs of packaging the Equipment for transport and all costs of transport shall be borne by the Customer.
+                                </p>
+                                <center>
+                                    <p>Trimble Inc.&mdash;Loaners</p>
+                                    <p>10427 Cogdill Rd.&nbsp; #700</p>
+                                    <p>Knoxville, TN&nbsp; 37932</p>
+                                    <p>(800) 234-3758</p>
+                                </center>
+                                <h4>5.  SHIPPING CHARGES</h4>
+                                <p>
+                                    Customer is responsible for shipping charges of all non-warranty loaner equipment, or warranty loaner equipment where the Loaner Period begins more than 120 days after the original purchase date.
+                                </p>
+                                <h4>6.  RENTAL PERIOD</h4>
+                                <p>
+                                    The rental period will begin automatically at the end of the loaner period. 
+                                </p> 
+                                <h4>7.  NON WARRANTY LOANER AND RENTAL CHARGES</h4>
+                                <p>
+                                    Charges are based on five business day increments (“Week”).  There is no proration of charges from one to five days. Multiple weeks incur corresponding multiple weekly charges. 
+                                </p>
+                                <br/>TX5 3D LASER SCANNER - $1000.00 / WEEK
+                                <br/>ROBOTIC TOTAL STATION - $875.00 / WEEK
+                                <br/>YUMA 2 TABLET WITH FIELD LINK - $295.00 / WEEK
+                                <br/>KENAI - $295.00 / WEEK
+                                <h4>8.  NON WARRANTY LOANER OR RENTAL PAYMENTS</h4>
+                                <p>
+                                    The Customer, upon signing this Agreement, agrees that they understand Sections 5 - 7 and agrees to pay Trimble all applicable charges. 
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> 
+                                <h4>9. TAXES</h4>
+                                <p>
+                                    The Customer shall pay when and as due all taxes and assessments (federal, state or local) which may be assessed at anytime during the rental period under this Agreement with respect to the ownership, leasing, rental, sale, purchase, possession or use of the Equipment; excluding, however, all taxes which are based upon or measured by Trimble's net income. Trimble may, from time to time, require verification from the Customer of payment of all such taxes and assessments. Customer further agrees that if Trimble pays any taxes or charges on its behalf, Customer shall reimburse Trimble for all payments, plus reasonable cost incurred in collecting and administering any taxes.
+                                </p>
+                                <h4>10. LOCATION OF EQUIPMENT</h4>
+                                <p>
+                                    The Equipment shall at all times be housed at the location set forth on the Signature Page (or, if an equipment location is not stated, at the Customer's address as stated above). The Equipment may be used in the field by Customer’s work crews only and shall not be moved to or left at another location unless with Trimble's prior written consent.  Customer shall, whenever requested, advise Trimble of the exact location of the Equipment.
+                                </p>
+                                <h4>11. USE AND MAINTENANCE</h4>
+                                <p>
+                                    Customer shall, at its own expense, use and maintain the Equipment in a prudent manner, in accordance with the manufacturer's specifications and instructions and in compliance with all pertinent governmental requirements. Unless with Trimble's prior written consent, the Customer shall not alter the Equipment, shall not make any attachments or additions to the Equipment and shall not permit the 
+                                </p>
+                                <p>
+                                    Equipment to become an attachment or addition to any other personal property or a fixture to any real estate. Any attachments or additions to the Equipment shall become part of the Equipment and shall be subject to all terms and conditions of this Agreement. Trimble shall have the right, at any time during normal business hours to inspect the Equipment. 
+                                </p>
+                                <h4>12. WARRANTY AND DISCLAIMER</h4>
+                                <p>
+                                    The Equipment furnished to Customer hereunder is used equipment.  EXCEPT AS OTHERWISE EXPRESSLY PROVIDED HEREIN, CUSTOMER USES THE  
+                                </p>
+                            </td>
+                            <td style="width:10px;">
+                                &nbsp;
+                            </td>
+                            <td>
+                                <p> 
+                                    EQUIPMENT “AS IS,” AND TRIMBLE MAKES NO WARRANTY, EXPRESSED OR IMPLIED AS TO THE EQUIPMENT.  WITHOUT LIMITING THE FOREGOING, NO WARRANTY IS MADE AS TO THE CONDITION OF THE EQUIPMENT, AS TO THE MERCHANTABILITY OF THE EQUIPMENT, AS TO THE FITNESS OF THE EQUIPMENT FOR ANY PURPOSES, OR AS TO THE NON-INFRINGEMENT OF THE EQUIPMENT UPON THE RIGHTS OF OTHERS. 
+                                    <br/>
+                                    NEITHER TRIMBLE NOR ANYONE INVOLVED IN THE CREATION, PRODUCTION, INSTALLATION, OR DISTRIBUTION OF THE EQUIPMENT SHALL BE LIABLE TO THE CUSTOMER OR TO ANY OTHER PARTY FOR ANY INJURY OR DEATH TO PERSON, DAMAGE TO PROPERTY OR OTHER LOSS OR DAMAGE RESULTING FROM THE CONDITION OR USE OF THE EQUIPMENT.  EXCEPT AS PROVIDED IN SECTION 2, NO DEFECTS IN THE EQUIPMENT SHALL AFFECT THE VALIDITY OR TERMS OF THIS AGREEMENT.    
+                                </p>
+                                <h4>13. LIENS</h4>
+                                <p>
+                                    The Customer shall not cause or permit the Equipment to be subjected to any lien or encumbrance (other than liens or encumbrances resulting from the acts or omissions of Trimble).
+                                </p>
+                                <h4>14. LOSS OR DAMAGE</h4>
+                                <p>
+                                    At the time of delivery of the Equipment to the Customer, Customer shall bear all risk of loss, theft, damage or destruction of the Equipment from any cause whatever. If all or any portion of the Equipment shall become lost, stolen, destroyed or damaged beyond repair, the Customer, immediately upon demand, shall pay to Trimble: an amount equal to Trimble’s then list price for the equipment. Upon such payment, the Equipment shall become the sole property of the Customer and Trimble will transfer to the Customer, without recourse or warranty, all of Trimble's right, title and interest in and to the Equipment. Customer shall pay all sales, transfer and similar taxes payable upon such transfer. This Agreement shall thereupon terminate. Insurance proceeds received by Trimble with respect to the Equipment, if any, will be applied against the Customer's payment obligation under this Section. Any insurance proceeds thereafter receivable by Trimble with respect to the Equipment shall be assigned by Trimble to the Customer. If less than all of the Equipment has been lost, stolen, destroyed or damaged, then Trimble in its discretion, may elect to
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>
+                                    have the provisions of this Section apply to all Equipment subject to this Agreement (including any items of Equipment not lost, stolen, destroyed or damaged) or may elect to have the terms of this Section only apply to the items of Equipment which are lost, stolen, destroyed or damaged and, subject to a pro rata adjustment of the charges thereafter payable, this Agreement shall remain in full force and effect as to any remaining items of Equipment.
+                                </p>
+                                <h4>15. TITLE</h4>
+                                <p>
+                                    Title to the Equipment is and shall at all times remain vested in Trimble unless and until transferred to Customer through sale.  While in Customer’s possession the Equipment shall not become an accession to any other personal property even though attached to such personal property. Trimble, in its discretion, may affix labels or other identifications to the Equipment to confirm Trimble’s ownership. Trimble, in its discretion, may cause financing statements and similar notices to be filed or published evidencing its ownership interest. CUSTOMER BY SIGNING THIS AGREEMENT, AUTHORIZES TRIMBLE AND ITS AGENTS AS ATTORNEY-IN-FACT FOR THE CUSTOMER, TO SIGN AND RECORD WITH ALL APPROPRIATE GOVERNMENTAL AGENCIES SUCH FINANCING STATEMENTS AND OTHER DOCUMENTS AS TRIMBLE DEEMS APPROPRIATE TO GIVE NOTICE OF TRIMBLE'S OWNERSHIP OF THE EQUIPMENT AND EXISTENCE OF THIS AGREEMENT. THE CUSTOMER FURTHER AGREES TO EXECUTE ALL DOCUMENTS REASONABLY REQUIRED 
+                                </p>
+                                <p>
+                                    BY TRIMBLE FOR THESE PURPOSES AND TO REIMBURSE TRIMBLE FOR ALL EXPENSES OF PREPARING AND FILING SUCH PUBLIC NOTICES.
+                                </p>
+                                <h4>16. INDEMNITY</h4>
+                                <p>
+                                    Customer agrees that Customer assumes all risks relating to Customer’s use of the Equipment.  The Customer agrees to indemnify and to hold Trimble and its agents harmless from and against all losses, liabilities, claims or expenses (including reasonable attorney's fees incurred by Trimble) in connection with Customer's possession or use of the Equipment or as a result of any failure by the Customer to perform any of its obligations under this Agreement. THE CUSTOMER’S OBLIGATION OF INDEMNITY UNDER THIS SECTION SHALL SURVIVE THE EXPIRATION OR TERMINATION OF THIS AGREEMENT.
+                                </p>
+                                
+                            </td>
+                            <td style="width:10px;">
+                                &nbsp;
+                            </td>
+                            <td>
+                                <h4>17. ASSIGNMENT</h4>
+                                <p>
+                                    Customer will not sell or transfer, sub-rent, grant a security interest in, or otherwise encumber or cause or permit any other party to have any right to possess or use the Equipment.  Any such transfer or assignment or delegation of Customer's rights or obligations under this Agreement shall be void without the prior written consent of Trimble. This Agreement will otherwise be binding upon and inure to the benefit of the parties and their successors and assigns.  
+                                </p>
+                                <h4>18. COLLECTION CHARGES AND INTEREST</h4>
+                                <p>
+                                    If any installment of the Base Rent or any other amount payable by the Customer to Trimble hereunder is not paid when due, then, in addition to all other rights and remedies which Trimble may have under this Agreement, Trimble may assess (a) a collection charge of TWENTY DOLLARS ($20.00) for each month, or part thereof, for which such amount remains delinquent plus (b) interest on the delinquent amount from the due date to the date of payment at a rate equal to the lesser of Two Percent (2%) per month or the highest charge permitted by law. A returned check or non-sufficient funds charge shall be assessed to the Customer to reimburse Trimble for the time and expense incurred with respect to a check that is returned for any reason, said charge to be $30.00.
+                                </p>
+                                <h4>19. DEFAULT</h4>
+                                <p>
+                                    The following shall constitute events of default under this Agreement (an “Event of Default”): (a) the Customer's failure to pay Rental Charges or any other amount due hereunder within ten (10) days after its due date; (b) the Customer's failure to perform any non-monetary obligation hereunder within ten (10) days after Trimble delivers written notice demanding performance; (c) the Customer or any Guarantor under this Agreement ceases to conduct business as a going concern, makes an assignment for the benefit of creditors, voluntarily files a petition for liquidation, reorganization or similar relief under the Federal Bankruptcy Code; (d) Trimble determines that any financial or other information provided to Trimble with respect to the Customer or any guarantor under this Agreement is incomplete or incorrect in any material respect; (e) an involuntary petition for liquidation, reorganization or similar relief under the Federal Bankruptcy Code is filed against the Customer or any guarantor under the Agreement and is not discharged within thirty (30) days after filing; (f) the death or dissolution of the Customer or any Guarantor under this Agreement; (g) the default of the Customer or any guarantor under this Agreement under any other contract with Trimble or with any financial institution; or 
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>
+                                    (h) Trimble, in good faith, deems itself reasonably insecure as to the financial condition of the Customer or any guarantor under this Agreement. No waiver by Trimble of any Event of Default shall be effective unless in writing and signed by Trimble.
+                                </p>
+                                <h4>20. REMEDIES UPON DEFAULT</h4>
+                                <p>
+                                    As of the date of occurrence of an Event of Default, there shall be immediately due and payable to Trimble an amount (“Trimble's Loss”) equal to the sum of the following: (a) the sum of all installments of the Rental Charges and other amounts payable by the Customer hereunder which are at such time accrued but unpaid, plus (b) an amount equal to fifteen percent (15%) of Trimble's actual cost for the Equipment plus (c) all applicable late charges and interest payable pursuant to Section 17 plus (d) all expenses (including reasonable attorney's fees or fees from collection agency) incurred by Trimble in exercising any of its rights and remedies under this Agreement. 
+                                </p>
+                                <p>
+                                    Upon the occurrence of an Event of Default, and anytime thereafter, Trimble may exercise any one or more of the following remedies; (a) take possession of all or any portion of the Equipment, where located, with or without instituting legal proceedings and without incurring any liability to the Customer for damages occasioned by taking of possession; (b) require the Customer at it expense, to package for transport and to transport the Equipment to a location in the continental United States designated by Trimble; (c) upon repossession, (i) accept and retain the Equipment in full satisfaction of the Customer's obligation under this Agreement or (ii) sell or rent part or all of the Equipment, by public or private sale or rental, upon such terms as Trimble deems appropriate and reserve the right to collect any deficiency from the Customer; (d) institute legal proceedings against the Customer to recover Trimble's Loss, reduced by any amount received or receivable by Trimble upon the resale or re-rental of any repossessed items of Equipment; (e) exercise any other right or remedy available under applicable law. No right or remedy given under this Section is intended to be exclusive and each right or remedy shall be cumulative to the extent necessary to permit Trimble to recover all amounts for which the Customer is liable hereunder.
+                                </p>
+                                <h4>21. APPLICABLE LAW/JURISDICTION</h4>
+                                <p>
+                                    This Agreement is governed by and shall be interpreted  
+                                </p>
+                            </td>
+                            <td style="width:10px;">
+                                &nbsp;
+                            </td>
+                            <td>
+                                <p>
+                                    in accordance with the laws of the State of California and applicable United States federal law, without reference to “conflict of laws” principles.  The United Nations Convention on Contracts for the International Sale of Goods will not apply. (For such purposes, this Agreement shall be deemed to have been fully executed and performed in the State of California.) In any dispute or legal action arising out of or relating to this Agreement TRIMBLE AND CUSTOMER EXPRESSLY CONSENT TO THE JURISDICTION AND VENUE OF THE STATE AND FEDERAL COURTS LOCATED IN SANTA CLARA, CALIFORNIA.
+                                </p>
+                                <h4>22. NOTICES </h4>
+                                <p>
+                                    Any notice or other communication given by either party to the other regarding this Agreement will be deemed given and served when personally delivered, 
+                                </p>
+                                <p>
+                                    or five (5) business days after sent by reputable international courier requiring signature for receipt, addressed to the party at its notice address. Either party may change its notice address by written notice to the other. Customer’s notice address shall be its address appearing on the Signature Page. Trimble’s notice address shall be:
+                                </p>
+                                <ul>
+                                    <li style="list-style: none;text-align:left;">
+                                        <br/>Trimble Inc.
+                                        <br/>Attention: Director of Client Services
+                                        <br/>116 Inverness Drive East
+                                        <br/>Suite 210
+                                        <br/>Englewood, Colorado 80112 / USA
+                                        <br/>
+                                        <br/>With a copy to:
+                                        <br/>Trimble Inc.
+                                        <br/>Attention: General Counsel, Important Legal Notice
+                                        <br/>935 Stewart Drive
+                                        <br/>Sunnyvale, California 94085 / USA
+                                    </li>
+                                </ul>
+                                <h4>23. ENTIRE AGREEMENT</h4>
+                                <p>
+                                    This Agreement constitutes the entire understanding between the parties and supersedes all proposals, communications or prior agreements related to its subject matter.  None of the provisions of this Agreement may be amended, modified or waived except in a writing signed by Trimble and Customer.   
+                                </p>
+                                <p>
+                                    <center>END OF GENERAL TERMS AND CONDITIONS</center>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:form>
+        </body>
+    </div>
+</apex:page>

@@ -1,0 +1,5 @@
+<apex:page standardController="TTraining_Events__c" tabStyle="TTraining_Events__c" >
+<flow:interview name="Trimble_Training_New_Event" finishLocation="{!URLFOR('/home/home.jsp')}">
+                
+    </flow:interview>
+</apex:page>

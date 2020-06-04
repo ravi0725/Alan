@@ -1,0 +1,102 @@
+<apex:page standardController="Event" id="pgId" sidebar="false" showHeader="false" extensions="CustomerEventExnt">
+    <script type="text/javascript">
+        function Contactpopup(custeveId){
+            alert('--hi');
+            mywindow = window.open("/apex/ContactCustomLookup?id="+custeveId, "_parent");
+        }
+        
+        function selectCheckboxes(inpt,receivedInptID){
+            alert('---'+inpt);
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+                inputCheckBox[i].checked = inpt.checked;
+            }
+        }
+    </script>
+    <apex:form id="Pageform">
+    <apex:messages />
+        <apex:pageBlock >
+           
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveConfirmations}"/>
+            </apex:pageBlockButtons>
+            <div style="overflow-y:auto; height:140px;">
+                <apex:pageBlockTable value="{!custEventWrapMap}" var="cust" id="pagetableId"><!--listCustomer-->
+                    <apex:column value="{!cust}" headerValue="Customer"/>
+                    <apex:column value="{!customersMap[cust].BillingStreet}" headerValue="Street"/>
+                    <apex:column value="{!customersMap[cust].BillingCity}" headerValue="City"/>
+                    <apex:column value="{!customersMap[cust].BillingState}" headerValue="State"/>
+                    <apex:column value="{!customersMap[cust].BillingCountry}" headerValue="Country"/>
+                    <apex:column headerValue="Contact Name">
+                         <!-- <apex:facet name="header"> 
+                             <apex:inputCheckbox onclick="selectCheckboxes(this,'checkedone')" label="Contact"/>
+                         </apex:facet> {!eventContactsMap[cust.Account__c]}
+                         <apex:repeat value="{!eventContactsMap}" var="ecm" id="repeatId"> {!eventContactsMap}-->
+                             <apex:dataTable value="{!custEventWrapMap[cust]}" var="cnts" id="contactsTableId" columnsWidth="15,30,150,150" width="100%">
+                                 <apex:column style="border:none;">
+                                     <apex:inputCheckbox value="{!cnts.ceConfirm}"/>
+                                 </apex:column>
+                                 <apex:column value="{!cnts.ce.Contact_Confirmation_Status__c}" style="border:none;"/>
+                                 <apex:column style="border:none;">
+                                     <apex:commandLink value="{!cnts.ce.Contact_Name__c}" action="/{!cnts.ce.Event_Contact__c}" target="_blank"/>
+                                 </apex:column>
+                                 <apex:column style="border:none;">
+                                    <!--<a href="javascript:DeleteCustEvent('{!cnts.ce.Id}');" style="font-weight:bold">Del</a>&nbsp;&nbsp;-->
+                                    <!--<a href="javascript:Contactpopup('{!cust.Id}');" style="font-weight:bold">Update Contact</a>-->
+                                    <!--<apex:commandLink style="font-weight:bold;" action="/apex/ContactCustomLookup?id={!cnts.ce.Id}" value="Update Contact" target="_parent"/><br/>-->
+                                    
+                                    <apex:outputPanel layout="block" rendered="{!IF(cnts.ce.FS_Survey_Link_Sent__c == FALSE && cnts.ce.Contact_Confirmation__c == TRUE && cnts.ce.Event_Contact__r.Email != NULL && cnts.ce.Event_Contact__r.Stop_Training_Survey__c == FALSE && enableSurvey == TRUE, TRUE, FALSE)}">
+                                        <a href="javascript:sendSurvey('{!cnts.ce.Id}');" style="font-weight:bold">Send Survey</a>
+                                    </apex:outputPanel>
+                                    <!-- <apex:commandLink style="font-weight:bold;" rendered="{!IF(cnts.ce.FS_Survey_Link_Sent__c == FALSE && cnts.ce.Contact_Confirmation__c == TRUE, TRUE, FALSE)}" onClick="sendSurvey('{!cnts.ce.Id}');" value="Send Survey"/> -->
+                                    <apex:commandLink style="font-weight:bold;" rendered="{!IF(cnts.ce.FS_Survey_Completed_Date__c != NULL && enableSurvey == TRUE, TRUE, FALSE)}" action="/{!cnts.ce.Id}" value="FormStack Response" target="_blank"/>
+                                </apex:column>
+                             </apex:dataTable>
+                         <!--</apex:repeat>-->
+                     </apex:column>     
+                     <apex:column >
+                         <a href="javascript:DeleteCustEvent('{!customersMap[cust].Id}');" style="font-weight:bold">Del</a>&nbsp;&nbsp;
+                         <apex:commandLink style="font-weight:bold;" action="/apex/ContactCustomLookup?eventId={!eventId}&accountId={!customersMap[cust].Id}" value="Update Contact" target="_parent"/><br/>
+                    </apex:column>
+                </apex:pageBlockTable> 
+            </div>
+        </apex:pageBlock>
+        <apex:actionFunction action="{!DeleteCustEvent}" name="DeleteCustEvent" reRender="redirectPaneldel" >  
+           <apex:param name="custeventid" value="" assignTo="{!eventAcctId}"/>
+        </apex:actionFunction>
+        <apex:actionFunction action="{!sendFormstackSurvey}" name="sendSurvey" reRender="redirectPaneldel" >  
+           <apex:param name="cEventID" value="" assignTo="{!cEventSendSurveyID}"/>
+        </apex:actionFunction>
+        
+        <apex:outputPanel id="redirectPanel" > 
+             <apex:outputText rendered="{!shouldRedirect}">
+                  <script type="text/javascript">
+                   
+                    var cust = "{!oCustomerEvent.Account__c}";
+                    if(cust == ''){
+                        alert('Please enter the value for Customer Search');
+                    }
+                    var SFObjectArray = new Array();
+                    <apex:repeat value="{!listCustomer}" var="arrayItem">
+                    SFObjectArray.push('{!arrayItem.Account__c}');
+                    </apex:repeat>
+                    for(var i=0; i < SFObjectArray.length; i++){
+                        if(SFObjectArray[i] == cust){
+                            alert('Customer already exisit');
+                        }
+                    }
+                    window.top.location.href = '{!url}';  
+                  </script>
+             </apex:outputText>
+        </apex:outputPanel> 
+        <apex:outputPanel id="redirectPaneldel" > 
+             <apex:outputText rendered="{!shouldRedirect}">
+                  <script type="text/javascript">
+                     window.top.location.href = '{!url}';  
+                  </script>
+             </apex:outputText>
+        </apex:outputPanel> 
+    </apex:form>
+</apex:page>

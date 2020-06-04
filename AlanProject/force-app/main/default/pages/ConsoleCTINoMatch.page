@@ -1,0 +1,50 @@
+<apex:page controller="ConsoleCTINoMatchController">
+    <apex:includeScript value="/soap/ajax/36.0/connection.js"/>
+    <apex:includeScript value="/support/console/36.0/integration.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-1.10.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.css')}"/>
+    <apex:form >
+        <apex:sectionHeader rendered="{!openDashboardPageFlag}" title="Incoming Call"/>
+        <apex:actionStatus startText="requesting..." stopText="" id="myStatus" />
+    </apex:form>
+    <script>
+    if (sforce.console.isInConsole()) {
+        var callback1 = function (result) {
+            if (result.ids && result.ids.length > 0) {
+                sforce.console.cti.getCallAttachedData(result.ids[0], callback2, {getCallType:true});
+            }
+        };
+        
+        var callback2 = function (result) {
+            if({!openDashboardPageFlag} && result.data !== undefined){
+                var jArray = JSON.parse(result.data);
+                sforce.console.setTabTitle('Incoming - ' + jArray.number);
+            	createCase(result.data);
+            }else{
+            	sforce.console.setTabTitle('Incoming Call');    
+            }
+        };
+        //Note that we are using the CTI submodule here
+        sforce.console.cti.getCallObjectIds(callback1);
+    }
+    else {
+        alert('Sorry! This Page ONLY worked on Service Console.');
+    }
+    
+    function createCase(jsonData) {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ConsoleCTINoMatchController.CreateTAPCase}',
+            jsonData, 
+            function(result, event){
+                if (event.status) {
+                    sforce.console.openPrimaryTab(null , '/' + result, true, 'New Case',null);
+                }else {
+                    if(event.message.indexOf('CreateTAPCase') == -1) alert(event.message);
+                }
+            }, 
+            {escape: true}
+        );
+    }
+    </script>
+</apex:page>

@@ -1,0 +1,21 @@
+<apex:page title="Send for Internal Review: {Apttus__APTS_Agreement__c.Name}" standardController="Apttus__APTS_Agreement__c" extensions="FC_SendForReviewOverrideController" >
+    <apex:form >
+    <apex:pageBlock title="Send for Internal Review">
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton value="Continue" action="{!setField}"/>
+        </apex:pageBlockButtons>
+        Choose which internal party that you are sending to:&nbsp;
+        <apex:inputField value="{!Apttus__APTS_Agreement__c.Internal_Party__c}"/>
+        <br/>
+        
+        <!--<h2>Choose the proserv and legal approver.  Leave blank if the approval is not applicable.-->
+        <!--    <span style="color: red">This will lock the record!  Please ensure your approvers are accurate before continuing.</span>-->
+        <!--</h2>-->
+        <!--<br/>-->
+        <!--<apex:pageBlockSection columns="1">-->
+        <!--    <apex:inputField value="{!Apttus__APTS_Agreement__c.Approver__c}" label="Proserv Approver"/>-->
+        <!--    <apex:inputField value="{!Apttus__APTS_Agreement__c.Approver__c}" label="Legal Approver"/>-->
+        <!--</apex:pageBlockSection>-->
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

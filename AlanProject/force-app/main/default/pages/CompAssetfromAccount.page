@@ -1,0 +1,34 @@
+<apex:page controller="CompetitiorAssetOpportunityClass" sidebar="true" showHeader="true" action="{!loadAddCompetitorAsset}">
+<apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+   <style>
+     .blue {
+    color:#0000FF;
+    font-size:13px;
+    }
+   </style>     
+    <apex:form >
+       <apex:pageMessages id="errorMsg"/>
+       <apex:pageblock >
+       <div style="font-weight: bold;font-size: 15px;">{!$Label.Comp_Asset_Account}-{!accountname}</div>
+        <apex:pageBlockTable value="{!competitorAssetsList}" var="wrapper" rendered="{!AND(competitorAssetsList != null, competitorAssetsList.size > 0)}">                             
+            <apex:column headerValue="{!$Label.Action}">
+               <apex:inputCheckbox value="{!wrapper.isSelected}" styleClass="selectedCheckbox"/>
+            </apex:column>
+            <apex:column value="{!wrapper.asset.Competitor_Assets__r.Name}" headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Name.label}" width="20%"/>
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Competitor_Company__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Competitor_Company__r.Name}"/>                       
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Number_of_Licenses__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Number_of_Licenses__c}"/> 
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product_Version__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Product_Version__c}"/>
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Yearly_Subscription_Cost__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Yearly_Subscription_Cost__c}"/>
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Install_Date__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Install_Date__c}"/>
+            <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Expiration_Date__c.label}" value="{!wrapper.asset.Competitor_Assets__r.Expiration_Date__c}"/>
+           </apex:pageBlockTable> <br/>
+          <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!AND(competitorAssetsList != null, competitorAssetsList.size <= 0)}" />
+          <apex:pageBlockButtons >
+             <apex:commandButton value="{!$Label.Submit}" action="{!updatecompetitor}" rerender="errorMsg" rendered="{!AND(competitorAssetsList != null, competitorAssetsList.size > 0)}" status="loadingStatus" />
+             <apex:actionstatus id="loadingStatus" startText="{!$Label.Updating}"/>
+             <apex:commandbutton value="{!$Label.Cancel}" action="{!cancel}"/>
+             <apex:commandbutton value="{!$Label.New_Comp_Assets}" action="{!pageredirect}"/>
+          </apex:pageBlockButtons>
+        </apex:pageblock>       
+    </apex:form>   
+</apex:page>

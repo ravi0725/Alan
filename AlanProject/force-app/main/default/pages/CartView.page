@@ -1,0 +1,12 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c"
+    extensions="CartViewController">
+    <apex:form >
+        <apex:pageMessages id="errorPage" />
+        
+        <apex:outputPanel id="idApprovalContextPanel">
+            <Apttus_CQApprov:ApprovalContextView contexSOId="{!ctxObjectId}" 
+                contextApprovalType="{!ctxApprovalType}"/>
+        </apex:outputPanel>
+        
+    </apex:form>
+</apex:page>

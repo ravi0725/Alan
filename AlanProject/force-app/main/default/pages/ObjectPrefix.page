@@ -1,0 +1,10 @@
+<apex:page controller="DescribeAllObjectController" sidebar="false" showHeader="false" showChat="false">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!ObjPrefixMap}" var="prf">
+                <apex:column value="{!ObjPrefixMap[prf]}" headerValue="Prefix"/>
+                <apex:column value="{!prf}" headerValue="Object Name"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>        
+</apex:page>

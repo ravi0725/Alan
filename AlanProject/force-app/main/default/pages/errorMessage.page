@@ -1,0 +1,5 @@
+<apex:page controller="PartnerInternalSupportController">
+
+<apex:pageMessage summary="Either the Trimble Account is not found or some technical error occurred. Please contact your system administrator." severity="warning" strength="3" />
+           
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:page >
+    <apex:listViews type="Case" >
+        <apex:facet name="header">
+            &nbsp; 
+            <apex:form >
+            <div align="center">
+                <apex:commandbutton value="New Case" onclick="window.open('/clientsupport/setup/ui/recordtypeselect.jsp?ent=Case&retURL=%2Fclientsupport%2F500%3Ffcf%3D00B5A0000083vm7%26rolodexIndex%3D-1%26page%3D1&save_new_url=%2Fclientsupport%2F500%2Fe%3FretURL%3D%252Fclientsupport%252F500%253Ffcf%253D00B5A0000083vm7%2526rolodexIndex%253D-1%2526page%253D1','_self')" />
+            </div>
+            </apex:form>    
+        </apex:facet>
+    </apex:listViews>
+</apex:page>

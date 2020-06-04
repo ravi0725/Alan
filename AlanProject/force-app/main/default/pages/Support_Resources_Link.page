@@ -1,0 +1,18 @@
+<apex:page >
+  <!-- Begin Default Content REMOVE THIS -->
+  
+  <br/>
+    <H1> Software and FAQ Downloads </H1>
+   <br/> <br/> 
+    <body>
+  To Access Software Downloads Click Here: </body> 
+    <apex:outputLink value="http://www.plancal.ch/kundenbereich.html">Software Downloads</apex:outputLink>  
+  
+ <br/>
+  
+  <body>
+  To Access FAQ Downloads Click Here: </body> 
+    <apex:outputLink value="http://www.plancal.ch/kundenbereich.html">FAQ Downloads</apex:outputLink>  
+
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

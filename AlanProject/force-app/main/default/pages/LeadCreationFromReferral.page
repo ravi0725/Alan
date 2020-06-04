@@ -1,0 +1,2 @@
+<apex:page standardcontroller="Referral__c" extensions="LeadCreationFromReferalController" action="{!redirectURL}">
+</apex:page>

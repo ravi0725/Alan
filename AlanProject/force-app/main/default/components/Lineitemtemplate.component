@@ -1,0 +1,37 @@
+<apex:component controller="LineitemtemplateController" access="global" >
+     <apex:attribute name="configid" type="String" description="Id of the prod configuration" assignTo="{!configurationId}"/>
+    
+     <table border = "1" cellspacing = "0">
+        
+        <tr>
+            <td bgcolor="#000033" ><font color="#fff">{!$Label.Product_Name}</font></td>
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.Charge_Type}</font></td>
+            
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.Quantity}</font></td>
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.List_Price}({!Curr})</font></td>
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.Extended_Price}({!Curr})</font></td>
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.Discount}</font></td>
+            <td  bgcolor="#000033"><font color="#fff">{!$Label.Net_Price}({!Curr})</font></td>               
+        </tr>
+        <apex:repeat value="{!Lineitemlst}" var="item">
+        <tr>
+            <td>{!item.Product_or_Option_name__c}</td>
+            <td>{!item.Apttus_Config2__ChargeType__c}</td> 
+            <td><apex:outputText value="{0, number, ###,###,###,###,##0.00}">
+                 <apex:param value="{!item.Apttus_Config2__Quantity__c}"/>
+                  </apex:outputText></td> 
+            <td><apex:outputText value="{0, number, ###,###,###,###,##0.00}">
+                 <apex:param value="{!item.Apttus_Config2__ListPrice__c}"/>
+                  </apex:outputText></td> 
+            <td><apex:outputText value="{0, number, ###,###,###,###,##0.00}">
+                 <apex:param value="{!item.Apttus_Config2__ExtendedPrice__c}"/>
+                  </apex:outputText></td> 
+            <td>{!item.New_Net_Discount__c}</td> 
+            <td><apex:outputText value="{0, number, ###,###,###,###,##0.00}">
+                 <apex:param value="{!item.Apttus_Config2__NetPrice__c }"/>
+                  </apex:outputText></td>      
+            </tr>
+        </apex:repeat>       
+              
+    </table>
+</apex:component>

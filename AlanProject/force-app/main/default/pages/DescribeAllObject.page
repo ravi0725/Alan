@@ -1,0 +1,92 @@
+<apex:page controller="DescribeAllObjectController" showChat="false" showHeader="false" sidebar="false" contenttype="{!pageLoadType}" renderAs="{!LoadType}">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:repeat value="{!ObjWrapMap}" var="objName">
+                <table style="border:1px thin">
+                    <tr style="background-color:#92D050">
+                        <th colspan="5">
+                            <span style="font-size:20px;">
+                            <b>
+                            {!$ObjectType[objName].Label}
+                            </b>
+                            </span>
+                        </th>
+                    </tr>
+                </table>
+                <table border="1px">
+                    <tr style="background-color:#5B9BD5">
+                        <th>
+                            Field Name
+                        </th>
+                        <th>
+                            Field API Name
+                        </th>
+                        <th>
+                            Field Type 
+                        </th>
+                        <th>
+                            Help Text
+                        </th>
+                        <th>
+                            PickList Values
+                        </th>
+                    </tr>
+                    <tr style="background-color:#F0F0F0;">
+                        <td colspan="5">
+                            Standard Fields
+                        </td>
+                    </tr>
+                    <apex:repeat value="{!ObjWrapMap[objName]}" var="fields">
+                    <apex:actionRegion rendered="{!!fields.isCustom}">
+                    <tr style="background-color:#F0F0F0;">
+                        <td>
+                            <apex:outputText value="{!fields.fieldName}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldAPIName}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldType}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldDescription}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.pickValues}"/>
+                        </td>
+                    </tr>
+                    </apex:actionRegion>
+                    </apex:repeat>
+                    <tr style="background-color:#F0F0F0;">
+                        <td colspan="5">
+                            Custom Fields
+                        </td>
+                    </tr>
+                    <apex:repeat value="{!ObjWrapMap[objName]}" var="fields">
+                    <apex:actionRegion rendered="{!fields.isCustom}">
+                    <tr style="background-color:#F0F0F0;">
+                        <td>
+                            <apex:outputText value="{!fields.fieldName}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldAPIName}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldType}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.fieldDescription}"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!fields.pickValues}"/>
+                        </td>
+                    </tr>
+                    </apex:actionRegion>
+                    </apex:repeat>
+                </table>
+                <br/>
+            </apex:repeat>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

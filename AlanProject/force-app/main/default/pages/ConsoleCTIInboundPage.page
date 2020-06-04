@@ -1,0 +1,250 @@
+<apex:page controller="ConsoleCTIInboundController">
+    <apex:includeScript value="/soap/ajax/36.0/connection.js"/>
+    <apex:includeScript value="/support/console/36.0/integration.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-1.10.2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.CDNDataTable, 'jquery-dataTables.css')}"/>
+    
+    <script type="text/javascript">
+    var responseData;
+    j$ = jQuery.noConflict();
+    j$(document).ready(function() {});
+    
+    // Refresh jQuery Tables after Action
+    function refreshTables(){
+        j$('#tableAccountEntitlements').dataTable({
+            "bSort":false
+        });
+    }
+    
+    if (sforce.console.isInConsole()) {
+        var callback1 = function (result) {
+            if (result.ids && result.ids.length > 0) {
+                sforce.console.cti.getCallAttachedData(result.ids[0], callback2, {getCallType:true});
+            }
+        };
+        
+        var callback2 = function (result) {
+            if(result.data !== undefined){
+                getRemoteRecordId(result.data);
+            }
+        };
+        //Note that we are using the CTI submodule here
+        sforce.console.cti.getCallObjectIds(callback1);
+    }
+    else {
+        alert('Sorry! This Page ONLY worked on Service Console.');
+    }
+    
+    // Below function ONLY Opens Account Tab
+    function openAccountPrimaryTab(AccountId, AccountName){
+        sforce.console.getEnclosingPrimaryTabId(function VFAccTabId(result) {
+            sforce.console.refreshPrimaryTabById(result.id, false);
+            sforce.console.openSubtab(result.id , '/'+AccountId, true, '', null);
+        });
+    }
+    
+    function openContactTabs(AccountId, AccountName, ContactId, ContactName){
+        sforce.console.getEnclosingPrimaryTabId(function VFConTabId(result) {
+            sforce.console.openSubtab(result.id , '/'+AccountId, true, '', null);
+            sforce.console.openSubtab(result.id , '/'+ContactId, true, '', null);
+        });
+    }
+    
+    // Start - TAP related functions
+    function openAccountRecord(){
+        sforce.console.openPrimaryTab(null , '/' + responseData.AccountId, true, 'Account', openTAPAccountSuccess);
+    }
+    
+    var openTAPAccountSuccess = function openTAPAccountSuccess(result) {
+        //Report whether opening the new tab was successful
+        if (result.success) {
+            if(!responseData.isOnlyAccount)
+                sforce.console.openPrimaryTab(null , '/' + responseData.ContactId, true, 'Contact',null);
+            sforce.console.openPrimaryTab(null , '/' + responseData.CaseId, true, 'New Case',openTAPCaseSuccess);
+        }
+    };
+    
+    var openTAPCaseSuccess = function openTAPCaseSuccess(result){
+        if (result.success) {
+        	sforce.console.openPrimaryTab(null, '/apex/Account360View6?Id='+responseData.AccountId, true, 'Account Dashboard',null);
+        }else{
+        	alert('Error occured while opening Account Dashboard.');    
+        }
+    };
+    // End - TAP related functions
+    
+    function openTab(recid, recname) {
+        if(!sforce.console.isInConsole())
+            window.parent.location.replace('/'+recid);
+        else
+            sforce.console.getEnclosingPrimaryTabId(function(result) {
+                callBackopenTab(result, recid, recname);
+            });
+    }
+    
+    function callBackopenTab(result, recordid, recordname){
+        sforce.console.openSubtab(result.id, '/'+recordid , true, recordname, null);
+    }
+    
+    function CreateCaseJS(AccountId, ContactId, AssetId, EntitlementId, ProductGroup){
+        console.log(' Nonce =>'+'{!pNonce}');
+        console.log('pURL ==>'+'{!pUrl}');
+        sforce.console.getEnclosingPrimaryTabId(function VFMainTabId(result) {
+            sforce.console.openSubtab(result.id , navigateToCreateCaseJs(ContactId, '{!pNonce}', AccountId, EntitlementId, AssetId), true, 'New Case', null);
+        });
+    }
+    
+    function navigateToCreateCaseJs(ContactId, pNonceVal, AccountId, EntitlementId, AssetId){
+        var redirectURL;
+        if(ContactId != ''){
+            // Create Case for Account
+            redirectURL = '/setup/ui/recordtypeselect.jsp?ent=Case&ekp=500&retURL=/'+
+                ContactId+
+                '?isdtp=vw&nonce='+
+                pNonceVal+
+                '&save_new_url=/500/e?retURL=%2F'+
+                ContactId +
+                '%3Fisdtp%3Dvw%26nonce%3D'+
+                pNonceVal+
+                '&def_contact_id='+
+                ContactId+
+                '&def_account_id='+
+                AccountId+
+                '&def_entitlement_id='+
+                EntitlementId+
+                '&def_asset_id='+
+                AssetId+
+                '&isdtp=vw';
+        }
+        else{
+            // Create Case for Contact
+            redirectURL = '/setup/ui/recordtypeselect.jsp?ent=Case&ekp=500&retURL=/'+
+                AccountId+
+                '?isdtp=vw&nonce='+
+                pNonceVal+
+                '&save_new_url=/500/e?retURL=%2F'+
+                AccountId +
+                '%3Fisdtp%3Dvw%26nonce%3D'+
+                pNonceVal+
+                '&def_account_id='+
+                AccountId+
+                '&def_entitlement_id='+
+                EntitlementId+
+                '&def_asset_id='+
+                AssetId+
+                '&isdtp=vw';
+        }
+        // redirect to Case Creation
+        navigateToUrl(redirectURL,'RELATED_LIST','newCase');
+    }
+    
+    function getRemoteRecordId(jsonCallData) {
+        console.log(' jsonCallData ==>'+jsonCallData);
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.ConsoleCTIInboundController.returnAccountId}',
+            jsonCallData, 
+            function(result, event){
+                if (event.status) {
+                    // Get DOM IDs for HTML and Visualforce elements like this
+                    // Open Records in Same Tab
+                    result = result.replace(/&(lt|gt|quot);/g, function (m, p) { 
+                        return (p == "lt") ? "<" : ((p == "gt") ? ">" : "\"");
+                    });
+                    var jArray = JSON.parse(result);
+                    
+                    if({!NOT(openDashboardPageFlag)}){
+                        if(jArray.isOnlyAccount){ // Account Found
+                            openAccountPrimaryTab(jArray.AccountId, jArray.AccountName);
+                        }
+                        else{ // Contact Found
+                            openContactTabs(jArray.AccountId, jArray.AccountName, jArray.ContactId, jArray.ContactName);
+                        }
+                        // Query Related Entitlements
+                        QueryEntitlements(jArray.AccountId, jArray.ContactId);
+                    }else if({!openDashboardPageFlag}){
+                        //TAP Division
+                        responseData = jArray;
+                        openAccountRecord();
+                    }
+                }else {
+                    if(event.message.indexOf('returnAccountId') == -1)alert(event.message);
+                }
+            }, 
+            {escape: true}
+        );
+    }
+    
+    </script>
+    <apex:form >
+        <apex:pageMessages id="Errors"></apex:pageMessages>
+        <apex:sectionHeader rendered="{!NOT(openDashboardPageFlag)}" title="Entitlements" subtitle="Related Entitlements"/>
+        <apex:sectionHeader rendered="{!openDashboardPageFlag}" title="Incoming Call"/>
+        <apex:actionStatus startText="requesting..." stopText="" id="myStatus" />
+        
+        <apex:actionFunction name="QueryEntitlements" action="{!retrieveEntitlements}" reRender="pgBlockId" status="myStatus" oncomplete="refreshTables()">
+            <apex:param name="relatedAccountId" value="" assignTo="{!rAccId}"/>
+            <apex:param name="relatedContactId" value="" assignTo="{!rConId}"/>
+        </apex:actionFunction>
+        <apex:pageBlock rendered="{!NOT(openDashboardPageFlag)}" title="Entitlements" mode="maindetail" id="pgBlockId">
+            <apex:pageBlockSection collapsible="false" columns="1" title="Information">
+                <apex:outputPanel layout="block" styleClass="full_width">
+                    <table id="tableAccountEntitlements" class="list" border="0" cellpadding="0" cellspacing="0">
+                        <thead>
+                            <tr class="headerRow" style="background-color: burlywood;">
+                                <th>
+                                    Entitlement Name
+                                </th>
+                                <th>
+                                    Serial Number
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Status Icon
+                                </th>
+                                <!--
+                                <th>
+                                    Contract Start Date
+                                </th>
+                                <th>
+                                    Contract End Date
+                                </th>
+                                <th>
+                                    Quantity
+                                </th>
+                                <th>
+                                    List Price
+                                </th>
+                                -->
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat id="repeatAccountEntitlements" value="{!lstEntitlements}" var="ent">
+                                <tr class="dataRow">
+                                    <td class="dataCell"><a href="#" onClick="openTab('{!ent.Id}','{!ent.Name}'); return false">
+                                        <apex:outputText value="{!ent.Name}" /></a></td>
+                                    <td class="dataCell"><apex:outputText value="{!ent.Asset_s_Serial_Number__c}"></apex:outputText></td>
+                                    <td class="dataCell"><apex:outputText value="{!ent.Entitlement_Status__c}"></apex:outputText></td>
+                                    <td class="dataCell"><img src="{!CASE(ent.Entitlement_Status__c, 'Active', '/img/entitlement/active_entitlement_status.png', 'Signed', '/img/entitlement/active_entitlement_status.png', 'InActive', '/img/entitlement/inactive_entitlement_status.png', 'Expired', '/img/entitlement/expired_entitlement_status.png', 'Terminated', '/img/entitlement/expired_entitlement_status.png', '')}" alt="{!ent.Entitlement_Status__c}" title="Entitlement Satus"/></td>
+                                    <!--
+                                    <td class="dataCell"><apex:outputField value="{!ent.Contract_Start_Date__c}" /></td>
+                                    <td class="dataCell"><apex:outputField value="{!ent.Contract_End_Date__c}"/> </td>
+                                    <td class="dataCell"><apex:outputText value="{!ent.Quantity__c}"></apex:outputText></td>
+                                    <td class="dataCell"><apex:outputText value="{!ent.List_Price__c}"></apex:outputText></td>
+                                    -->
+                                    <td class="dataCell">
+                                        <apex:outputLink onclick="CreateCaseJS('{!ent.AccountId}', '{!rConId}', '{!ent.AssetId}', '{!ent.Id}', '{!ent.Entitlement_Product_Group__c}'); return false;">Create Case</apex:outputLink>
+                                    </td>
+                                </tr> 
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

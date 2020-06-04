@@ -1,0 +1,13 @@
+<apex:component >
+    <apex:attribute required="true" type="string" name="type" description="specify header and footer type" />
+    <apex:attribute required="true" type="string" name="eventLanguage" description="eventLanguage" />
+    <apex:stylesheet value="{!$Resource.dynaPdf}"/>
+    <div class="{!type}" style="background-color:rgb(255,255,255); box-shadow: 10px 10px 5px white; margin-bottom:200px; padding-top: 30px;">
+        <center>
+            <img src="{!$Resource.PlanCal_Logo_CH}" style="position: relative;left:2px; right: 5px; display:{! IF(eventLanguage=='German', 'block' , 'none')};" height="80" width="695"/>
+            <img src="{!$Resource.PlanCal_Logo_FR}" style="position: relative;left:2px; right: 5px; display:{! IF(eventLanguage=='French', 'block' , 'none')};" height="80" width="695"/>
+            <img src="{!$Resource.PlanCal_Logo_NL}" style="position: relative;left:2px; right: 5px; display:{! IF(eventLanguage=='English', 'block' , 'none')};" height="80" width="695"/>
+            <apex:componentBody />
+        </center>
+    </div>
+</apex:component>

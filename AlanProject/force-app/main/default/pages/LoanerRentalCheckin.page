@@ -1,0 +1,5 @@
+<apex:page standardController="Loaner_Rentals__c" tabStyle="Loaner_Rentals__c" >
+    <flow:interview name="Check_In_Loaner_Rentals" finishLocation="/{!Loaner_Rentals__c.id}">
+        <apex:param name="varLoanerID" value="{!Loaner_Rentals__c.id}"/>
+    </flow:interview>
+</apex:page>

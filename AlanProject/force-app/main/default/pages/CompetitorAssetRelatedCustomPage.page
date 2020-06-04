@@ -1,0 +1,34 @@
+<apex:page standardController="Account" extensions="CompetitiorAssetClass" showHeader="false" sidebar="false" >
+<apex:form >
+  <apex:pageBlock mode="main" id="pb"> 
+      <apex:pageMessages />
+      <apex:pageBlockButtons location="top">
+         <apex:outputLink value="/apex/competitorAssetsAccountPage?id={!accId}" styleClass="btn" style="text-decoration:none;" target="_top">
+            {!$Label.New_Comp_Assets}
+         </apex:outputLink>
+      </apex:pageBlockButtons>   
+      <apex:pageBlockTable value="{!RelatedCompetitorAsset}" id="CompAssetTable" var="compAsset" rendered="{!AND(RelatedCompetitorAsset!=null, RelatedCompetitorAsset.size > 0)}">
+        <apex:column headerValue="{!$Label.Action}">
+        <apex:outputLink value="/apex/EditCompetitorAssetsAccountPage?id={!compAsset.Competitor_Assets__c}&aId={!accId}" target="_parent">
+            {!$Label.Edit}
+        </apex:outputLink>&nbsp;|&nbsp;<apex:outputLink target="_parent" onclick="return confirm('{!$Label.Are_You_Sure_Comp_Asset}');" value="{!URLFOR($Action.Competitor_Assets_Junction__c.Delete, compAsset.Id, [retURL='/'&accId])}">{!$Label.DeleteLink}</apex:outputLink>        
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Name.label}">
+           <apex:outputLink value="/apex/DetailCompetitorAssetsAccountPage?id={!compAsset.Competitor_Assets__c}&aId={!accId}" target="_parent">
+              {!compAsset.Competitor_Assets__r.Name}
+           </apex:outputLink>
+        </apex:column>        
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Competitor_Company__c.label}">
+          <apex:outputLink value="/{!compAsset.Competitor_Assets__r.Competitor_Company__c}" target="_parent">
+            <apex:outputText value="{!compAsset.Competitor_Assets__r.Competitor_Company__r.Name}"/>
+          </apex:outputLink>           
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Number_of_Licenses__c.label}" value="{!compAsset.Competitor_Assets__r.Number_of_Licenses__c}"/> 
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Yearly_Subscription_Cost__c.label}" value="{!compAsset.Competitor_Assets__r.Yearly_Subscription_Cost__c}"/>
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Install_Date__c.label}" value="{!compAsset.Competitor_Assets__r.Install_Date__c}"/>
+        <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Expiration_Date__c.label}" value="{!compAsset.Competitor_Assets__r.Expiration_Date__c}"/>             
+     </apex:pageBlockTable>           
+     <apex:outputLabel value="{!$Label.No_Records_Found}" rendered="{!OR(RelatedCompetitorAsset == null, AND(RelatedCompetitorAsset != null, RelatedCompetitorAsset.size <= 0))}" />
+  </apex:pageBlock>  
+</apex:form>
+</apex:page>

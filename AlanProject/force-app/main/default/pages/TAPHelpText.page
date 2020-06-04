@@ -1,0 +1,80 @@
+<apex:page showHeader="false">
+  <!-- Begin Default Content REMOVE THIS -->
+  <apex:form >
+  <apex:pageBlock title="TAP Help Document reference">
+<apex:outputPanel > 
+   <b>Field reference </b><br></br><br></br><br></br>
+Account - Customer<br></br><br></br>
+Customer Name – Account Name<br></br><br></br>
+Customer Number – Oracle Account Number<br></br><br></br>
+Payment Term – EBS Payment Term<br></br><br></br>
+Customer Type – Type<br></br><br></br>
+Invoice To – Bill To<br></br><br></br>
+Customer – Ship To<br></br><br></br>
+Email Invoice – Invoice Delivery Method<br></br><br></br>
+Print Invoice – Invoice Delivery Method<br></br><br></br>
+POS ID – Serial Number<br></br><br></br><br></br><br></br>
+
+<!--<h1>Discount reference</h1><br></br><br></br>-->
+<table border="1">
+<tr><td><b>Customer Discount</b></td><td><b>Description</b></td></tr>
+<tr><td>Level 30: AM-RTK Sub-dealer</td><td>Dealer discount only when dealer is the "invoice to" party, available only on RTK purchases, all OmniSTAR and RTX purchases at 10% discount, TVN purchases at 0% discount</td></tr>
+<tr><td>Level 31: AM-RTK Early Adopter</td><td>end user discount on all RTK purchases (i.e. $800 for 1 yr, 2400 for farm plan) if customer is invoice to party</td></tr>
+<tr><td>Level 32: AM-RTK Network Partner Early Adopter-A</td><td>end user discount on RTKcorporate bulk purchases (i.e. $3200 for farm plan)  if customer is invoice to party</td></tr>
+<tr><td>Level 33: AM-RTK Network Partner Early Adopter-B</td><td>end user discount on all RTK purchases (i.e. $1000 for 1 yr, $3000 for farm plan)  if customer is invoice to party</td></tr>
+<tr><td>Level 34: AM-RTK Network Partner Early Adopter-C</td><td>end user discount on RTK corporate bulk purchases (i.e. $2000 for farm plan)  if customer is invoice to party</td></tr>
+<tr><td>Level 35: AM-RTK Network Partner Early Adopter-D</td><td>end user discount on all RTK purchases (i.e. $600 for 1 yr, $1800 for farm plan)  if customer is invoice to party</td></tr>
+<tr><td>Level 36: AM-RTK Network Partner Early Adopter-E</td><td>end user discount on RTK corporate bulk purchases (i.e. $800 farm plan)  if customer is invoice to party</td></tr>
+<tr><td>Level 37: AM-RTK Ag America Customer</td><td>end user discount on all RTK purchases, must be booked through Ag America account</td></tr>
+<tr><td>Level 11: Tier-2 Dealer</td><td>PRICE_LISTNOT =828473Cost + Bill To Markup<br></br>
+Product Line=RTX CENTERPOINT LB FASTRTX CENTERPOINT LB FAST<br></br>
+Product Line=RTX VIEWPOINT IPRTX VIEWPOINT IP<br></br>
+Product Line=RTX FALLBACKRTX FALLBACK<br></br>
+Product Line=RTX CENTERPOINT IP STANDARDRTX CENTERPOINT IP STANDARD<br></br>
+Product Line=RTX RANGEPOINT IPRTX RANGEPOINT IP<br></br>
+Product Line=RTX FIELDPOINT LBRTX FIELDPOINT LB<br></br>
+Product Line=RTX VIEWPOINT LBRTX VIEWPOINT LB<br></br>
+Product Line=RTX CENTERPOINT IP FASTRTX CENTERPOINT IP FAST<br></br>
+Product Line=RTX RANGEPOINT LBRTX RANGEPOINT LB<br></br>
+Product Line=RTX CENTERPOINT LB STANDARDRTX CENTERPOINT LB STANDARD<br></br>
+POS DISCOUNT CODE=1111<br></br>
+POS CUSTOMER TYPE=RESELLERRESELLER<br></br>
+</td></tr>
+<tr><td>Level 12: AM Key Account End User</td><td>Customer Type : Customer<br></br>
+ORDER_TYPE : AM POS Service Order<br></br>
+PRICE_LIST : Cost + Bill To Markup<br></br>
+POS DISCOUNT CODE: 12<br></br>
+</td></tr>
+</table>
+<br></br>
+<table border="1">
+<tr><td><b>Customer Sub Type</b></td><td><b>Description</b></td></tr>
+<tr><td>Chinese OEM Reseller</td><td>Reseller for Chinese GNSS providers like China South, Huace, etc.</td></tr>
+<tr><td>Other OEM Reseller</td><td>Reseller for OEM equipment not otherwise specified</td></tr>
+<tr><td>Tier 2: Other OEM Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>OmniSTAR Only Reseller</td><td>OmniSTAR reseller selling signals on 3rd party hardware (i.e. using Topcon or Novatel hardware)</td></tr>
+<tr><td>Tier 2: OmniSTAR Only Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>OEM-GNSS</td><td>GNSS equipment manufacturers</td></tr>
+<tr><td>OEM-Machine</td><td>Machine equipment manufacturers (typically do not build their own GNSS equipment)</td></tr>
+<tr><td>OEM-Other</td><td>TBD</td></tr>
+<tr><td>Other</td><td>Not yet categorized or doesnt fit into another classification</td></tr>
+<tr><td>Standard End User</td><td>End user using our services</td></tr>
+<tr><td>Tier 2: Key Account End User</td><td>Strategic Trimble partner or does significant corrections business with TAP which may result in preferential compensation terms</td></tr>
+<tr><td>Trimble Reseller</td><td>Trimble distributor for Ag, Geospatial, CEC etc.</td></tr>
+<tr><td>Tier 2: Trimble Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>CNH Reseller</td><td>Reseller for Case or New Holland equipment, using Trimble HW</td></tr>
+<tr><td>Tier 2: CNH Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>CAT Reseller</td><td>Reseller for Caterpillar equipment, using Trimble HW. May also be an AGCO reseller as well</td></tr>
+<tr><td>Tier 2: CAT Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>AGCO Reseller</td><td>Reseller for AGCO equipment (but not CAT dealer), using Trimble HW</td></tr>
+<tr><td>Tier 2: AGCO Reseller</td><td>Does significant corrections business with TAP, resulting in preferential compensation terms</td></tr>
+<tr><td>Branded Trimble Dealer</td><td>Strategic Trimble distribution partner who operates a branded Trimble business (i.e Vantage for Ag, Alterra for Geospatial, SITECH for CEC, BuildingPoint for Building Construction)</td></tr>
+<tr><td>Tier 2: Branded Trimble Dealer</td><td>Branded Trimble distribution partner who does significant (corrections?) business with TAP, resulting in preferential compensation terms</td></tr>
+
+</table>
+</apex:outputPanel>
+</apex:pageBlock>
+</apex:form>
+
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

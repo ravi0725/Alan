@@ -1,0 +1,135 @@
+<apex:page controller="NewCaseNotificationController" showHeader="false" showChat="false" sidebar="false">
+    
+    <apex:form > 
+        <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+    </style>
+        <script type="text/javascript">
+        
+            function startLoad(){
+                document.getElementById("filter").style.display = "block";
+                document.getElementById("loadFilter").style.display = "block";
+            }
+            
+            function endLoad(){
+                document.getElementById("filter").style.display = "none";
+                document.getElementById("loadFilter").style.display = "none";
+            }
+        // var onlineFlag = false;
+        //var firstTimePeriod = 5000;
+            window.onload=function(){
+                sforce.console.setCustomConsoleComponentButtonText('Notifications');
+                sforce.console.setCustomConsoleComponentButtonStyle('background:#252C33;');
+                //setTimeout(function(){setAgentStatus();}, firstTimePeriod);
+            };
+            
+        /* function setAgentStatus(){
+
+                sforce.console.chat.setAgentState('Online', function(result) {
+                    firstTimePeriod = 50000;
+                    //alert(result.success);
+                    if (!result.success && sforce.console.chat.setAgentState() != 'Online') {
+                        firstTimePeriod = 5000;
+                        alert('Please change Live Agent Status to Online.');
+                    }
+                });
+            }*/
+            
+            var openSuccess = function openSuccess(result) {
+                //Report whether opening the new tab was successful
+                if (result.success == true) {
+                    //alert('Primary tab successfully opened');
+                } else {
+                    //alert('Primary tab cannot be opened');
+                }
+            };
+            var newCaseflag
+            function showCaseDetails(counter,flag){
+                if(flag == 'true'){
+                    sforce.console.setCustomConsoleComponentButtonText('Notifications(' + counter + ')');
+                    sforce.console.setCustomConsoleComponentButtonStyle('background:red;');
+                    newCaseflag = setTimeout(function(){
+                        sforce.console.setCustomConsoleComponentButtonStyle('background:#252C33;');
+                        clearTimeout(newCaseflag );
+                    }, 15000);
+                }
+            }
+            
+        </script>
+        <div width="100%" id="filter" style="display:none;"/>
+        <div id="loadFilter" style="display:none;">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+            Loading . . . 
+        </div>
+
+        <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/cometd.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/jquery-1.5.1.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/json2.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.StreamingAPI, '/js/jquery.cometd.js')}"/>
+        <apex:includeScript value="/support/console/29.0/integration.js"/>
+        <apex:actionFunction name="caseDetails" status="statusId" action="{!caseDetails}" oncomplete="showCaseDetails('{!counter}','{!displayCaseFlag}'); stopLoad();" reRender="newCaseDetails">
+            <apex:param assignTo="{!CaseIds}" value="CaseIds" name="CaseIds"/>
+        </apex:actionFunction>
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <div style="text-align:center">
+            <apex:commandButton value="Clear"  onclick="window.open('/apex/NewCaseNotification','_self');" reRender="newCaseDetails"/>
+        </div>
+        <apex:outputPanel id="newCaseDetails">
+            <apex:pageBlock rendered="{!displayCaseFlag}">
+                <div style="overflow:auto;height:280px;">
+                    <apex:pageBlockTable value="{!caselist}" var="cs">
+                        <apex:column headerValue="Case Number">
+                            <u style="cursor:pointer" onclick="sforce.console.openPrimaryTab(null,'/{!cs.Id}',true,'Case {!cs.CaseNumber}',openSuccess,'');">{!cs.CaseNumber}</u>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </div>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <script type="text/javascript">
+            var CaseIds = '';
+            (function($){
+                $(document).ready(function() {
+                    // Connect to the CometD endpoint
+                    $.cometd.init({
+                        url: window.location.protocol+'//'+window.location.hostname+'/cometd/24.0/',
+                        requestHeaders: { Authorization: 'OAuth {!$Api.Session_ID}'}
+                    });
+                        
+                    // Subscribe to a topic. JSON-encoded update will be returned
+                    $.cometd.subscribe('/topic/{!pushTopicName}', function(message) {
+                        CaseIds = CaseIds+JSON.stringify(message.data.sobject.Id) + ',';
+                        caseDetails(CaseIds);
+                    });
+
+                });
+           
+            })(jQuery)
+        </script>
+    </apex:form>
+
+</apex:page>

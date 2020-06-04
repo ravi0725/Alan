@@ -1,0 +1,96 @@
+<apex:page controller="CustomProposalGenerateController" 
+           showHeader="true" 
+           sidebar="true" 
+           cache="false" id="pgID"
+           tabStyle="Apttus_Proposal__Proposal__c">
+    <apex:stylesheet value="{!$Resource.Apttus_Config2__ConfigStyles}" />
+   <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCommon.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCatalog.css')}" />
+    <style type="text/css">
+      .aptLoadingOverlay {
+        background-color: rgba(255, 255, 255, 0.9);
+        display:none;      
+        background-repeat: no-repeat;
+        background-position:center center;
+      }
+    
+      html {height:100%}
+    
+      #idApprovalDialog {
+        margin:0;
+        height:100%;
+        overflow:hidden
+      }
+      
+
+        #filter{
+            display:none;
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+    </style>
+    <script type="text/javascript">
+        function selectCheckboxes(inpt,receivedInptID)
+        {
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++)
+            {          
+                if(inputCheckBox[i].id.indexOf(receivedInptID)!=-1){                                     
+                    inputCheckBox[i].checked = inpt.checked;
+                }
+            }
+       }
+        
+        function startProcess(){
+            document.getElementById('filter').style.display = 'block'; 
+        }
+        function endProcess(){
+            document.getElementById('filter').style.display = 'none'; 
+        }
+                    
+    </script>       
+     <apex:form id="frId">
+         <apex:actionFunction action="{!assignSessionId}" reRender="errorMsgId" oncomplete="endProcess();" name="assignSessionId">
+             <apex:param value="{!sessionId}" assignTo="{!sessionId}" name="sessionId"/>
+         </apex:actionFunction>
+         
+         <div id="filter">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" id="loadingImge" style="position:fixed;top:50%;left:50%;z-index:10;"/>
+            <div style="position:fixed;top:51%;left:53%;">
+               <b> Processing ....</b>
+            </div>
+        </div>
+        <apex:pageBlock title="Present Proposal" >
+            <apex:PageMessages id="errorMsgId"></apex:PageMessages>  
+            <ul style="text-align:center; margin-top:10px; margin-bottom:10px;" id="aptTopButtons">
+                <li class="aptSpinnerBtn">
+                    <a onClick="gotoPresent();startProcess();" class="aptListButton ">Next</a>
+                </li>
+                <li class="aptSpinnerBtn">
+                    <a onClick="window.open('/{!quoteId}');" class="aptListButton">Cancel</a>
+                </li>
+            </ul>       
+   <apex:pageBlockTable value="{!AttWrapList}" var="assWrap" id="table" width="150%">
+                <apex:column >
+                <apex:facet name="header">
+                    <apex:inputCheckbox onclick="selectCheckboxes(this,'checkedone')"/>
+                </apex:facet>
+                    <apex:inputCheckbox value="{!assWrap.checked}" id="checkedone"/>
+                </apex:column>
+                <apex:column value="{!assWrap.att.Name}"/>
+                <apex:column value="{!assWrap.att.ContentType}"/>
+                <apex:column value="{!assWrap.att.BodyLength}"/>
+                <apex:column value="{!assWrap.att.LastModifieddate}"/>
+                 </apex:pageBlockTable> 
+                  </apex:pageBlock>
+        <apex:actionFunction action="{!gotoPresent}" onComplete="createEmailTemplate();" id="errorMsgId" name="gotoPresent"/>
+         <apex:actionFunction action="{!createEmailTemplate}" reRender="errorMsgId" name="createEmailTemplate" onComplete="endProcess();"/>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,677 @@
+<apex:page standardController="Lead"
+    extensions="CustomLeadConversionController" id="Page" language="{!$CurrentPage.parameters.lang}">
+   <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 250px;
+            margin-left: -150px;
+            top:200px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .expQuotePopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 30%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/            
+            margin-left: -150px;
+            top:200px;
+        }
+ 
+    </style>
+   
+    <div class="bPageTitle">
+        <div class="ptBody">
+            <div class="content">
+                <img class="pageTitleIcon" title="Lead" alt="Lead" src="/s.gif" />
+                <h1 class="pageType">
+                    {!$Label.Convert_Lead} <span class="titleSeparatingColon">:</span>
+                </h1>
+                <h2 class="pageDescription">{!lead.Name}</h2>
+                <div class="blank"></div>
+            </div>
+
+        </div>
+        <div class="ptBreadcrumb"></div>
+    </div>
+    <apex:PanelGroup rendered="{!NoResultsDisplay == true && duplicateContact == false}">
+    <table cellspacing="2" cellpadding="0" border="0">
+        <tbody>
+            <tr>
+                <td colspan="4">{!$Label.Lead_Text} <br /> {!$Label.Lead_Text1} <br /> {!$Label.Lead_Text2} <br /> <br />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </apex:PanelGroup>
+    <apex:PanelGroup rendered="{!duplicateContact}">
+    <table cellspacing="2" cellpadding="0" border="0">
+        <tbody>
+            <tr>
+                <td colspan="4">{!$Label.DuplicateContact}<br /> <br />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </apex:PanelGroup>
+    <script type="text/javascript"> 
+      var SelUserVal;
+      var SelAccountVal; 
+      var inputvar;
+      var hiddenvalue;
+      
+      //function callValidateCompAssetsJS(){
+      //   callValidateCompAssets();
+      //}
+      
+      function openLookup(textid, width, modified, searchParam){  
+        var intval = textid.lastIndexOf(":");
+        if(textid!=null)
+          for(var i=0;i<=intval;i++){
+           if(textid.indexOf(":")>0)
+             textid = textid.replace(":","%3A");        
+          }        
+          var baseURL = '/_ui/common/data/LookupPage?lkfm=Page%3AmyForm&lknm='+textid+'&lktp=005';                
+          var originalbaseURL = baseURL;
+          var originalwidth = width;
+          var originalmodified = modified;
+          var originalsearchParam = searchParam;    
+            
+          var lookupType = baseURL.substr(baseURL.length-3, 3);
+          if (modified == '1') baseURL = baseURL + searchParam;
+ 
+          var isCustomLookup = false;
+        
+          if(lookupType == "005"){ 
+             var urlArr = baseURL.split("&");
+             var txtId = '';      
+             if(urlArr.length > 2) {
+               urlArr = urlArr[1].split('=');
+               txtId = urlArr[1];
+             } 
+             // Following is the url of Custom Lookup page. You need to change that accordingly
+             baseURL = "/apex/CustomUserLookUpPage?txt=" + txtId;
+         
+             // Following is the id of apex:form control "myForm". You need to change that accordingly
+             baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+             if(modified == '1'){
+                baseURL = baseURL + "&lksearch=" + searchParam;
+             }
+ 
+             // Following is the ID of inputField that is the lookup to be customized as custom lookup
+             if(txtId.indexOf('Account') > -1 ){
+                isCustomLookup = true;
+             }
+          } 
+    
+          if(isCustomLookup == true){
+             openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+          }else{
+             if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+             openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+          } 
+      }  
+
+      function openLookupForAccount(textid, width, modified, searchParam){ 
+         var intval = textid.lastIndexOf(":");
+         if(textid!=null)
+           for(var i=0;i<=intval;i++){
+             if(textid.indexOf(":")>0)
+               textid = textid.replace(":","%3A");        
+           }        
+           if(searchParam.indexOf(":")>0){
+               var searchvar = searchParam;
+               var serchvar1 = searchParam.split("=");
+               var searchvar2 = serchvar1[1].split(":");            
+               searchParam = serchvar1[0]+'='+searchvar2[1].trim();            
+           }                
+           var baseURL = '/_ui/common/data/LookupPage?lkfm=Page%3AmyForm&lknm='+textid+'&lktp=001';
+           var originalbaseURL = baseURL;
+           var originalwidth = width;
+           var originalmodified = modified;
+           var originalsearchParam = searchParam;
+           var lookupType = baseURL.substr(baseURL.length-3, 3);
+           if(modified == '1') baseURL = baseURL + searchParam;
+              var isCustomLookup = false;
+              if(lookupType == "001"){
+                 var urlArr = baseURL.split("&");
+                 var txtId = '';       
+                 if(urlArr.length > 2) {
+                    urlArr = urlArr[1].split('=');
+                    txtId = urlArr[1];
+                 } 
+                 // Following is the url of Custom Lookup page. You need to change that accordingly
+                 baseURL = "/apex/CustomAccountLookupPage?txt=" + txtId;      
+         
+                 // Following is the id of apex:form control "myForm". You need to change that accordingly
+                 baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+                 if(modified == '1') {
+                   baseURL = baseURL + "&lksearch=" + searchParam;
+                 }
+ 
+                 // Following is the ID of inputField that is the lookup to be customized as custom lookup
+                 if(txtId.indexOf('picklistid') > -1 ){
+                   isCustomLookup = true;
+                 }
+              }
+     
+              if(isCustomLookup == true){
+                openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+              } else {
+                 if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+                 openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+              } 
+      }
+
+      function GoToOnChange(inputvalue){  
+          var inputvar = inputvalue;
+          if(inputvar ==  null || inputvar == '' || inputvar == 'undefined'){
+             alert('please select a value for record  owner ');
+             return false;
+          }    
+       }
+
+       function PreparePicklistval(input, textid) {
+          document.getElementById(textid).value = input.value;   
+          reorderpickValues(hiddenvalue);
+       }
+
+       function changeValue(input, textid){
+           document.getElementById(textid).value = input.value;
+       }      
+
+       function hasvalues(IPval){    
+          hiddenvalue = IPval;
+          reorderpickValues(hiddenvalue);    
+       }    
+                         
+</script>
+    
+    <apex:form id="myForm">
+    <apex:pageMessages id="error"/>
+        <apex:actionFunction name="callToConverts" action="{!ConvertLead}"/>
+        <apex:actionFunction name="callToConvert" action="{!ConvertLead}" reRender="expQuotePopup, dupeContact, mainPanel, MDMDataId" status="convertingStatus">
+           <apex:param name="convertAssets" value="true" assignTo="{!convertAssets}"/>
+        </apex:actionFunction>  
+        <!-- <apex:actionFunction name="callValidateCompAssets" action="{!validateCompetitorAssets}" rerender="expquotepopup,error" oncomplete="callConvert();"/> -->
+        <!-- Section for Convert Page starts -->                   
+        <apex:outputPanel id="mainPanel">
+            <apex:outputPanel rendered="{!DisplayCreateLeadPage == true && duplicateContact == false}">
+                <apex:PageBlock id="PageBlock">
+                    <apex:pageblockButtons >                       
+                        <apex:commandButton action="{!validateCompetitorAssets}" value="{!$Label.Convert_Button_Value}" rerender="expquotepopup,error" oncomplete="callConvert();"/>
+                        <apex:commandButton action="{!Cancel}" value="{!$Label.Cancel_Button_Value}" />
+                    </apex:pageblockButtons>
+    
+                    <apex:pageBlockSection columns="1" title="{!$Label.Convert_Lead}"
+                        collapsible="false">
+    
+                        <apex:pageBlockSectionItem id="PBSId">
+                            <apex:outputLabel for="Account" id="OPlabelid"
+                                 value="{!$Label.Record_Owner}"></apex:outputLabel>
+                            <apex:pageblocksectionItem >
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                    <apex:inputtext id="Account" value="{!SelUserValue}"
+                                        onfocus="SelUserVal = this.value;" Required="true"
+                                        onchange="GoToOnChange(this.value)" />
+    
+                                    <img title="Record Owner Lookup (New Window)"
+                                        onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';"
+                                        onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';"
+                                        onfocus="this.className = 'lookupIconOn';"
+                                        onblur="this.className = 'lookupIcon';" class="lookupIcon"
+                                        alt="Record Owner Lookup (New Window)" src="/s.gif"
+                                        onclick="openLookup('{!$Component.Account}',670,1, '&lksrch='+SelUserVal)" />                                   
+                                        
+                                        
+                                </apex:outputPanel>
+                            </apex:pageblocksectionItem>
+                        </apex:pageBlockSectionItem>
+    
+                        <apex:inputCheckbox value="{!ischecked}"
+                            label="{!$Label.Send_Email_to_the_Owner}" />
+    
+                        <apex:pageblocksectionitem >
+                            <apex:outputLabel for="picklistid" value="{!$Label.Account_Name}"></apex:outputLabel>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                
+                                <apex:selectList value="{!SelAccountName}" id="picklistid"
+                                    onfocus="SelAccountVal =  this.value;" size="1" >
+                                    <apex:selectOptions value="{!options}" />
+                                </apex:selectList>
+                                
+                                <script>         
+                                   if(SelAccountVal != null && SelAccountVal != '' && SelAccountVal != 'undefined')
+                                      SelAccountVal = SelAccountVal;
+                                   else
+                                      SelAccountVal = '';                                                                                       
+                                </script>
+                                <img title="Account Name(New Window)"
+                                    onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';"
+                                    onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';"
+                                    onfocus="this.className = 'lookupIconOn';"
+                                    onblur="this.className = 'lookupIcon';" class="lookupIcon"
+                                    alt="Record Owner Lookup (New Window)" src="/s.gif"
+                                    onclick="openLookupForAccount('{!$Component.picklistid}',670,1, '&lksrch='+SelAccountVal)" />
+    
+                            </apex:outputPanel>
+                            
+                        </apex:pageblocksectionitem>
+                        <apex:inputHidden value="{!Changedpicklistval}" id="pickvalue" />
+                                                                   
+                        <apex:pageblocksectionitem >
+                            <apex:outputLabel for="Oppid" value="{!$Label.Opportunity_Name}"></apex:outputLabel>
+                            <apex:outputPanel styleClass="requiredInput" layout="block">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                <apex:pageblocksectionitem >
+                                    <apex:inputtext value="{!stroppname}" id="oppid" />
+                                </apex:pageblocksectionitem>
+                                <br />
+                                <apex:pageblocksectionitem >
+                                    <apex:inputCheckbox value="{!createOpp}" label="" />
+                                    <apex:outputtext >Do not create a new opportunity upon conversion.</apex:outputtext>
+                                </apex:pageblocksectionitem>
+                            </apex:outputPanel>
+                        </apex:pageblocksectionitem>
+    
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="convertedstatus" value="{!$Label.Converted_Status}">
+                                </apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                    <apex:selectList id="convertedstatus" value="{!strconverStatus}"
+                                        size="1" label="Converted Status" required="true">
+                                        <apex:selectOption itemValue="{!$Label.Lead_Status_SQL_Convert_to_Opportunity}"
+                                            itemLabel="{!$Label.Lead_Status_SQL_Convert_to_Opportunity}" />
+                                    </apex:selectList>
+                                </apex:outputPanel>
+                        </apex:pageblocksectionitem>
+                    </apex:pageBlockSection>
+    
+    
+                    <apex:pageblocksection columns="2" title="{!$Label.Task_Information}"
+                        collapsible="false">
+    
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="subjectid" value="{!$Label.Subject}">
+                                </apex:outputLabel>
+                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                    <apex:inputfield value="{!taskobj.subject}" label="Subject"
+                                        id="subjectid"></apex:inputfield>
+                                </apex:outputPanel>
+                        </apex:pageblocksectionitem>
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="statusid" value="{!$Label.Status}">
+                                </apex:outputLabel>
+                                <apex:inputfield value="{!taskobj.status}" label="Status"
+                                    id="statusid"></apex:inputfield>
+                        </apex:pageblocksectionitem>
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="duedateid" value="{!$Label.Due_Date}">
+                                </apex:outputLabel>
+                                <apex:inputfield value="{!taskobj.ActivityDate}" label="Due Date"
+                                    id="duedateid"></apex:inputfield>
+                        </apex:pageblocksectionitem>
+                        <br />
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="priorityid" value="{!$Label.Priority}">
+                                </apex:outputLabel>
+                                <apex:inputfield value="{!taskobj.priority}" label="Priority"
+                                    id="priorityid"></apex:inputfield>
+                        </apex:pageblocksectionitem>
+                    </apex:pageblocksection>
+    
+                    <apex:pageblocksection columns="1" title="{!$Label.Description_Information}"
+                        collapsible="false">
+                        <apex:pageblocksectionitem >
+                            <apex:outputlabel for="newDesc" value="{!$Label.Comments}">
+                                </apex:outputLabel>
+                                <apex:inputTextarea id="newDesc" value="{!StrComments}" cols="80"
+                                    rows="5" />
+                        </apex:pageblocksectionitem>
+                        <apex:pageblocksectionitem dir="RTL">
+                            <apex:inputCheckbox value="{!SendNotificMail}" label=""/>
+                            <apex:outputtext >{!$Label.Send_Notification_Email}</apex:outputtext>
+                        </apex:pageblocksectionitem>
+                    </apex:pageblocksection>
+    
+                    <apex:pageblocksection columns="1" title="{!$Label.Reminder}"
+                        collapsible="false">
+                        <apex:pageBlockSectionitem >
+                            <apex:outputlabel for="reminderid" value="{!$Label.Reminder}" />
+                            <apex:pageBlockSectionitem >
+                                <apex:inputCheckbox value="{!Setreminder}" label=""
+                                    selected="true" />
+                                <apex:pageBlockSectionitem >
+                                    <apex:inputfield value="{!Eventobj.Activitydate}" />
+                                    <apex:selectlist value="{!selectedtime}" multiselect="false"
+                                        size="1">
+                                        <apex:selectOptions value="{!times}" />
+                                        </apex:selectList>
+                                </apex:pageBlockSectionitem>
+                            </apex:pageBlockSectionitem>
+                        </apex:pageBlockSectionitem>
+                    </apex:pageblocksection>
+                </apex:PageBlock>
+            </apex:outputPanel>                           
+        </apex:outputPanel>
+        <!-- Section for Convert Page ends -->         
+        
+        <!-- Section for searching Customer Data Hub starts -->
+        <apex:outputPanel id="MDMDataId">
+        <apex:outputPanel rendered="{!DisplaySearchMDMDataPage == true && duplicateContact == false}">
+
+            <apex:pageblock title="{!$Label.Search_for_Customer_Data_Hub_Account}" id="SearchMDMId" >
+
+                <apex:pageblockbuttons location="bottom">
+                    <apex:commandbutton value="{!$Label.Search_Account_from_MDM}"
+                        action="{!SearchCustomerMaster}" />&nbsp;&nbsp;&nbsp;&nbsp;
+                          
+                    <!-- <apex:commandbutton value="Create Account from MDM"
+                        action="{!COntinueWithUserSelection}"
+                        rendered="{!displayMDMResults}" />&nbsp;&nbsp;&nbsp;&nbsp; -->  
+                        
+                     <apex:commandbutton value="{!$Label.Create_Account_from_MDM}"
+                        action="{!COntinueWithUserSelection}"
+                        rendered="{!IF(wrapperlist!=null && wrapperlist.size>0,true,false)}" />&nbsp;&nbsp;&nbsp;&nbsp;     
+                        
+                         
+                    <apex:commandbutton value="{!$Label.Create_New_Account}"
+                        action="{!continuetoPage}" rendered="{!displayMDMResults}" />    
+                    <apex:commandbutton value="{!$Label.Cancel_Button_Value}"
+                    action="{!cancelAction}"
+                    rendered="{!displayMDMResults}" />
+                </apex:pageblockbuttons>
+                <apex:pageblocksection title="{!$Label.Company_Information}" collapsible="false" columns="2">
+                     <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.Company}" for="accid" />
+                        <apex:inputtext value="{!Strleadcompany}" id="accid" tabindex="1"/>
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.Phone}" for="strphoneid" />
+                        <apex:inputtext value="{!strleadphone}" id="strphoneid"  tabindex="3"/>
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.Country_for_VF}" for="lea16country" />
+                        <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block" /> 
+                        <apex:inputtext value="{!strcountry}" id="lea16country" tabindex="2" />
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem>                                    
+                    
+                    
+                    
+                    <!-- <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.Phone_Country_Code}" for="strCountryCodeid" />
+                        <apex:inputtext value="{!strCountryCode}" id="strCountryCodeid"  tabindex="3"/>
+                    </apex:pageblocksectionItem>
+                     -->
+                   
+                   <!-- <apex:pageblocksectionItem >
+                        <apex:outputlabel value="Name" for="strNameid" />
+                        <apex:inputtext value="{!StrLeadNmae}" id="strNameid"/>
+                    </apex:pageblocksectionItem> -->  
+                    
+                    </apex:pageblocksection>
+                    <apex:pageblocksection title="{!$Label.Address_Information}" collapsible="false" columns="1">  
+                    <!-- <apex:pageblocksectionItem >
+                        <apex:outputlabel value="Country" for="countryid" /> 
+                        <apex:inputtext value="{!strcountry}" id="countryid"  />
+                    </apex:pageblocksectionItem> -->
+                    
+                     <!-- <apex:pageblocksectionItem helpText="{!$ObjectType.Lead.Fields.Address1__c.inlineHelpText}">
+                        
+                        <apex:outputlabel value="Street Address" for="Addressid" /> 
+                        <apex:inputtextarea value="{!straddress}" id="Addressid"  rows="4" cols="40"/>
+                    </apex:pageblocksectionItem>  -->
+                    
+                   <!--  <apex:pageblocksectionItem >
+                        <apex:outputlabel value="Country" for="lea16country" /> 
+                        <apex:inputtext value="{!strcountry}" id="lea16country"  />
+                    </apex:pageblocksectionItem>
+                    
+                     <apex:pageblocksectionItem >
+                        <apex:outputlabel value="Country" for="lea16country" /> 
+                        <apex:inputtext value="{!lead.country}" id="lea16country"  />
+                    </apex:pageblocksectionItem>    -->                 
+                    
+                    <apex:pageblocksectionItem helpText="{!$ObjectType.Lead.Fields.Address1__c.inlineHelpText}">
+                        <apex:outputlabel value="{!$Label.Street_Address}" for="Addressid" /> 
+                         <apex:outputPanel styleClass="requiredInput" layout="block">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                        <apex:inputtextarea value="{!straddress}" id="Addressid"  rows="4" cols="40" tabindex="4"/>
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem> 
+                    
+                    <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.City_for_VF}" for="cityid" />
+                         <apex:outputPanel styleClass="requiredInput" layout="block">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block" /> 
+                        <apex:inputtext value="{!strcity}" id="cityid"  tabindex="5"/>
+                        </apex:outputPanel>
+                    </apex:pageblocksectionItem> 
+                    
+                    <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.State_Province}" for="Stateid" /> 
+                        <apex:inputtext value="{!strstate}" id="stateid" tabindex="6" />
+                    </apex:pageblocksectionItem>
+                    
+                    <apex:pageblocksectionItem >
+                        <apex:outputlabel value="{!$Label.Postal_Code}" for="postalcodeid" /> 
+                        <apex:inputtext value="{!strpostalcode}" id="postalcodeid"  tabindex="7"/>
+                    </apex:pageblocksectionItem>   
+                                     
+                    
+                </apex:pageblocksection>               
+            </apex:pageblock>
+
+            <apex:outputpanel rendered="{!displayMDMResults == true && duplicateContact == false}" id="MdmResultsid">
+                <apex:pageBlock title="{!$Label.Accounts_from_MDM}">
+                    <apex:pageBlockTable value="{!wrapperlist}" var="r">
+                        <apex:column > 
+                             <input type="radio" name="Letters" value="{!r.enterprisemasterid}"
+                                    onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /> 
+                        </apex:column> 
+                        <apex:column >
+                         <apex:facet name="header">{!$Label.Company}</apex:facet>
+                            {!r.orgName}
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">Site Name</apex:facet>
+                        {!r.SiteName}
+                        </apex:column>
+                         <apex:column >
+                         <apex:facet name="header">{!$Label.Street_Address}</apex:facet>
+                        {!r.billlingstreet}
+                        </apex:column> 
+                        <apex:column >
+                         <apex:facet name="header">{!$Label.City_for_VF}</apex:facet>
+                        {!r.billlingCity}
+                        </apex:column> 
+                        <apex:column >
+                         <apex:facet name="header">{!$Label.State_Province}</apex:facet>
+                        {!r.billlingstate}
+                        </apex:column>
+                        <apex:column >
+                         <apex:facet name="header">{!$Label.Country_for_VF}</apex:facet>
+                        {!r.billlingcountry}
+                        </apex:column>
+                        <apex:column >
+                         <apex:facet name="header">{!$Label.Postal_Code}</apex:facet>
+                        {!r.billingpostalcode}
+                        </apex:column> 
+                        <apex:column > 
+                        <apex:facet name="header">{!$Label.Phone}</apex:facet>
+                        {!r.phoneno}
+                        </apex:column>
+                        <!-- <apex:column > 
+                        <apex:facet name="header">{!$Label.EnterpriseMasterId}</apex:facet>
+                        {!r.enterprisemasterid}
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header">{!$Label.Enterprise_Party_Number}</apex:facet>
+                        {!r.enterprisepartynumber}
+                        </apex:column>  -->
+                         <apex:column >
+                        <apex:facet name="header">{!$Label.EnterpriseMasterId}</apex:facet>
+                        {!r.enterprisepartynumber}
+                        </apex:column> 
+                    </apex:pageBlockTable> 
+                </apex:pageBlock>
+                <apex:inputHidden value="{!SelAccId}" id="RadioButtonValue" />
+             </apex:outputpanel>
+            </apex:outputpanel>
+            </apex:outputPanel>
+            <!-- Section for searching Customer Data Hub ends -->
+            
+            <!-- Section for Duplicate Contact starts -->
+            <apex:outputPanel id="dupeContact">
+                <apex:outputpanel rendered="{!duplicateContact}">
+                    <apex:pageBlock >
+                        <apex:pageblockButtons > 
+                            <apex:commandButton action="{!convertFromContact}" value="{!$Label.Convert_Button_Value}" />
+                            <apex:commandButton action="{!Cancel}" value="{!$Label.Cancel_Button_Value}" />
+                        </apex:pageblockButtons>  
+                        
+                        <apex:pageBlockSection columns="1" title="{!$Label.Convert_Lead}"
+                        collapsible="false">
+                             <apex:pageblocksectionItem >
+                                <apex:outputlabel value="Company Name" for="Stateid" /> 
+                                <apex:outputtext value="{!SelAccountName}" id="stateid"/>
+                             </apex:pageblocksectionItem>
+                             <apex:pageblocksectionItem >
+                                <apex:outputlabel value="Contact Name" for="Stateid" /> 
+                                <apex:outputPanel layout="block" >
+                                <apex:outputPanel layout="block" />
+                                
+                                <apex:selectList value="{!SelContactName}" id="picklistid"
+                                    onfocus="SelContactVal =  this.value;" size="1" >
+                                    <apex:selectOptions value="{!conOptions}" />
+                                </apex:selectList>
+                                
+                                <script>
+                                   if(SelContactVal!=null && SelContactVal!='' && SelContactVal!='undefined')
+                                    SelContactVal = SelContactVal; 
+                                    else
+                                    SelContactVal = '';
+                                                    
+                                </script>
+                                </apex:outputPanel>
+                             </apex:pageblocksectionItem>
+                             <apex:inputHidden value="{!Changedpicklistval}" id="pickvalue" />
+                        </apex:pageBlockSection>
+                        
+                    </apex:pageBlock>
+                </apex:outputpanel>
+            </apex:outputPanel>
+            <!-- Section for Duplicate Contact ends*/ -->
+            <!-- <apex:actionFunction name="reorderpickValues" action="{!reorderpickValues}"  rerender="picklistid">
+                        <apex:param name="hiddenvalue" value="" assignto="{!changedvalue}"/>
+                     </apex:actionFunction> -->
+        <apex:outputpanel rendered="{!NoResultsDisplay == true && duplicateContact == false}">
+                <font color="red">{!$Label.Alert_Text}</font>
+        </apex:outputpanel> 
+                     
+        <apex:actionFunction name="reorderpickValues" action="{!reorderpickValues}"  rerender="picklistid" immediate="true">
+           <apex:param name="hiddenvalue" value="" assignto="{!changedvalue}"/>
+        </apex:actionFunction>                       
+        
+        <apex:actionFunction name="reorderConPickValues" action="{!reorderConPickValues}"  rerender="picklistid" immediate="true">
+                  <apex:param name="conhiddenvalue" value="" assignto="{!changedConvalue}"/>
+        </apex:actionFunction>  
+        
+        <!-- Section for Competitor Assets starts -->
+        <apex:outputPanel id="expQuotePopup">
+          <script>
+              
+             function callConvert(){
+               //alert('asd: '+'{!showCompAssetsPopUp}');
+               
+               //alert('SelAccountVal='+SelAccountVal);
+               //alert('validation: '+'{!validation}');
+               //alert('validateAddress:'+'{!validateAddress}');
+               if('{!showCompAssetsPopUp}' == 'false'){
+                  callToConverts();
+               } 
+             }
+          </script>
+          <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!showCompAssetsPopUp}"/>
+          <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="{!showCompAssetsPopUp}">
+            <apex:pageBlock title="{!$Label.Competitor_Assets}">
+                <apex:pageMessages />                              
+                <apex:pageBlockButtons location="top">
+                  <input type="button" value="{!$Label.Convert}" onclick="validateCheckBoxes()" class="btn"/> 
+                  <apex:commandbutton value="{!$Label.Cancel}" action="{!cancelpopup}" reRender="expQuotePopup" />
+                  <apex:actionstatus id="convertingStatus" startText="{!$Label.Converting}"/>
+                </apex:pageBlockButtons>
+                                                
+                <apex:pageBlockSection title="{!$Label.Comp_Assets_Lead} - {!leadobj.Name} {!$Label.Comp_Assets_Text1} {!leadobj.Name} {!$Label.Comp_Assets_Text2}" collapsible="false" rendered="{!AND(compAssetsLeadList!=null, compAssetsLeadList.size > 0)}"> 
+                  <apex:pageBlockTable value="{!compAssetsLeadList}" id="leadCompAssetTable" var="wrapper" rendered="{!AND(compAssetsLeadList!=null, compAssetsLeadList.size > 0)}">
+                    <apex:column headerValue="{!$Label.Action}">
+                       <apex:inputCheckbox value="{!wrapper.isSelected}" styleClass="selectedCheckbox"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Name.label}" value="{!wrapper.asset.Name}"/>                                    
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Competitor_Company__c.label}" value="{!wrapper.asset.Competitor_Company__r.Name}"/>                       
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Number_of_Licenses__c.label}" value="{!wrapper.asset.Number_of_Licenses__c}"/> 
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product_Version__c.label}" value="{!wrapper.asset.Product_Version__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Yearly_Subscription_Cost__c.label}" value="{!wrapper.asset.Yearly_Subscription_Cost__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Install_Date__c.label}" value="{!wrapper.asset.Install_Date__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Expiration_Date__c.label}" value="{!wrapper.asset.Expiration_Date__c}"/>             
+                  </apex:pageBlockTable>  
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="{!$Label.Comp_Assets_Account} - {!SelAccountName}" collapsible="false" rendered="{!AND(compAssetsAccountList!=null, compAssetsAccountList.size > 0)}">   
+                  <apex:pageBlockTable value="{!compAssetsAccountList}" id="accountCompAssetTable" var="compAsset" rendered="{!AND(compAssetsAccountList!=null, compAssetsAccountList.size > 0)}">
+                    <apex:column headerValue="{!$Label.Action}"></apex:column>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Name.label}" value="{!compAsset.Name}"/>                                    
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Competitor_Company__c.label}" value="{!compAsset.Competitor_Company__r.Name}"/>                       
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Number_of_Licenses__c.label}" value="{!compAsset.Number_of_Licenses__c}"/> 
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Product_Version__c.label}" value="{!compAsset.Product_Version__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Yearly_Subscription_Cost__c.label}" value="{!compAsset.Yearly_Subscription_Cost__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Install_Date__c.label}" value="{!compAsset.Install_Date__c}"/>
+                    <apex:column headerValue="{!$ObjectType.Competitor_Owned_Assets__c.Fields.Expiration_Date__c.label}" value="{!compAsset.Expiration_Date__c}"/>             
+                  </apex:pageBlockTable>
+                </apex:pageBlockSection>    
+            </apex:pageBlock>
+          </apex:outputPanel>
+        </apex:outputPanel>     
+        <!-- Section for Competitor Assets ends -->         
+    </apex:form>    
+    <script>
+       function validateCheckBoxes(){         
+           var convertAssets = true;
+           callToConvert(convertAssets);
+       }       
+    </script>
+</apex:page>

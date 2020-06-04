@@ -1,0 +1,203 @@
+<apex:page controller="CustomerDuplicateCheckWithSavepointCtrl" id="pgId" tabStyle="Account" sidebar="false" showChat="false" showHeader="false" >
+    <style>
+        
+        .loadingScreen{
+            z-index:199;
+            width:100%;
+            height:97%;
+            background-color:black;
+            position:absolute;
+            opacity:0.4;
+            filter:alpha(40);
+            display:none;
+        }
+        
+        .loadingStyle{
+            z-index:999;
+            width:200px;
+            height:50px;
+            background-color:#3EAEDC;
+            color:white;
+            font-size:24px;
+            text-align:center;
+            border-radius:6px;
+            position:absolute;
+            left:45%;
+            top:35%;
+        }
+    </style>
+    <script>
+        function startLoad(){
+            document.getElementById("loadId").style.display = "block";
+            document.getElementById("loadTextId").style.display = "block";
+        }
+        
+        function endLoad(){
+            document.getElementById("loadId").style.display = "none";
+            document.getElementById("loadTextId").style.display = "none";
+        }
+    
+        function unCheckOtherAddresses(ele,addId){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf('selectedAddress')!=-1){                                     
+                    inputCheckBox[i].checked = false;
+                }
+            }
+            ele.checked = true;
+            document.getElementById('{!$Component.pgId.frId.pbId.dedupeAddressId}').value = addId;
+           
+        }
+    
+        function unCheckOtherAccounts(ele,accId){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf('selectedAccount')!=-1){                                     
+                    inputCheckBox[i].checked = false;
+                }
+            }
+            ele.checked = true;
+            document.getElementById('{!$Component.pgId.frId.pbId.dedupeAccountId}').value = accId;
+            
+        }
+    
+    </script>
+    <apex:form id="frId">
+        <div id="loadId" class="loadingScreen"/>
+        <div id="loadTextId" class="loadingStyle" style="display:none;">
+            Loading . . . 
+            <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+        </div>
+        <apex:actionStatus id="statusId" onstart="startLoad();" onstop="endLoad();"/>
+        <apex:pageBlock id="pbId">
+            <apex:inputHidden value="{!dedupeAccountId}" id="dedupeAccountId"/>
+            <apex:inputHidden value="{!dedupeAddressId}" id="dedupeAddressId"/>
+            <apex:pageBlockSection title="Customer Duplicate Check" columns="2" >
+                <apex:repeat rows="1" first="{!currentPage}" value="{!customerDupeCheckList}" var="customerDupeCheck">
+                    <apex:repeat value="{!$ObjectType.Customer_Dup_Check__c.FieldSets.Customer_Duplicate_Check}" var="f">
+                        <apex:outputField value="{!customerDupeCheck[f]}"/>
+                    </apex:repeat>
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Dedupe Accounts" columns="1"></apex:pageBlockSection>
+                <div id="accTableId" style="overflow:auto;height:260px;">
+                    <apex:pageBlockTable title="Dedupe Accounts" value="{!dedupeAccountWrapList}" var="dedupeAccountWrap" width="100%">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputCheckbox id="selectedAccountFlag" selected="false" onchange="unCheckOtherAccounts(this,null);">
+                                </apex:inputCheckbox>
+                            </apex:facet>
+                            <apex:inputCheckbox id="selectedAccount" selected="{!dedupeAccountWrap.selected}" onchange="unCheckOtherAccounts(this,'{!dedupeAccountWrap.dedupeAccount.Cust_Account_ID__c}');showaddress('{!dedupeAccountWrap.dedupeAccount.Cust_Account_ID__c}');">
+                            </apex:inputCheckbox>
+                        </apex:column>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Record_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Gen_Cust_Customer_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Legacy_Customer_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Customer_Name__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Customer_Name_Match_Percentage__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Oracle_Customer_Name__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Oracle_Account_Number__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Profile_Amount__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Payment_Term__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Bill_To_Cust_Invoice_Count__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Party_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Cust_Account_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Request_ID__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Process_Flag__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_1__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_2__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_3__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_4__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_5__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_6__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_7__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_8__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_9__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_10__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_11__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_12__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_13__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_14__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_15__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_16__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_17__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_18__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_19__c}"/>
+                        <apex:column value="{!dedupeAccountWrap.dedupeAccount.Addl_Column_20__c}"/>
+                    </apex:pageBlockTable>
+                </div>
+            
+            <apex:pageBlockSection id="pbAddressSectionId" title="Dedupe Addresses"  columns="1"></apex:pageBlockSection>
+                <div id="addTableId" style="overflow:auto;height:260px;">
+                    <apex:pageBlockTable styleclass="fixme" id="pbAddressTableId" value="{!dedupeAddressWrapList}" var="dedupeAddressWrap" width="100%">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputCheckbox id="selectedAddressFlag" selected="false" onchange="unCheckOtherAddresses(this,null);">
+                                </apex:inputCheckbox>
+                            </apex:facet>
+                            <apex:inputCheckbox id="selectedAddress" selected="{!dedupeAddressWrap.selected}" onchange="unCheckOtherAddresses(this,'{!dedupeAddressWrap.dedupeAddress.Cust_Acct_Site_ID__c}');">
+                            </apex:inputCheckbox>
+                        </apex:column>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Customer_Addr_Match_Percentage__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_address1__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_Address2__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_Address3__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_Address4__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_City__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_State__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_County__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_Postal_Code__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Oracle_Country__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Record_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Gen_Cust_Customer_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Legacy_Customer_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Gen_Cust_Address_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Legacy_Address_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Cust_Account_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Cust_Acct_Site_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Org_Id__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Party_Site_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Party_Site_Number__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Location_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Bill_To_Addr_Invoice_Count__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Request_ID__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Process_Flag__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_1__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_2__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_3__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_4__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_5__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_6__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_7__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_8__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_9__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_10__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_11__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_12__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_13__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_14__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_15__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_16__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_17__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_18__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_19__c}"/>
+                        <apex:column value="{!dedupeAddressWrap.dedupeAddress.Addl_Column_20__c}"/>
+    
+                    </apex:pageBlockTable>
+                </div>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!previous}" value="Previous" status="statusId" reRender="pbId" disabled="{!previousFlag}"/>
+                <apex:commandButton value="Cancel" onclick="window.open('/{!dedupeMasterId}','_self');" status="statusId" reRender="pbId" />
+                <apex:commandButton action="{!next}" oncomplete="if({!nextPageFlag})window.open('/{!dedupeMasterId}','_self');" value="Save & Next" status="statusId" reRender="pbId" rendered="{!!nextPageFlag}"/>
+                <apex:commandbutton value="Save Point" action="{!SetSavePoint}"/>
+            </apex:pageBlockButtons>
+            <script>
+                document.getElementById('accTableId').style.width = window.innerWidth;
+                document.getElementById('addTableId').style.width = window.innerWidth;
+            </script>
+        </apex:pageBlock>
+        <apex:actionFunction name="showaddress" action="{!showaddress}" rerender="pbAddressTableId" status="statusId"> 
+            <apex:param assignTo="{!dedupeAccountId}" value="{!dedupeAccountId}" name="dedupeAccountId"/>
+        </apex:actionFunction>
+    </apex:form>
+</apex:page>

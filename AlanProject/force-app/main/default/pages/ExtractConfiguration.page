@@ -1,0 +1,305 @@
+<apex:page controller="ExtractConfiguration" contentType="{!LoadType}" renderAs="{!renderAs}">
+    <head>
+    <style>
+        .headerStyle{
+            text-align:center;
+        }
+    </style>
+    </head>
+    <apex:form >
+    <apex:pageBlock >
+        <apex:outputPanel rendered="{!pageLoadType == 'VF Page'}">
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td>
+                        <apex:selectRadio value="{!pageLoadType}" onchange="loadType();" rendered="{!pageLoadType == 'VF Page'}">
+                            <apex:selectOption itemLabel="VF Page" itemValue="VF Page"></apex:selectOption>
+                            <apex:selectOption itemLabel="Excel" itemValue="Excel"></apex:selectOption>
+                            <apex:selectOption itemLabel="PDF" itemValue="PDF"></apex:selectOption>
+                           <!-- <apex:selectOption itemLabel="Doc" itemValue="Doc"></apex:selectOption>-->
+                        </apex:selectRadio>
+                    </td>
+                    <td style="text-align:right; vertical-align:middle;">
+                        <apex:commandLink value="Link to Objects List" action="/{!$Label.ObjectListLabelId}" target="_blank"/>
+                    </td>
+                </tr>
+            </table>
+            
+            <apex:tabPanel switchType="client" selectedTab="{!renderedTab}">
+                <apex:tab label="Object Permissions" title="Object Permissions" name="ObjectPermissionsTabId" id="ObjectPermissionsTabId">
+                    <apex:selectList value="{!profileSelectedforObjPrms}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!prfLstOptions}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getObjectPermissions}"/>
+                    <br/><br/>
+                        <apex:repeat value="{!objWrapList}" var="key">
+                        <h5>{!key.Type}</h5>
+                            <apex:PageBlockTable value="{!key.ObjPermissions}" var="objPermission">
+                                <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Object Name">{!$ObjectType[objPermission.sObjectType].label}</apex:column>
+                                <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Object Name">{!objPermission.sObjectType}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Read">{!IF(objPermission.PermissionsREad , 'Y' , '')}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Create">{!IF(objPermission.PermissionsCreate , 'Y' , '')}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Edit">{!IF(objPermission.PermissionsEdit , 'Y' , '')}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Delete">{!IF(objPermission.PermissionsDelete , 'Y' , '')}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="View All">{!IF(objPermission.PermissionsViewAllRecords , 'Y' , '')}</apex:column>
+                                <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Modify All">{!IF(objPermission.PermissionsModifyAllRecords , 'Y' , '')}</apex:column>
+                            </apex:PageBlockTable>
+                        </apex:repeat>
+                </apex:tab>
+                <apex:tab label="Field Permissions" title="Field Permissions" name="FieldPermissionsTabId" id="FieldPermissionsTabId">
+                    <apex:selectList value="{!profileSelected}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!prfLstOptions}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getFieldPermissions}">
+                    </apex:commandButton><br/>
+                    <apex:repeat value="{!fldWrapList}" var="key">
+                    <h5>{!key.Type}<br/></h5>
+                        <apex:repeat value="{!key.objWrapList}" var="objectType">
+                        <h6>{!$ObjectType[objectType.Type].label}</h6>
+                        <apex:PageBlockTable value="{!objectType.fldPermissions}" var="fldPermission">
+                            <apex:column style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Field Name">
+                                {!IF(CONTAINS(fldPermission.Field,'__c') && NOT(CONTAINS(objectType.Type,'Knowledge')),$ObjectType[objectType.Type].fields[RIGHT(fldPermission.Field,LEN(fldPermission.Field) - FIND('.', fldPermission.Field))].label,RIGHT(fldPermission.Field,LEN(fldPermission.Field) - FIND('.', fldPermission.Field)))}
+                            </apex:column>
+                            <apex:column style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Field Name">{!fldPermission.Field}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Read">{!IF(fldPermission.PermissionsREad , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Edit">{!IF(fldPermission.PermissionsEdit , 'Y' , '')}</apex:column>
+                        </apex:PageBlockTable>
+                        <br/>
+                        </apex:repeat>
+                    </apex:repeat>
+                </apex:tab>
+                <apex:tab label="Validation Rules" title="Validation Rules" name="ValidationRuleTabId" id="ValidationRuleTabId">
+                    <apex:selectList value="{!selectedObjectValidationRule}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!objectValidationRuleList}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getObjectValidationRules}">
+                    </apex:commandButton><br/>
+                    <apex:PageBlockTable value="{!ValidationRules}" var="ValidationRule">
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Rule Name">{!ValidationRule.fullName}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Active">{!ValidationRule.active}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Description">{!ValidationRule.Description}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Condition">{!ValidationRule.errorConditionFormula}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Error Mseeage">{!ValidationRule.errorMessage}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Error Position">{!ValidationRule.errorDisplayField}</apex:column>
+                    </apex:PageBlockTable>
+                </apex:tab>
+                <apex:tab label="List Views" title="List Views" name="ListViewsTabId" id="ListViewsTabId">
+                    <apex:selectList value="{!selectedObjectListView}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!objectList}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getObjectListViews}">
+                    </apex:commandButton><br/>
+                    <table style="border:1px thin">
+                        <tr style="background-color:#CCCCCC">
+                            <th>
+                                <b>
+                                    Full Name
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Label
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Conditions
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Boolean Filter
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Column Name
+                                </b>
+                            </th>
+                        </tr>
+                    <apex:repeat value="{!ListViews}" var="key">
+                        <tr style="background-color:white;">
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:outputText value="{!key.fullName}"/>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:outputText value="{!key.Label}"/>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:repeat value="{!key.filters}" var="filter">
+                                    {!filter.Field} {!filter.operation} {!filter.value}<br/>
+                                </apex:repeat>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                {!key.booleanFilter}
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:repeat value="{!key.columns}" var="colName">
+                                    {!colName}<br/>
+                                </apex:repeat>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    </table>
+                    
+                </apex:tab>
+                <!--<apex:tab label="Tab Visibility" title="Tab Visibility" name="TabVisibilityTabId" id="TabVisibilityTabId">
+                    <apex:selectList value="{!profileSelected}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!prfLstOptions}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getTabVisibility}">
+                    </apex:commandButton><br/>
+                        <h6>{!profileSelected}</h6>
+                        <apex:PageBlockTable value="{!TabVisibility}" var="tab">
+                            <apex:column style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Tab Name">{!tab.tab}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Visibility">{!tab.visibility}</apex:column>
+                        </apex:PageBlockTable>
+                </apex:tab>-->
+                 <apex:tab label="Reports" title="Reports" name="ReportsTabId" id="ReportsTabId">
+                    <apex:selectList value="{!FolderId}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!folderOptions}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Extract" action="{!getReportDetails}">
+                    </apex:commandButton><br/>
+                    <apex:PageBlockTable value="{!rtWrapperList}" var="rt">
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Name">{!rt.Name}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Type">{!rt.rtType}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Format">{!rt.rtFormat}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Filters">
+                            <apex:repeat value="{!rt.flters}" var="filter">
+                                {!filter}<br/>
+                            </apex:repeat>
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Filter Logic">{!rt.booleanFilter}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Columns">
+                            <apex:repeat value="{!rt.columns}" var="col">
+                                {!col}<br/>
+                            </apex:repeat>
+                        </apex:column>
+                    </apex:PageBlockTable>
+                </apex:tab>
+                <apex:tab label="Object Prefixes" title="Object Prefixes" name="ObjectPrefixesTabId" id="ObjectPrefixesTabId">
+                    <apex:iframe scrolling="true" title="Objects & Prefixes" src="/apex/ObjectPrefix"/>
+                </apex:tab>
+                <apex:tab label="Fields & Picklists" title="Fields & Picklists" name="FieldsPicklistsTabId" id="FieldsPicklistsTabId">
+                    <apex:commandButton value="Extract" onComplete="window.open('/apex/DescribeAllObject?pageLoadType={!pageLoadType}','_blank');"/>
+                    <apex:outputPanel rendered="{!pageLoadType == 'VF Page'}">
+                        <apex:iframe scrolling="true" src="/apex/DescribeAllObject?pageLoadType={!pageLoadType}"/>
+                    </apex:outputPanel>
+                </apex:tab>
+            </apex:tabPanel>
+            </apex:outputpanel>
+            <apex:outputPanel rendered="{!pageLoadType != 'VF Page'}">
+                <apex:outputPanel id="objId" rendered="{!renderedTab == 'ObjectPermissionsTabId'}">
+                    <apex:repeat value="{!objWrapList}" var="key">
+                    <h5>{!key.Type}</h5>
+                        <apex:PageBlockTable value="{!key.ObjPermissions}" var="objPermission">
+                            <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Object Name">{!objPermission.sObjectType}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Read">{!IF(objPermission.PermissionsREad , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Create">{!IF(objPermission.PermissionsCreate , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Edit">{!IF(objPermission.PermissionsEdit , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Delete">{!IF(objPermission.PermissionsDelete , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="View All">{!IF(objPermission.PermissionsViewAllRecords , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Modify All">{!IF(objPermission.PermissionsModifyAllRecords , 'Y' , '')}</apex:column>
+                        </apex:PageBlockTable>
+                    </apex:repeat>
+                </apex:outputPanel>
+                <apex:outputPanel id="fldId" rendered="{!renderedTab == 'FieldPermissionsTabId'}">
+                    <apex:repeat value="{!fldWrapList}" var="key">
+                    <h5>{!key.Type}</h5>
+                        <apex:repeat value="{!key.objWrapList}" var="objectType">
+                        <h6>{!objectType.Type}</h6>
+                        <apex:PageBlockTable value="{!objectType.fldPermissions}" var="fldPermission">
+                            <apex:column style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Field Name">{!fldPermission.Field}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Read">{!IF(fldPermission.PermissionsREad , 'Y' , '')}</apex:column>
+                            <apex:column headerClass="headerStyle" style="text-align:center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Edit">{!IF(fldPermission.PermissionsEdit , 'Y' , '')}</apex:column>
+                        </apex:PageBlockTable>
+                        </apex:repeat>
+                    </apex:repeat>
+                </apex:outputPanel>
+                <apex:outputPanel id="listviewId" rendered="{!renderedTab == 'ListViewsTabId'}">
+                    <table style="border:1px thin">
+                        <tr style="background-color:#CCCCCC">
+                            <th>
+                                <b>
+                                    Full Name
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Label
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Conditions
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Boolean Filter
+                                </b>
+                            </th>
+                            <th>
+                                <b>
+                                    Column Name
+                                </b>
+                            </th>
+                        </tr>
+                    <apex:repeat value="{!ListViews}" var="key">
+                        <tr style="background-color:white;">
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:outputText value="{!key.fullName}"/>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:outputText value="{!key.Label}"/>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:repeat value="{!key.filters}" var="filter">
+                                    {!filter.Field} {!filter.operation} {!filter.value} ; 
+                                </apex:repeat>
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                {!key.booleanFilter}
+                            </td>
+                            <td style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;">
+                                <apex:repeat value="{!key.columns}" var="colName">
+                                    {!colName} ; 
+                                </apex:repeat>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel id="rtId" rendered="{!renderedTab == 'ReportsTabId'}">
+                    <apex:PageBlockTable value="{!rtWrapperList}" var="rt">
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Name">{!rt.Name}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Type">{!rt.rtType}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Report Format">{!rt.rtFormat}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Filters">
+                            <apex:repeat value="{!rt.flters}" var="filter">
+                                {!filter} ; 
+                            </apex:repeat>
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Filter Logic">{!rt.booleanFilter}</apex:column>
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Columns">
+                            <apex:repeat value="{!rt.columns}" var="col">
+                                {!col} ; 
+                            </apex:repeat>
+                        </apex:column>
+                    </apex:PageBlockTable>
+                </apex:outputpanel>
+                <apex:outputPanel id="validationId" rendered="{!renderedTab == 'ValidationRuleTabId'}">
+                    <apex:PageBlockTable value="{!ValidationRules}" var="ValidationRule">
+                        <apex:column headerClass="headerStyle" style="border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Rule Name">{!ValidationRule.fullName}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Active">{!ValidationRule.active}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Description">{!ValidationRule.Description}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Condition">{!ValidationRule.errorConditionFormula}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Error Mseeage">{!ValidationRule.errorMessage}</apex:column>
+                        <apex:column headerClass="headerStyle" style="center;border-style:solid; border-width:1px; border-color:#E0E3E5; border-top:none; border-left:none;" headerValue="Error Position">{!ValidationRule.errorDisplayField}</apex:column>
+                    </apex:PageBlockTable>
+                </apex:outputpanel>
+            </apex:outputpanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

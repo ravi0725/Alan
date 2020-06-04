@@ -1,0 +1,138 @@
+<apex:page standardController="Case" extensions="CaseOverrideController" language="English" sidebar="false" showChat="false" showHeader="false">
+    <apex:includeScript value="/support/console/36.0/integration.js"/>
+    <style type="text/css">
+        .custPopup{
+        background-color: white;
+        border-width: 2px;
+        border-style: solid;
+        z-index: 9999;
+        left: 50%;
+        padding:10px;
+        position: absolute;
+        /* These are the 3 css properties you will need to change so the popup 
+        displays in the center of the screen. First set the width. Then set 
+        margin-left to negative half of what the width is. You can add 
+        the height property for a fixed size pop up if you want.*/
+        width: 180px;
+        margin-left: -150px;
+        top:200px;
+        }
+        .popupBackground{
+        background-color:black;
+        opacity: 0.20;
+        filter: alpha(opacity = 20);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        }
+        
+        .expQuotePopup{
+        background-color: white;
+        border-width: 2px;
+        border-style: solid;
+        z-index: 9999;
+        left: 34%;
+        padding:10px;
+        position: absolute;
+        /* These are the 3 css properties you will need to change so the popup 
+        displays in the center of the screen. First set the width. Then set 
+        margin-left to negative half of what the width is. You can add 
+        the height property for a fixed size pop up if you want.*/
+        width: 31%;
+        /*margin-left: -150px;*/
+        top:200px;
+        }
+        
+        .loadingScreen{
+        z-index:199;
+        width:100%;
+        height:97%;
+        background-color:black;
+        position:absolute;
+        opacity:0.4;
+        filter:alpha(40);
+        display:none;
+        }
+        
+        .loadingStyle{
+        z-index:999;
+        width:200px;
+        height:50px;
+        background-color:#3EAEDC;
+        color:white;
+        font-size:20px;
+        text-align:center;
+        border-radius:6px;
+        position:absolute;
+        left:45%;
+        top:35%;
+        }
+        
+    </style>
+    
+    <script type="text/javascript">
+    window.onload = function(){
+        doValidate();
+    };
+    function startLoad(){
+        document.getElementById("loadId").style.display = "block";
+        document.getElementById("loadTextId").style.display = "block";
+    }
+    
+    function endLoad(){
+        document.getElementById("loadId").style.display = "none";
+        document.getElementById("loadTextId").style.display = "none";
+    }
+    function CloseCurrentTab() {
+        if (sforce.console.isInConsole()) {
+            sforce.console.getEnclosingTabId(closeSubtab);
+        }
+        else{
+            cancelAction();
+        }
+    }
+    
+    var closeSubtab = function closeSubtab(result) {
+        var tabId = result.id;
+        sforce.console.closeTab(tabId);
+    };
+    </script>
+    <div id="loadId" class="loadingScreen"/>
+    <div id="loadTextId" class="loadingStyle" style="display:none;">
+        Processing. . .
+        <apex:image url="{!$Resource.LoadingBar}" style="border-radius:6px;"/>
+    </div>
+    <apex:form >
+        <apex:pageMessages id="errors"></apex:pageMessages>
+        <apex:actionFunction action="{!Initialize}" name="doValidate" status="processStatus" rerender="errorPanelId"/>
+        <apex:actionFunction action="{!cancel}" name="cancelAction" rerender="errorPanelId"/>
+        <apex:actionStatus id="processStatus" onstart="startLoad();" onstop="endLoad();" ></apex:actionStatus>
+        
+        <apex:outputPanel id="errorPanelId">
+            <apex:outputPanel id="errorPanelId1" rendered="{!ErrorPopup}">
+                <apex:outputPanel styleClass="popupBackground" layout="block" rendered="true"/> 
+                <apex:outputPanel styleClass="expQuotePopup" layout="block" rendered="true">
+                    <apex:pageBlock >
+                        <div style="margin-left:2%; margin-right:auto; display:block; margin-top:auto; margin-bottom:auto">  
+                            <!--<apex:outputText value="Sales Ops Comments: " style="font-weight: bold;" escape="false"/><br/>-->
+                            <!--<apex:outputText value="{!SUBSTITUTE(JSENCODE(messagetoUser),'\r\n','<br/>')}" escape="false"/><br/>-->
+                            <apex:outputText value="{!messagetoUser}" escape="false"/><br/>
+                        </div>
+                        <apex:pageBlockButtons location="bottom">
+                            <apex:outputPanel id="buttons_tax"> 
+                                
+                                <div style="margin-left:16%;margin-right:auto;display:block;margin-top:auto;margin-bottom:auto">  
+                                    <apex:commandButton value="{!$Label.Continue}" action="{!continueCaseCreation}" />
+                                    <apex:commandButton value="{!$Label.Back}" onclick="CloseCurrentTab(); return false;"/>
+                                </div>                    
+                            </apex:outputPanel>
+                        </apex:pageBlockButtons>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

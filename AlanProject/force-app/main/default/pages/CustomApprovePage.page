@@ -1,0 +1,59 @@
+<!-- 
+    Apttus Approvals Management
+    CustomCaseApprovalSummary
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Apttus_Approval__Approval_Request__c"
+           extensions="ApptusApproveRejectControllernew,LineitemtemplateController"
+           showHeader="true" 
+           sidebar="true"
+           cache="false" 
+           tabstyle="Apttus_Approval__Approval_Request__c" >
+        
+    <apex:sectionHeader title="{!$Label.apttus_approval__approvalrequest}" 
+                        subtitle="{!$ObjectType.Apttus_Config2__ProductConfiguration__c.Label} {!Approval.Apttus_CQApprov__CartId__r.Name}"/>
+    
+    <apex:pageBlock title="{!$ObjectType.Apttus_Config2__ProductConfiguration__c.Label} {!$Label.apttus_approval__information}">
+        
+        <apex:pageBlockSection columns="1">
+            <apex:outputField value="{!Approval.Apttus_CQApprov__CartId__r.Name}" />
+            <apex:pageblockSectionItem ></apex:pageblockSectionItem>
+          </apex:pageBlockSection>
+                   
+          <apex:pageBlockSection columns="2">
+          
+          <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Initial_Price1__c}" label="Proposal Standard Price"/>
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Effective_Discount__c}" label="Proposal Overall Effective Discount"/>
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Discounted_Price1__c}" label="Proposal Discounted Price"/>
+            
+             <apex:pageblockSectionItem ></apex:pageblockSectionItem>
+             <apex:pageblockSectionItem ></apex:pageblockSectionItem>
+             <apex:pageblockSectionItem ></apex:pageblockSectionItem>
+
+         
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Apttus_Proposal__Account__r.Name}" />
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.ownerid}" />
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Apttus_Proposal__Opportunity__r.Name}" />
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Name}" label="Proposal Name"/>
+            
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Customer_Request_Date__c}" />
+            <apex:outputField value="{! approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Payment_Terms_Oppty__c}" />
+            <apex:outputField value="{!approval.Apttus_CQApprov__CartId__r.Apttus_QPConfig__Proposald__r.Apttus_Proposal__Primary_Contact__r.Name}" label="Primary Contact"/>
+            </apex:pageBlockSection>
+           
+            <p/>&nbsp;  
+         </apex:pageBlock>
+        <apex:pageBlock >
+        <apex:pageBlock title="Line Item Information">
+        
+                <c:Lineitemtemplate configid="{!approval.Apttus_CQApprov__CartId__c}"/>
+        </apex:pageBlock>
+        <apex:include pageName="Apttus_Approval__ApprovalAction" />
+        
+    </apex:pageBlock>
+    
+    <apex:include pageName="Apttus_Approval__ApprovalRequestsList"/>
+        
+</apex:page>

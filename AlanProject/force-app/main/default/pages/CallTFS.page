@@ -1,0 +1,45 @@
+<apex:page standardController="Case" extensions="CallTFS" showChat="false" showHeader="false" sidebar="false">
+    <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+        #loadFilter{
+            width:120px;
+            position:fixed; 
+            top:40%; 
+            left:45%; 
+            z-index:199; 
+            font-weight:bold; 
+            font-size:14px; 
+            text-align:center;
+            background-color:#E0E3E5;
+            border-radius:6px;
+            padding:10px;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("loadFilter").style.display = "block";
+            makeCallOut();
+        };
+        
+    </script>
+    <apex:form >
+    <apex:actionFunction name="makeCallOut" action="{!makeCallOut}" oncomplete="window.open('/{!Case.Id}','_self');"/>
+    <apex:detail rerender="{!Case.ID}" />
+    <div width="100%" id="filter" style="display:none;"/>
+    <div id="loadFilter" style="display:none;">
+        <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" style="border-radius:6px;"/><br/>
+        Sending . . . 
+    </div>
+    </apex:form>
+</apex:page>

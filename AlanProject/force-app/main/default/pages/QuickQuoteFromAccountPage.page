@@ -1,0 +1,52 @@
+<apex:page standardController="Account" extensions="QuickQuoteFromAccountController">
+    <style>
+        #filter{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index:10;
+            opacity:0.6;
+            filter: alpha(opacity=50);
+        }
+    </style>
+
+    <script>
+    
+        function init() {
+            startProcess();
+            createQuickQuote();
+        }
+        window.onload = init; 
+
+        function startProcess(){
+            document.getElementById('filter').style.display = 'block'; 
+        }
+        function endProcess(){
+            document.getElementById('filter').style.display = 'none'; 
+        }
+        function openAddProduct(errorflag,quoteId){
+            if(!errorflag){
+                window.open('/_ui/sales/quote/SelectSearch?addTo=' + quoteId + '&retURL=%2F' + quoteId,'_self');
+            }
+        }
+    </script>
+    <apex:form >
+        <div id="filter">
+            <apex:image url="{!$Resource.Apttus_Approval__Image_LoadingPage}" id="loadingImge" style="position:fixed;top:50%;left:50%;z-index:10;"/>
+            <div style="position:fixed;top:51%;left:53%;">
+               <b> Processing ....</b>
+            </div>
+        </div>
+        <apex:pageBlock id="errorPanel">
+            <apex:outputpanel rendered="{!errorFlag}">
+                <apex:pagemessages />
+                <a href="/{!account.Id}" >Click here</a> to go back.
+            </apex:outputpanel>
+            <apex:actionFunction name="createQuickQuote" action="{!createQuickQuote}" oncomplete="endProcess();openAddProduct({!errorFlag},'{!qt.Id}');" reRender="errorPanel"/>
+            <apex:detail rendered="{!NOT(errorFlag)}"/>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

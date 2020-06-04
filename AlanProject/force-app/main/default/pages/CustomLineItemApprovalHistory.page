@@ -1,0 +1,12 @@
+<!-- 
+    Apttus Approvals Management
+    CustomLineItemApprovalHistory
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Apttus_Config2__LineItem__c" >
+
+    <Apttus_Approval:ApprovalHistory ctxObjectId="{!$CurrentPage.parameters.id}" />
+
+</apex:page>

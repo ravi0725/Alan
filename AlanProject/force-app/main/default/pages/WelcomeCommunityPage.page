@@ -1,0 +1,15 @@
+<apex:page showHeader="false" sidebar="false">
+  <p>
+    <font face="Verdana, Helvetica, sans-serif" size="2">{!$Label.CommunityHomePageLabel1}
+      <b>
+        <font color="#000099">{!$Label.CommunityHomePageLabel2}</font>
+      </b>
+    </font>
+  </p>
+  <br/>
+  <p>
+    <font face="Verdana, Helvetica, sans-serif" size="2">
+      {!$Label.CommunityHomePageLabel3}
+    </font>
+  </p>
+</apex:page>

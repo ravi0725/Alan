@@ -1,0 +1,17 @@
+button.primary.ng-scope {
+    display: none !important;
+}
+.mini-cart__actions {
+    
+    display: none !important;
+    
+}
+
+.fa-exclamation{
+	display: none;
+}
+.main-cart-container .lookup--field {
+    position: absolute;
+    right: -9px !important;
+    top: 0.8rem;
+}

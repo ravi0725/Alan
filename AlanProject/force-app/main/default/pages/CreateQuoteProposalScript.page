@@ -1,0 +1,7 @@
+<apex:page >
+    <apex:includeScript value="../../soap/ajax/29.0/connection.js"/>
+    <apex:includeScript value="../../soap/ajax/29.0/apex.js"/>
+    <script>
+    
+    </script>
+</apex:page>

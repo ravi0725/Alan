@@ -1,0 +1,19 @@
+<apex:page standardStylesheets="false">
+
+<style>
+
+.hasMotif {
+    margin: 0 !important;
+}
+</style>
+
+  <!-- Begin Default Content REMOVE THIS -->
+<body style="align:left;background-color:white">  
+ <div>
+ <apex:image style="align:left" url="https://c.na49.content.force.com/servlet/servlet.ImageServer?id=015i0000007jzwA &oid=00D0t000000BADB" width="100%" height="100%"/>
+   <!-- End Default Content REMOVE THIS -->
+   </div>
+   <br/><br/><br/>
+</body>  
+   
+</apex:page>

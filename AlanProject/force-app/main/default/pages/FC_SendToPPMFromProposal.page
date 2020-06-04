@@ -1,0 +1,10 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c" extensions="FC_SendToPPMFromProposalController" action="{!sendToPPM}">
+    <apex:pageMessages />
+    
+    <apex:outputText value="{!Apttus_Proposal__Proposal__c.Name}" rendered="false"/>
+    <apex:outputText value="{!Apttus_Proposal__Proposal__c.Apttus_Proposal__Description__c}" rendered="false"/>
+    <apex:outputText value="{!Apttus_Proposal__Proposal__c.Apttus_Proposal__Account__c}" rendered="false"/>
+    <apex:outputText value="{!Apttus_Proposal__Proposal__c.Account_Name__c}" rendered="false"/>
+
+    
+</apex:page>

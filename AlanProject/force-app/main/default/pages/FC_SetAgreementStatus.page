@@ -1,0 +1,2 @@
+<apex:page standardController="Apttus__APTS_Agreement__c" extensions="FC_SetAgreementStatusController" action="{!setStatus}">
+</apex:page>
