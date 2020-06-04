@@ -1,5 +1,5 @@
 /*
- @Author : RS
+ @Author : RSingh
  @Description : Display Certificate data as pdf and send out to student via Email attachment.
  @Visualforce : CertificatePDFAttachment
  @Test Class : CertificateAttachmentTest
